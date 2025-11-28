@@ -1,6 +1,9 @@
 #pragma once
 
+#include <string>
 #include "Globals.h"
+//#include "pugixml.hpp"
+#include <memory>
 
 class Application;
 class PhysBody;
@@ -73,6 +76,9 @@ public:
 	}
 
 	virtual void OnCollision(PhysBody* bodyA, PhysBody* bodyB)
+	{
+	}
+	virtual void OnCollisionEnd(PhysBody* bodyA, PhysBody* bodyB)
 	{
 	}
 };

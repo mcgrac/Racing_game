@@ -16,6 +16,9 @@ Application::Application()
 	physics = new ModulePhysics(this);
 	scene_intro = new ModuleGame(this);
 
+	//added
+	entity_manager = new ModuleGame(this);
+
 	// The order of calls is very important!
 	// Modules will Init() Start() and Update in this order
 	// They will CleanUp() in reverse order
@@ -27,6 +30,9 @@ Application::Application()
 	
 	// Scenes
 	AddModule(scene_intro);
+
+	//added
+	AddModule(entity_manager);
 
 	// Rendering happens at the end
 	AddModule(renderer);
