@@ -20,6 +20,7 @@ public:
 	ModuleAudio* audio;
 	ModulePhysics* physics;
 	ModuleGame* scene_intro;
+	ModuleGame* entity_manager;
 
 private:
 

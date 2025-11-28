@@ -1,18 +1,15 @@
 #pragma once
-#include "Module.h"
 #include "Globals.h"
 #include "p2Point.h"
 
-class ModulePlayer : public Module
+class Player
 {
 public:
-	ModulePlayer(Application* app, bool start_enabled = true);
-	virtual ~ModulePlayer();
+	Player(Application* app, bool start_enabled = true);
+	virtual ~Player();
 
 	bool Start();
-	update_status Update();
+	void Update();
 	bool CleanUp();
-
-public:
 
 };
