@@ -55,6 +55,18 @@
     <ClCompile Include="Source\Map.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Chansey.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Pachirisu.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Meganium.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Cleffa.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source/p2Point.h">
@@ -112,6 +124,18 @@
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="Source\PositionTracker.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Chansey.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Pachirisu.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Meganium.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Cleffa.h">
       <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>
