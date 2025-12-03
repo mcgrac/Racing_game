@@ -1,20 +1,22 @@
 #pragma once
 #include"Globals.h"
 #include "raylib.h"
+#include "ModulePhysics.h"
 
 class Map {
 
 public:
 
-	void Start();
-	void Update();
+    virtual ~Map() {}
+
+    virtual void Start() = 0;     // Construye el nivel
+    virtual void Update() = 0;      // Opcional (animaciones)
+    virtual void CleanUp() = 0;   // Libera memoria
 
 
 protected:
-	virtual void CreateLevel();
+	//virtual void CreateLevel();
 
-	Texture2D floor;
-	Texture2D overMap;
 private:
 
 };

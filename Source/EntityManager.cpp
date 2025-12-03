@@ -99,6 +99,8 @@ bool EntityManager::Update(float dt)
 {
 	bool ret = true;
 
+	//std::cout << "Update Entity Manager" << std::end;
+
 	//List to store entities pending deletion
 	std::list<std::shared_ptr<Entity>> pendingDelete;
 

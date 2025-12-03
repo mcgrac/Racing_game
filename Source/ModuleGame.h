@@ -8,6 +8,9 @@
 #include "raylib.h"
 #include <vector>
 
+#include"Map.h"
+#include"Level1.h"
+
 class PhysBody;
 class PhysicEntity;
 
@@ -24,5 +27,6 @@ public:
 
 public:
 
+	Map* currentMap = nullptr;
 	
 };
