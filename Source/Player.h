@@ -1,6 +1,7 @@
 #pragma once
 #include "Globals.h"
 #include "p2Point.h"
+#include "Application.h"
 
 class Player
 {

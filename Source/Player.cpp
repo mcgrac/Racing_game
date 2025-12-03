@@ -1,5 +1,4 @@
 #include "Globals.h"
-#include "Application.h"
 #include "Player.h"
 
 Player::Player(Application* app, bool start_enabled)

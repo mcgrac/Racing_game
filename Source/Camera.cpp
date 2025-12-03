@@ -1,6 +1,6 @@
 #include "Camera.h"
 
-Camera::Camera()
+Camera::Camera(Player* player)
 {
 }
 
@@ -17,5 +17,9 @@ void Camera::Update()
 }
 
 void Camera::CleanUp()
+{
+}
+
+void Camera::FollowPlayer()
 {
 }
