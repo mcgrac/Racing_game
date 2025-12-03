@@ -3,5 +3,10 @@
 
 class level1 : public Map {
 
+public:
+
+protected:
+
+private:
 
 };
