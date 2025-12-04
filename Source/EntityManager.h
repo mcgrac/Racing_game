@@ -5,7 +5,9 @@
 #include <list>
 class EntityManager : public Module {
 
+public:
 	EntityManager(Application* app, bool start_enabled = true);
+	EntityManager();
 
 	bool Init();
 	// Destructor

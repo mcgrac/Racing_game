@@ -1,0 +1,9 @@
+#pragma once
+
+#include <cstdio>
+#include <cstdarg>
+
+#define LOG(format, ...) Log(__FILE__, __LINE__, format, ##__VA_ARGS__)
+
+void Log(const char file[], int line, const char* format, ...);
+

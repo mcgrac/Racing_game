@@ -55,7 +55,10 @@
     <ClCompile Include="Source\Map.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Camera.cpp">
+    <ClCompile Include="Source\GameCamera.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Vector2D.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
   </ItemGroup>
@@ -117,7 +120,13 @@
     <ClInclude Include="Source\PositionTracker.h">
       <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Camera.h">
+    <ClInclude Include="Source\GameCamera.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Vector2D.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Log.h">
       <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>
