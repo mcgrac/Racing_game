@@ -98,8 +98,6 @@ bool Player::Update(float dt)
     if (IsKeyDown(KEY_UP) || IsKeyDown(KEY_W)) {
         position.setY(position.getY() - speed * dt);
     }
-
-    Render();
     return true;
 }
 

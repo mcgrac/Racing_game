@@ -46,13 +46,16 @@ bool ModuleGame::Start()
 update_status ModuleGame::Update()
 {
 	float dt = GetFrameTime();
-	entityManager->Update(dt);
+
+	if(entityManager){entityManager->Update(dt);}
+	else { LOG("Entity manager error Module Game\n"); }
 
 	//std::cout << "MODULE GAME UPDATE" << std::endl;
-	currentMap->Update();
+	//currentMap->Update();
 	
-	if(player)
-	player->Update(dt);
+	if(player){player->Update(dt);}
+	else { LOG("Player error Module Game\n"); }
+
 
 	if(camera && player)
 	{
@@ -60,6 +63,26 @@ update_status ModuleGame::Update()
 		camera->Update(dt);
 	}
 	return UPDATE_CONTINUE;
+}
+
+//render in post-update
+update_status ModuleGame::PostUpdate()
+{
+	//--------------RENDER-----------------
+	//Raylib camera behaviour (start camera mode)
+	BeginMode2D(camera->GetRaylibCamera());
+	//render map
+	if (currentMap) { currentMap->Render(); }
+	//player
+	if (player) { player->Render(); }
+
+	EndMode2D();
+	//--------------------------------------
+	//---------UI debug render--------------
+
+
+	//--------------------------------------
+	return UPDATE_CONTINUE;;
 }
 
 // Unload assets

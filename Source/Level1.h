@@ -10,6 +10,7 @@ public:
 
     void Start() override;
     void Update() override;
+    void Render() override;
     void CleanUp() override;
 
 protected:

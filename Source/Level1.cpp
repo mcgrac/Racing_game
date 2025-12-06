@@ -16,6 +16,11 @@ void Level1::Start()
 
 void Level1::Update()
 {
+
+}
+
+void Level1::Render()
+{
 	//draw Basic map
 	DrawTexture(floor, 0, 0, WHITE);
 	DrawTexture(overMap, 0, 0, WHITE);
