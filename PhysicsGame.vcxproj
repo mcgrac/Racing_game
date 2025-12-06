@@ -189,9 +189,14 @@
     <ClInclude Include="Source/ModuleWindow.h" />
     <ClInclude Include="Source/p2Point.h" />
     <ClInclude Include="Source\GameCamera.h" />
+    <ClInclude Include="Source\BadgesScreen.h" />
+    <ClInclude Include="Source\Button.h" />
     <ClInclude Include="Source\Characters.h" />
+    <ClInclude Include="Source\CharacterSelectionScreen.h" />
     <ClInclude Include="Source\Entity.h" />
     <ClInclude Include="Source\EntityManager.h" />
+    <ClInclude Include="Source\GameOverScreen.h" />
+    <ClInclude Include="Source\GameScreen.h" />
     <ClInclude Include="Source\Interactables.h" />
     <ClInclude Include="Source\Level1.h" />
     <ClInclude Include="Source\Log.h" />
@@ -199,9 +204,11 @@
     <ClInclude Include="Source\ModuleGame.h" />
     <ClInclude Include="Source\Player.h" />
     <ClInclude Include="Source\PositionTracker.h" />
+    <ClInclude Include="Source\Scene.h" />
     <ClInclude Include="Source\SceneManager.h" />
     <ClInclude Include="Source\Timer.h" />
     <ClInclude Include="Source\Vector2D.h" />
+    <ClInclude Include="StartScreen.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source/Application.cpp" />
@@ -212,18 +219,25 @@
     <ClCompile Include="Source/ModuleRender.cpp" />
     <ClCompile Include="Source/ModuleWindow.cpp" />
     <ClCompile Include="Source\GameCamera.cpp" />
+    <ClCompile Include="Source\BadgesScreen.cpp" />
+    <ClCompile Include="Source\Button.cpp" />
     <ClCompile Include="Source\Characters.cpp" />
+    <ClCompile Include="Source\CharacterSelectionScreen.cpp" />
     <ClCompile Include="Source\Entity.cpp" />
     <ClCompile Include="Source\EntityManager.cpp" />
+    <ClCompile Include="Source\GameOverScreen.cpp" />
+    <ClCompile Include="Source\GameScreen.cpp" />
     <ClCompile Include="Source\Interactables.cpp" />
     <ClCompile Include="Source\Level1.cpp" />
     <ClCompile Include="Source\Map.cpp" />
     <ClCompile Include="Source\ModuleGame.cpp" />
     <ClCompile Include="Source\Player.cpp" />
     <ClCompile Include="Source\PositionTracker.cpp" />
+    <ClCompile Include="Source\Scene.cpp" />
     <ClCompile Include="Source\SceneManager.cpp" />
     <ClCompile Include="Source\Timer.cpp" />
     <ClCompile Include="Source\Vector2D.cpp" />
+    <ClCompile Include="StartScreen.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(SolutionDir)raylib.vcxproj">
