@@ -1,6 +1,5 @@
 #include "Application.h"
 #include "Globals.h"
-
 #include "raylib.h"
 
 #include <stdlib.h>

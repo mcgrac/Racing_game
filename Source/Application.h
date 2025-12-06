@@ -3,6 +3,7 @@
 #include "Globals.h"
 #include "Timer.h"
 #include <vector>
+#include "EntityManager.h"
 
 class Module;
 class ModuleWindow;
@@ -10,6 +11,7 @@ class ModuleRender;
 class ModuleAudio;
 class ModulePhysics;
 class ModuleGame;
+class EntityManager;
 
 class Application
 {
@@ -20,7 +22,7 @@ public:
 	ModuleAudio* audio;
 	ModulePhysics* physics;
 	ModuleGame* scene_intro;
-	ModuleGame* entity_manager;
+	EntityManager* entity_manager;
 
 private:
 

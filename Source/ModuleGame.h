@@ -10,6 +10,9 @@
 
 #include"Map.h"
 #include"Level1.h"
+#include "GameCamera.h"
+
+#include "EntityManager.h"
 
 class PhysBody;
 class PhysicEntity;
@@ -25,8 +28,13 @@ public:
 	update_status Update();
 	bool CleanUp();
 
-public:
+	GameCamera* GetCamera() const { return camera; }
+	Player* GetPlayer() const { return player; }
+
+private:
 
 	Map* currentMap = nullptr;
-	
+	Player* player = nullptr;
+	GameCamera* camera = nullptr;
+	EntityManager* entityManager = nullptr;
 };

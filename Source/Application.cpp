@@ -17,7 +17,7 @@ Application::Application()
 	scene_intro = new ModuleGame(this);
 
 	//added
-	entity_manager = new ModuleGame(this);
+	entity_manager = new EntityManager(this);
 
 	// The order of calls is very important!
 	// Modules will Init() Start() and Update in this order
