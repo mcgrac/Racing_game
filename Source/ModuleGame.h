@@ -8,12 +8,6 @@
 #include "raylib.h"
 #include <vector>
 
-#include"Map.h"
-#include"Level1.h"
-#include "GameCamera.h"
-
-#include "EntityManager.h"
-
 class PhysBody;
 class PhysicEntity;
 
@@ -26,16 +20,9 @@ public:
 
 	bool Start();
 	update_status Update();
-	update_status PostUpdate();
 	bool CleanUp();
 
-	GameCamera* GetCamera() const { return camera; }
-	Player* GetPlayer() const { return player; }
+public:
 
-private:
-
-	Map* currentMap = nullptr;
-	Player* player = nullptr;
-	GameCamera* camera = nullptr;
-	EntityManager* entityManager = nullptr;
+	
 };
