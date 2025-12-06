@@ -89,6 +89,7 @@ bool ModulePhysics::Start()
 
 update_status ModulePhysics::PreUpdate()
 {
+
 	return UPDATE_CONTINUE;
 }
 
@@ -96,6 +97,7 @@ update_status ModulePhysics::PreUpdate()
 update_status ModulePhysics::PostUpdate()
 {
 	
+
 	if (IsKeyPressed(KEY_F1))
 	{
 		debug = !debug;

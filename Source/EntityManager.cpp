@@ -5,10 +5,6 @@ EntityManager::EntityManager(Application * app, bool start_enabled) : Module(app
 	//name = "entitymanager";
 }
 
-EntityManager::EntityManager()
-{
-}
-
 bool EntityManager::Init()
 {
 	LOG("Creating EntityManager context");
@@ -102,8 +98,6 @@ void EntityManager::AddEntity(std::shared_ptr<Entity> entity)
 bool EntityManager::Update(float dt)
 {
 	bool ret = true;
-
-	LOG("entity manager update");
 
 	//List to store entities pending deletion
 	std::list<std::shared_ptr<Entity>> pendingDelete;
