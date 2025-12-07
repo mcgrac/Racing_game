@@ -194,6 +194,7 @@
     <ClInclude Include="Source\CharacterSelectionScreen.h" />
     <ClInclude Include="Source\Entity.h" />
     <ClInclude Include="Source\EntityManager.h" />
+    <ClInclude Include="Source\GameCamera.h" />
     <ClInclude Include="Source\GameOverScreen.h" />
     <ClInclude Include="Source\GameScreen.h" />
     <ClInclude Include="Source\Interactables.h" />
@@ -222,6 +223,7 @@
     <ClCompile Include="Source\CharacterSelectionScreen.cpp" />
     <ClCompile Include="Source\Entity.cpp" />
     <ClCompile Include="Source\EntityManager.cpp" />
+    <ClCompile Include="Source\GameCamera.cpp" />
     <ClCompile Include="Source\GameOverScreen.cpp" />
     <ClCompile Include="Source\GameScreen.cpp" />
     <ClCompile Include="Source\Interactables.cpp" />
