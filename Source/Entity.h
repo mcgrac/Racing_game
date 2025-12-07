@@ -1,9 +1,7 @@
 #pragma once
 #include <memory>
-#include "Vector2D.h"
+#include "vector"
 #include "Globals.h"
-#include<vector>
-#include "raylib.h"
 
 enum class EntityType
 {
@@ -17,11 +15,7 @@ class Entity : public std::enable_shared_from_this<Entity>
 public:
 
 	Entity() {}
-	Entity(const Vector2D& pos);
-	Entity(float x, float y);
 	Entity(EntityType type) : type(type), active(true) {}
-
-	virtual ~Entity() = default;
 
 	virtual bool Awake()
 	{
@@ -74,17 +68,6 @@ public:
 
 	};
 
-	// Getters
-	const Vector2D& GetPosition() const { return position; }
-	float GetX() const { return position.getX(); }
-	float GetY() const { return position.getY(); }
-
-	// Setters
-	void SetPosition(const Vector2D& pos) { position = pos; }
-	void SetPosition(float x, float y) { position.setX(x); position.setY(y); }
-
-protected:
-	Vector2D position;
 public:
 
 	EntityType type;
@@ -93,5 +76,6 @@ public:
 
 	// Possible properties, it depends on how generic we
 	// want our Entity class, maybe it's not renderable...
+	//Vector2D position;
 	bool renderable = true;
 };
