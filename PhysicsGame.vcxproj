@@ -206,9 +206,9 @@
     <ClInclude Include="Source\PositionTracker.h" />
     <ClInclude Include="Source\Scene.h" />
     <ClInclude Include="Source\SceneManager.h" />
+    <ClInclude Include="Source\StartScreen.h" />
     <ClInclude Include="Source\Timer.h" />
     <ClInclude Include="Source\Vector2D.h" />
-    <ClInclude Include="StartScreen.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source/Application.cpp" />
@@ -235,9 +235,9 @@
     <ClCompile Include="Source\PositionTracker.cpp" />
     <ClCompile Include="Source\Scene.cpp" />
     <ClCompile Include="Source\SceneManager.cpp" />
+    <ClCompile Include="Source\StartScreen.cpp" />
     <ClCompile Include="Source\Timer.cpp" />
     <ClCompile Include="Source\Vector2D.cpp" />
-    <ClCompile Include="StartScreen.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(SolutionDir)raylib.vcxproj">

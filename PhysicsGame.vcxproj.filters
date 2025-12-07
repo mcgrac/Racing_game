@@ -1,183 +1,64 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="Source/Application.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Source/Log.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Source/Main.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Source/ModuleAudio.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Source/ModulePhysics.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Source/ModuleRender.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Source/ModuleWindow.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Timer.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\ModuleGame.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Player.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\PositionTracker.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\SceneManager.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Characters.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Entity.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\EntityManager.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Interactables.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Level1.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Map.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\GameCamera.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Vector2D.cpp">
-    <ClCompile Include="Source\Scene.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="StartScreen.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CharacterSelectionScreen.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\GameOverScreen.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\GameScreen.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BadgesScreen.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Button.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
+    <ClCompile Include="Source/Application.cpp" />
+    <ClCompile Include="Source/Log.cpp" />
+    <ClCompile Include="Source/Main.cpp" />
+    <ClCompile Include="Source/ModuleAudio.cpp" />
+    <ClCompile Include="Source/ModulePhysics.cpp" />
+    <ClCompile Include="Source/ModuleRender.cpp" />
+    <ClCompile Include="Source/ModuleWindow.cpp" />
+    <ClCompile Include="Source\GameCamera.cpp" />
+    <ClCompile Include="Source\BadgesScreen.cpp" />
+    <ClCompile Include="Source\Button.cpp" />
+    <ClCompile Include="Source\Characters.cpp" />
+    <ClCompile Include="Source\CharacterSelectionScreen.cpp" />
+    <ClCompile Include="Source\Entity.cpp" />
+    <ClCompile Include="Source\EntityManager.cpp" />
+    <ClCompile Include="Source\GameOverScreen.cpp" />
+    <ClCompile Include="Source\GameScreen.cpp" />
+    <ClCompile Include="Source\Interactables.cpp" />
+    <ClCompile Include="Source\Level1.cpp" />
+    <ClCompile Include="Source\Map.cpp" />
+    <ClCompile Include="Source\ModuleGame.cpp" />
+    <ClCompile Include="Source\Player.cpp" />
+    <ClCompile Include="Source\PositionTracker.cpp" />
+    <ClCompile Include="Source\Scene.cpp" />
+    <ClCompile Include="Source\SceneManager.cpp" />
+    <ClCompile Include="Source\Timer.cpp" />
+    <ClCompile Include="Source\Vector2D.cpp" />
+    <ClCompile Include="Source\StartScreen.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source/p2Point.h">
-      <Filter>Headers\Containers</Filter>
-    </ClInclude>
-    <ClInclude Include="Source/Application.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Source/Globals.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Source/Module.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Source/ModuleAudio.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Source/ModulePhysics.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Source/ModuleRender.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Source/ModuleWindow.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Timer.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\ModuleGame.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\SceneManager.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Characters.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Entity.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\EntityManager.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Interactables.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Level1.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Map.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Player.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\PositionTracker.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\GameCamera.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Vector2D.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Log.h">
-    <ClInclude Include="Source\Scene.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="StartScreen.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\CharacterSelectionScreen.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\GameOverScreen.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\GameScreen.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\BadgesScreen.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Button.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <Filter Include="Headers">
-      <UniqueIdentifier>{d82c32f1-eea9-456f-981b-a7e64f40f8d1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources">
-      <UniqueIdentifier>{8fd46c61-4dab-4d27-8542-1af6dd78d6d0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Headers\Containers">
-      <UniqueIdentifier>{39bd4360-6afc-44b3-8ba5-578b26392b24}</UniqueIdentifier>
-    </Filter>
+    <ClInclude Include="Source/Application.h" />
+    <ClInclude Include="Source/Globals.h" />
+    <ClInclude Include="Source/ModulePhysics.h" />
+    <ClInclude Include="Source/Module.h" />
+    <ClInclude Include="Source/ModuleAudio.h" />
+    <ClInclude Include="Source/ModuleRender.h" />
+    <ClInclude Include="Source/ModuleWindow.h" />
+    <ClInclude Include="Source/p2Point.h" />
+    <ClInclude Include="Source\GameCamera.h" />
+    <ClInclude Include="Source\BadgesScreen.h" />
+    <ClInclude Include="Source\Button.h" />
+    <ClInclude Include="Source\Characters.h" />
+    <ClInclude Include="Source\CharacterSelectionScreen.h" />
+    <ClInclude Include="Source\Entity.h" />
+    <ClInclude Include="Source\EntityManager.h" />
+    <ClInclude Include="Source\GameOverScreen.h" />
+    <ClInclude Include="Source\GameScreen.h" />
+    <ClInclude Include="Source\Interactables.h" />
+    <ClInclude Include="Source\Level1.h" />
+    <ClInclude Include="Source\Log.h" />
+    <ClInclude Include="Source\Map.h" />
+    <ClInclude Include="Source\ModuleGame.h" />
+    <ClInclude Include="Source\Player.h" />
+    <ClInclude Include="Source\PositionTracker.h" />
+    <ClInclude Include="Source\Scene.h" />
+    <ClInclude Include="Source\SceneManager.h" />
+    <ClInclude Include="Source\Timer.h" />
+    <ClInclude Include="Source\Vector2D.h" />
+    <ClInclude Include="Source\StartScreen.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Source\resources.rc" />
