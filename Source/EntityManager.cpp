@@ -1,6 +1,8 @@
 #include "EntityManager.h"
+#include "Player.h"
+#include"ModuleGame.h"
 
-EntityManager::EntityManager(Application * app, bool start_enabled) : Module(app, start_enabled)
+EntityManager::EntityManager(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
 	//name = "entitymanager";
 }
@@ -68,7 +70,7 @@ bool EntityManager::CleanUp()
 	return ret;
 }
 
-Entity* EntityManager::CreateEntity(EntityType type)
+Entity* EntityManager::CreateEntity(EntityType type, Vector2D position)
 {
 	Entity* entity;
 
@@ -76,7 +78,9 @@ Entity* EntityManager::CreateEntity(EntityType type)
 	switch (type)
 	{
 	case EntityType::PLAYER:
-		entity = new Player(Vector2D(400.0f, 300.0f), type);
+		entity = new Player(App->scene_intro, 
+							Vector2D(400.0f, 300.0f), type);
+
 		player = dynamic_cast<Player*>(entity);
 		break;
 
@@ -101,10 +105,9 @@ void EntityManager::AddEntity(Entity* entity)
 	if (entity != nullptr) entities.push_back(entity);
 }
 
-bool EntityManager::Update(float dt)
+update_status EntityManager::Update()
 {
-	bool ret = true;
-
+	float dt = GetFrameTime();
 	//List to store entities pending deletion
 	std::list<Entity*> pendingDelete;
 
@@ -118,7 +121,7 @@ bool EntityManager::Update(float dt)
 		}
 
 		if (entity->active == false) continue;
-		ret = entity->Update(dt);
+		entity->Update(dt);
 	}
 
 	//Now iterates over the pendingDelete list and destroys the entities
@@ -127,7 +130,7 @@ bool EntityManager::Update(float dt)
 		DestroyEntity(entity);
 	}
 
-	return ret;
+	return UPDATE_CONTINUE;
 }
 
 bool EntityManager::Render()

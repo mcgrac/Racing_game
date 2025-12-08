@@ -5,7 +5,7 @@ class Level1 : public Map {
 
 public:
 
-    Level1(ModulePhysics* physics, Module* _listener);
+    Level1(ModulePhysics* _physics, Module* _listener, EntityManager* _entityManager);
     ~Level1();
 
     void Start() override;
@@ -17,6 +17,10 @@ public:
 protected:
 
 private:
+
+    ModulePhysics* physics;
+    Module* listener; // listener for everithing
+    EntityManager* entityManager; //creation entities
 
     Texture2D floor;
     Texture2D overMap;

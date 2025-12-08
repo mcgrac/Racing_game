@@ -3,7 +3,8 @@
 #include "Module.h"
 #include"Entity.h"
 #include <list>
-#include "Player.h"
+
+class Player;
 
 class EntityManager : public Module {
 
@@ -23,7 +24,7 @@ public:
 	bool Start();
 
 	// Called every frame
-	bool Update(float dt);
+	update_status Update() override;
 
 	bool Render();
 
@@ -31,7 +32,7 @@ public:
 	bool CleanUp();
 
 	// Additional methods
-	Entity* CreateEntity(EntityType type);
+	Entity* CreateEntity(EntityType type, Vector2D position);
 	
 	void DestroyEntity(Entity* entity);
 	void AddEntity(Entity* entity);

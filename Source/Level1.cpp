@@ -1,8 +1,10 @@
 #include "Level1.h"
 
-#include "Level1.h"
 
-Level1::Level1(ModulePhysics* physics, Module* _listener)
+Level1::Level1(ModulePhysics* _physics, Module* _listener, EntityManager* _entityManager) :
+	physics(_physics),
+	listener(_listener),
+	entityManager(_entityManager)
 {
 }
 
@@ -14,6 +16,8 @@ void Level1::Start()
 {
 	floor = LoadTexture("Assets/Textures/Map/Background.png");
 	overMap = LoadTexture("Assets/Textures/Map/TopElementsMap.png");
+
+	entityManager->CreateEntity(EntityType::PLAYER, Vector2D(200,200));
 }
 
 void Level1::Update()

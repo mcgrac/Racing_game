@@ -51,8 +51,8 @@
 //    LoadTexture(texturePath);
 //}
 
-Player::Player(const Vector2D& startPos, EntityType _type)
-    : Entity(startPos, _type),
+Player::Player(Module* _listener, const Vector2D& startPos, EntityType _type)
+    : Entity(_listener, startPos, _type),
     speed (200.0f),
     textureLoaded(false),
     width(texture.width),           // Ancho del rectángulo del coche
@@ -64,8 +64,14 @@ Player::Player(const Vector2D& startPos, EntityType _type)
     deceleration(150.0f),   // Fricción natural
     brakeForce(500.0f),     // Fuerza de frenado
     turnSpeed(180.0f),      // Grados por segundo
-    minTurnSpeed(50.0f) {   // Velocidad mínima para girar
-    texture = { 0 };
+    minTurnSpeed(50.0f)     // Velocidad mínima para girar
+{   
+    LoadTexture("Assets/Textures/Cars/CarChansey.png");
+    std::cout << "texture resolution : (width,height)" << texture.width << " , " << texture.height << std::endl;
+    //create physbody
+    physBody = listener->App->physics->CreateRectangle(startPos.getX(), startPos.getY(), texture.width, texture.height, b2BodyType::b2_dynamicBody);
+    physBody->listener = _listener; //begin contact in charge
+    //texture = { 0 };
 }
 
 Player::~Player()
@@ -117,6 +123,10 @@ bool Player::CleanUp()
 bool Player::Update(float dt)
 {
     std::cout<<"position Player: " << position << std::endl;
+    std::cout << "position physBody (x, y): "
+        << physBody->GetPosition().x << ", "
+        << physBody->GetPosition().y << std::endl;
+
     // Movement Logic
     if (IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D)) {
         position.setX(position.getX() + speed * dt);

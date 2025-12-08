@@ -292,11 +292,11 @@ PhysBody* ModulePhysics::CreateRectangle(int x, int y, int width, int height, b2
 	b->CreateFixture(&fixture);
 
 	pbody->body = b;
-	//pbody->width = (int)(width * 0.5f);
-	//pbody->height = (int)(height * 0.5f);
+	pbody->width = (int)(width * 0.5f);
+	pbody->height = (int)(height * 0.5f);
 
-	pbody->width = width;
-	pbody->height = height;
+	//pbody->width = width;
+	//pbody->height = height;
 	return pbody;
 }
 

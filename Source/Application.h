@@ -10,6 +10,7 @@ class ModuleRender;
 class ModuleAudio;
 class ModulePhysics;
 class ModuleGame;
+class EntityManager;
 
 class Application
 {
@@ -20,7 +21,7 @@ public:
 	ModuleAudio* audio;
 	ModulePhysics* physics;
 	ModuleGame* scene_intro;
-	ModuleGame* entity_manager;
+	EntityManager* entity_manager;
 
 private:
 

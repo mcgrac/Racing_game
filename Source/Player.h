@@ -12,7 +12,7 @@ public:
 	//Player();
 	//Player(float startX, float startY, const char* texturePath);
 	//Player(const Vector2D& startPos, const char* texturePath);
-	Player(const Vector2D& startPos, EntityType _type);
+	Player(Module* _listener, const Vector2D& startPos, EntityType _type);
 
 	virtual ~Player();
 

@@ -15,9 +15,9 @@ Application::Application()
 	audio = new ModuleAudio(this, true);
 	physics = new ModulePhysics(this);
 	scene_intro = new ModuleGame(this);
-
+	entity_manager = new EntityManager(this);
 	//added
-	entity_manager = new ModuleGame(this);
+	//entity_manager = new ModuleGame(this);
 
 	// The order of calls is very important!
 	// Modules will Init() Start() and Update in this order

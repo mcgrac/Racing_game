@@ -1,11 +1,13 @@
 #pragma once
 #include <memory>
 #include "Vector2D.h"
-#include "Globals.h"
-#include<vector>
+//#include "Globals.h"
+#include "Application.h"
+#include <vector>
 #include "raylib.h"
 #include "box2d/box2d.h"
 #include "ModulePhysics.h"
+#include "Module.h"
 
 enum class EntityType
 {
@@ -16,6 +18,7 @@ enum class EntityType
 };
 
 class PhysBody;
+class ModuleGame;
 
 class Entity : public std::enable_shared_from_this<Entity>
 {
@@ -24,7 +27,7 @@ public:
 	Entity() {}
 	//Entity(const Vector2D& pos);
 	Entity(float x, float y);
-	Entity(const Vector2D& pos, EntityType _type);
+	Entity(Module* _listener, const Vector2D& pos, EntityType _type);
 
 	virtual ~Entity() = default;
 
@@ -95,6 +98,9 @@ public:
 
 protected:
 	Vector2D position;
+	PhysBody* physBody;
+	Module* listener;
+
 public:
 
 	EntityType type;
