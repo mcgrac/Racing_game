@@ -27,17 +27,21 @@ bool ModuleGame::Start()
 	//create player
 	//entityManager->CreateEntity(EntityType::PLAYER);
 
-	player = new Player(Vector2D(400.0f, 300.0f));
+	//player = new Player(Vector2D(400.0f, 300.0f));
+	//creation entities
+	entityManager->CreateEntity(EntityType::PLAYER);
 
 	//create level
 	currentMap = new Level1(App->physics, this);
 	currentMap->Start();
 
+	//canmera inicialization
 	camera = new GameCamera(SCREEN_WIDTH, SCREEN_HEIGHT);
 	camera->SetSmoothSpeed(.15f);
+	camera->CenterOn(entityManager->GetPlayer()->GetCenter());
 
-	camera->CenterOn(player->GetCenter());
-
+	//call start entity manager -> call start of all entities
+	entityManager->Start();
 	return ret;
 }
 
@@ -48,18 +52,18 @@ update_status ModuleGame::Update()
 	float dt = GetFrameTime();
 
 	if (entityManager) { entityManager->Update(dt); }
-	else { LOG("Entity manager error Module Game\n"); }
+	else { std::cout<<"Entity manager update error Module Game\n"; }
 
 	//std::cout << "MODULE GAME UPDATE" << std::endl;
 	//currentMap->Update();
 
-	if (player) { player->Update(dt); }
-	else { LOG("Player error Module Game\n"); }
+	/*if (player) { player->Update(dt); }
+	else { LOG("Player error Module Game\n"); }*/
 
 
-	if (camera && player)
+	if (camera && entityManager->GetPlayer())
 	{
-		camera->FollowPlayer(player);
+		camera->FollowPlayer(entityManager->GetPlayer());
 		camera->Update(dt);
 	}
 	return UPDATE_CONTINUE;
@@ -73,8 +77,9 @@ update_status ModuleGame::PostUpdate()
 	BeginMode2D(camera->GetRaylibCamera());
 	//render map background (floor)
 	if (currentMap) { currentMap->RenderBackground(); }
-	//player
-	if (player) { player->Render(); }
+	//render entities
+	if (entityManager) { entityManager->Render(); }
+	else { std::cout << "Entity manager render error Module Game\n"; }
 	//render top elements
 	if (currentMap) { currentMap->RenderTop(); }
 

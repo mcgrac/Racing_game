@@ -9,17 +9,16 @@
 class Player : public Entity
 {
 public:
-	Player(Application* app, bool start_enabled = true);
-	Player();
-	Player(float startX, float startY, const char* texturePath);
-	Player(const Vector2D& startPos, const char* texturePath);
-	Player(const Vector2D& startPos);
+	//Player();
+	//Player(float startX, float startY, const char* texturePath);
+	//Player(const Vector2D& startPos, const char* texturePath);
+	Player(const Vector2D& startPos, EntityType _type);
 
 	virtual ~Player();
 
 	bool Start() override;
 	bool Update(float dt) override;
-	void Render();
+	bool Render() override;
 	bool CleanUp() override;
 
 #pragma region GETTERS
@@ -36,6 +35,11 @@ public:
 	// texture getters
 	const Texture2D& GetTexture() const { return texture; }
 #pragma endregion
+#pragma region SETTERS
+	void SetMaxSpeed(float speed) { maxSpeed = speed; }
+	void SetAcceleration(float accel) { acceleration = accel; }
+	void SetTurnSpeed(float turn) { turnSpeed = turn; }
+#pragma endregion
 
 	bool IsTextureLoaded() const { return textureLoaded; }
 
@@ -47,6 +51,10 @@ private:
 	float speed;
 	Texture texture;
 	bool textureLoaded;
+
+	// Car dimensions
+	float width;
+	float height;
 
 	//Car physics variables
 	float rotation;          // Rotation angle in º

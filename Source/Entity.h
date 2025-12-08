@@ -4,10 +4,15 @@
 #include "Globals.h"
 #include<vector>
 #include "raylib.h"
+#include "box2d/box2d.h"
+#include "ModulePhysics.h"
 
 enum class EntityType
 {
-	PLAYER
+	PLAYER,
+	AI,
+	TURBO_ON_ROAD,
+	ROCK
 };
 
 class PhysBody;
@@ -17,9 +22,9 @@ class Entity : public std::enable_shared_from_this<Entity>
 public:
 
 	Entity() {}
-	Entity(const Vector2D& pos);
+	//Entity(const Vector2D& pos);
 	Entity(float x, float y);
-	Entity(EntityType type) : type(type), active(true) {}
+	Entity(const Vector2D& pos, EntityType _type);
 
 	virtual ~Entity() = default;
 
@@ -36,6 +41,11 @@ public:
 	virtual bool Update(float dt)
 	{
 		return true;
+	}
+	virtual bool Render() 
+	{
+		return true;
+
 	}
 
 	virtual bool CleanUp()

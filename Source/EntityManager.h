@@ -3,6 +3,8 @@
 #include "Module.h"
 #include"Entity.h"
 #include <list>
+#include "Player.h"
+
 class EntityManager : public Module {
 
 public:
@@ -23,17 +25,22 @@ public:
 	// Called every frame
 	bool Update(float dt);
 
+	bool Render();
+
 	// Called before quitting
 	bool CleanUp();
 
 	// Additional methods
-	std::shared_ptr<Entity> CreateEntity(EntityType type);
+	Entity* CreateEntity(EntityType type);
 	
-	void DestroyEntity(std::shared_ptr<Entity> entity);
+	void DestroyEntity(Entity* entity);
+	void AddEntity(Entity* entity);
 
-	void AddEntity(std::shared_ptr<Entity> entity);
+	Player* GetPlayer() { return player; }
 
 public:
 
-	std::list<std::shared_ptr<Entity>> entities;
+	std::list<Entity*> entities;
+	Player* player = nullptr;
+	//std::list<std::shared_ptr<Entity>> entities;
 };

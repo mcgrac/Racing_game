@@ -2,6 +2,8 @@
 
 //Entity::Entity() : position(0.0f, 0.0f) {}
 
-Entity::Entity(const Vector2D& pos) : position(pos) {}
+//Entity::Entity(const Vector2D& pos) : position(pos) {}
 
 Entity::Entity(float x, float y) : position(x, y) {}
+
+Entity::Entity(const Vector2D& pos, EntityType _type) : position(pos), type(_type), active(true) {}
