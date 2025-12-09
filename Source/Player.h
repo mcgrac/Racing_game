@@ -41,6 +41,7 @@ public:
 	void SetTurnSpeed(float turn) { turnSpeed = turn; }
 #pragma endregion
 
+	void InitPhysics();
 	bool IsTextureLoaded() const { return textureLoaded; }
 
 	bool LoadTexture(const char* texturePath);

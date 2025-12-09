@@ -78,5 +78,8 @@ private:
 	b2World* world = nullptr;
 	b2Vec2 gravity = { 0,9.81f };
 	bool debug;
+
+	//mouse joint
+	b2Body* mouseGround = nullptr;
 	
 };

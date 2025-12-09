@@ -69,8 +69,9 @@ Player::Player(Module* _listener, const Vector2D& startPos, EntityType _type)
     LoadTexture("Assets/Textures/Cars/CarChansey.png");
     std::cout << "texture resolution : (width,height)" << texture.width << " , " << texture.height << std::endl;
     //create physbody
-    physBody = listener->App->physics->CreateRectangle(startPos.getX(), startPos.getY(), texture.width, texture.height, b2BodyType::b2_dynamicBody);
-    physBody->listener = _listener; //begin contact in charge
+    InitPhysics();
+    //physBody = listener->App->physics->CreateRectangle(startPos.getX(), startPos.getY(), texture.width, texture.height, b2BodyType::b2_dynamicBody);
+    //physBody->listener = _listener; //begin contact in charge
     //texture = { 0 };
 }
 
@@ -79,6 +80,44 @@ Player::~Player()
     UnloadTexture();
 }
 
+void Player::InitPhysics()
+{
+    if (!listener->App->physics) {
+        LOG("ERROR: Physics module is null!");
+        return;
+    }
+
+    physBody = listener->App->physics->CreateRectangle(
+        (int)position.getX(),
+        (int)position.getY(),
+        (int)texture.width * 0.35f,
+        (int)texture.height * 0.35f,
+        b2_dynamicBody);
+
+    if (physBody && physBody->body) {
+        //set body
+        physBody->body->SetLinearDamping(0.3f);   // air friction
+        physBody->body->SetAngularDamping(3.0f);  // resistence to turning
+        //set fixture
+        b2Fixture* fixture = physBody->body->GetFixtureList();
+        if (fixture) {
+            fixture->SetDensity(1.2f); //density (mass)
+            fixture->SetFriction(0.4f); //friction with the floor
+            fixture->SetRestitution(0.2f); //doesn't bounce
+        }
+
+        physBody->body->ResetMassData(); //Necessary for recalculation of mass, centre of mass etc...
+
+        //overwrite pointer to the Player (Entity)
+        physBody->body->GetUserData().pointer = reinterpret_cast<uintptr_t>(this);
+
+        // OnCollision I will be able to do->
+        // Entity* entity = reinterpret_cast<Entity*>(body->GetUserData().pointer);
+    }
+
+    // already done in Entity, just for security
+    physBody->listener = listener;
+}
 // Load assets
 bool Player::Start()
 {
