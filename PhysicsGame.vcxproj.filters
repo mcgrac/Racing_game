@@ -55,7 +55,22 @@
     <ClCompile Include="Source\Map.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Chansey.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Pachirisu.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Meganium.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Cleffa.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Scene.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\StartScreen.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="Source\CharacterSelectionScreen.cpp">
@@ -74,6 +89,10 @@
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="Source\StartScreen.cpp">
+    <ClCompile Include="Source\Vector2D.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GameCamera.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
   </ItemGroup>
@@ -135,7 +154,22 @@
     <ClInclude Include="Source\PositionTracker.h">
       <Filter>Headers</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Chansey.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Pachirisu.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Meganium.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Cleffa.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Scene.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\StartScreen.h">
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="Source\CharacterSelectionScreen.h">
@@ -151,6 +185,12 @@
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="Source\Button.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Vector2D.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GameCamera.h">
       <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>
