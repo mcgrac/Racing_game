@@ -2,12 +2,16 @@
 
 #include "raylib.h"
 #include <vector>
+#include "Scene.h"
 
 class SceneManager {
+	SceneManager();
+	~SceneManager();
 
 private:
 
 	int currentScreenID();
+	std::vector<Scene> scenes;
 
 public:
 
