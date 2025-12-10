@@ -58,9 +58,6 @@
     <ClCompile Include="Source\Scene.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="StartScreen.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
     <ClCompile Include="Source\CharacterSelectionScreen.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
@@ -74,6 +71,9 @@
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="Source\Button.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\StartScreen.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
   </ItemGroup>
@@ -136,9 +136,6 @@
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="Source\Scene.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="StartScreen.h">
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="Source\CharacterSelectionScreen.h">
