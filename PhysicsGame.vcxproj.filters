@@ -89,6 +89,8 @@
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="Source\StartScreen.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Vector2D.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
