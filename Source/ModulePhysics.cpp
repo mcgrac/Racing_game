@@ -315,10 +315,11 @@ PhysBody* ModulePhysics::CreateRectangle(int x, int y, int width, int height, b2
 	pbody->body = b;
 	pbody->width = (int)(width * 0.5f);
 	pbody->height = (int)(height * 0.5f);
-
-	b->GetUserData().pointer = reinterpret_cast<uintptr_t>(pbody);
 	//pbody->width = width;
 	//pbody->height = height;
+
+	b->GetUserData().pointer = reinterpret_cast<uintptr_t>(pbody);
+
 	return pbody;
 }
 

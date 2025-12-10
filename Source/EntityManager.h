@@ -6,7 +6,7 @@
 
 class Player;
 
-class EntityManager : public Module {
+class EntityManager{
 
 public:
 
@@ -24,7 +24,7 @@ public:
 	bool Start();
 
 	// Called every frame
-	update_status Update() override;
+	bool Update(float dt);
 
 	bool Render();
 
@@ -32,16 +32,13 @@ public:
 	bool CleanUp();
 
 	// Additional methods
-	Entity* CreateEntity(EntityType type, Vector2D position);
+	Entity* CreateEntity(Module* listener, EntityType type, Vector2D position);
 	
 	void DestroyEntity(Entity* entity);
 	void AddEntity(Entity* entity);
 
-	Player* GetPlayer() { return player; }
-
 public:
 
 	std::list<Entity*> entities;
-	Player* player = nullptr;
 	//std::list<std::shared_ptr<Entity>> entities;
 };

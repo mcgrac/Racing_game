@@ -88,10 +88,10 @@ void Player::InitPhysics()
     }
 
     physBody = listener->App->physics->CreateRectangle(
-        (int)position.getX(),
-        (int)position.getY(),
-        (int)texture.width * 0.35f,
-        (int)texture.height * 0.35f,
+        (int)position.getX() + ((int)position.getX() / 2),
+        (int)position.getY() + ((int)position.getY() / 2),
+        (int)texture.width * 0.5f,
+        (int)texture.height * 0.5f,
         b2_dynamicBody);
 
     if (physBody && physBody->body) {
@@ -180,14 +180,16 @@ bool Player::Update(float dt)
         position.setY(position.getY() - speed * dt);
     }
 
+    physBody->SetPos(position.getX(), position.getY());
+
     //-----------INPUT CAR PHYSICS------------------
     // 1. Acceleration (W Key)
-    //if (IsKeyDown(KEY_W)) {
-    //    velocity += acceleration * dt;
-    //    if (velocity > maxSpeed) {
-    //        velocity = maxSpeed;
-    //    }
-    //}
+    if (IsKeyDown(KEY_W)) {
+        velocity += acceleration * dt;
+        if (velocity > maxSpeed) {
+            velocity = maxSpeed;
+        }
+    }
 
     //----------------------------------------------
     return true;

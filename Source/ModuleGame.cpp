@@ -22,27 +22,35 @@ bool ModuleGame::Start()
 	LOG("Loading Intro assets");
 	bool ret = true;
 
-	//entityManager = new EntityManager();
+	entityManager = new EntityManager();
 
 	//CREATION ENTITIES
 	//Player
-	//entityManager->CreateEntity(EntityType::PLAYER);
+	player = new Player(this, Vector2D(400.0f, 300.0f), EntityType::PLAYER);
+	entityManager->AddEntity(player);
 	//Ai
 	
-
+	//then ask to level one where is the parrila de alida and position them there
 	
 	//create level
-	currentMap = new Level1(App->physics, this, App->entity_manager);
+	currentMap = new Level1(App->physics, this, entityManager);
 	currentMap->Start();
 
 	//canmera inicialization
 	camera = new GameCamera(SCREEN_WIDTH, SCREEN_HEIGHT);
 	camera->SetSmoothSpeed(.15f);
-	camera->CenterOn(App->entity_manager->GetPlayer()->GetCenter());
+	camera->CenterOn(player->GetCenter());
 
 	//call start entity manager -> call start of all entities
-	//entityManager->Start();
+	entityManager->Start();
 	return ret;
+}
+
+update_status ModuleGame::PreUpdate()
+{
+	//BeginMode2D(camera->GetRaylibCamera());
+
+	return UPDATE_CONTINUE;
 }
 
 
@@ -51,19 +59,19 @@ update_status ModuleGame::Update()
 {
 	float dt = GetFrameTime();
 
-	//if (entityManager) { entityManager->Update(dt); }
-	//else { std::cout<<"Entity manager update error Module Game\n"; }
+	if (entityManager) { entityManager->Update(dt); }
+	else { std::cout<<"Entity manager update error Module Game\n"; }
 
 	//std::cout << "MODULE GAME UPDATE" << std::endl;
 	currentMap->Update();
 
-	/*if (player) { player->Update(dt); }
-	else { LOG("Player error Module Game\n"); }*/
+	//if (player) { player->Update(dt); }
+	//else { LOG("Player error Module Game\n"); }
 
 
-	if (camera && App->entity_manager->GetPlayer())
+	if (camera && player)
 	{
-		camera->FollowPlayer(App->entity_manager->GetPlayer());
+		camera->FollowPlayer(player);
 		camera->Update(dt);
 	}
 	return UPDATE_CONTINUE;
@@ -76,13 +84,14 @@ update_status ModuleGame::PostUpdate()
 	//Raylib camera behaviour (start camera mode)
 	BeginMode2D(camera->GetRaylibCamera());
 	//render map background (floor)
-	if (currentMap) { currentMap->RenderBackground(); }
+	//if (currentMap) { currentMap->RenderBackground(); }
 	//render entities
-	App->entity_manager->Render();
-	//render top elements
-	if (currentMap) { currentMap->RenderTop(); }
+	entityManager->Render();
 
-	//EndMode2D();
+	//render top elements
+	//if (currentMap) { currentMap->RenderTop(); }
+
+	EndMode2D();
 	//--------------------------------------
 	//---------UI debug render--------------
 

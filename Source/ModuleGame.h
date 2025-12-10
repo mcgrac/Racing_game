@@ -23,6 +23,7 @@ public:
 	~ModuleGame();
 
 	bool Start();
+	update_status PreUpdate() override;
 	update_status Update();
 	update_status PostUpdate();
 	bool CleanUp();

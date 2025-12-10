@@ -65,7 +65,7 @@ public:
 	PhysBody* CreateCircle(int x, int y, int radius, b2BodyType type);
 	PhysBody* CreateRectangle(int x, int y, int width, int height, b2BodyType type);
 	PhysBody* CreateRectangleSensor(int x, int y, int width, int height, b2BodyType type);
-	PhysBody* CreateChain(int x, int y, const int* points, int size, b2BodyType type);
+	PhysBody* CreateChain(int x, int y, const int* points, int size, b2BodyType type); 
 	PhysBody* CreatePolygon(int x, int y, int* points, int count, b2BodyType type);
 
 	void BeginContact(b2Contact* contact) override;

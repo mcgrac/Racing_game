@@ -17,7 +17,9 @@ void Level1::Start()
 	floor = LoadTexture("Assets/Textures/Map/Background.png");
 	overMap = LoadTexture("Assets/Textures/Map/TopElementsMap.png");
 
-	entityManager->CreateEntity(EntityType::PLAYER, Vector2D(200,200));
+	//positions parrilla
+	
+	//entityManager->CreateEntity(EntityType::PLAYER, Vector2D(200,200));
 }
 
 void Level1::Update()

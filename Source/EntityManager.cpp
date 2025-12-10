@@ -2,7 +2,7 @@
 #include "Player.h"
 #include"ModuleGame.h"
 
-EntityManager::EntityManager(Application* app, bool start_enabled) : Module(app, start_enabled)
+EntityManager::EntityManager(Application* app, bool start_enabled)
 {
 	//name = "entitymanager";
 }
@@ -70,7 +70,7 @@ bool EntityManager::CleanUp()
 	return ret;
 }
 
-Entity* EntityManager::CreateEntity(EntityType type, Vector2D position)
+Entity* EntityManager::CreateEntity(Module* listener, EntityType type, Vector2D position)
 {
 	Entity* entity;
 
@@ -78,10 +78,7 @@ Entity* EntityManager::CreateEntity(EntityType type, Vector2D position)
 	switch (type)
 	{
 	case EntityType::PLAYER:
-		entity = new Player(App->scene_intro, 
-							Vector2D(400.0f, 300.0f), type);
-
-		player = dynamic_cast<Player*>(entity);
+		entity = new Player(listener, Vector2D(400.0f, 300.0f), type);
 		break;
 
 	default:
@@ -105,9 +102,10 @@ void EntityManager::AddEntity(Entity* entity)
 	if (entity != nullptr) entities.push_back(entity);
 }
 
-update_status EntityManager::Update()
+bool EntityManager::Update(float dt)
 {
-	float dt = GetFrameTime();
+	bool ret = true;
+
 	//List to store entities pending deletion
 	std::list<Entity*> pendingDelete;
 
@@ -130,7 +128,7 @@ update_status EntityManager::Update()
 		DestroyEntity(entity);
 	}
 
-	return UPDATE_CONTINUE;
+	return ret;
 }
 
 bool EntityManager::Render()

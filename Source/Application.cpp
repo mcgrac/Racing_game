@@ -15,7 +15,7 @@ Application::Application()
 	audio = new ModuleAudio(this, true);
 	physics = new ModulePhysics(this);
 	scene_intro = new ModuleGame(this);
-	entity_manager = new EntityManager(this);
+	//entity_manager = new EntityManager(this);
 	//added
 	//entity_manager = new ModuleGame(this);
 
@@ -32,7 +32,7 @@ Application::Application()
 	AddModule(scene_intro);
 
 	//added
-	AddModule(entity_manager);
+	//AddModule(entity_manager);
 
 	// Rendering happens at the end
 	AddModule(renderer);
