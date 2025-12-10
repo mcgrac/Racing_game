@@ -85,7 +85,7 @@ update_status ModuleGame::PostUpdate()
 	//Raylib camera behaviour (start camera mode)
 	//BeginMode2D(camera->GetRaylibCamera());
 	//render map background (floor)
-	//if (currentMap) { currentMap->RenderBackground(); }
+	if (currentMap) { currentMap->RenderBackground(); }
 	//render entities
 	entityManager->Render();
 
