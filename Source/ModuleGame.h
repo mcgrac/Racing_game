@@ -8,15 +8,13 @@
 #include "raylib.h"
 #include <vector>
 
-#include"Map.h"
 #include"Level1.h"
 #include "GameCamera.h"
 
-#include "EntityManager.h"
-
 class PhysBody;
 class PhysicEntity;
-
+class EntityManager;
+class Player;        
 
 class ModuleGame : public Module
 {
@@ -25,12 +23,16 @@ public:
 	~ModuleGame();
 
 	bool Start();
+	update_status PreUpdate() override;
 	update_status Update();
 	update_status PostUpdate();
 	bool CleanUp();
 
 	GameCamera* GetCamera() const { return camera; }
 	Player* GetPlayer() const { return player; }
+
+	void OnCollision(PhysBody* physA, PhysBody* physB) override;
+	void OnCollisionEnd(PhysBody* physA, PhysBody* physB) override;
 
 private:
 

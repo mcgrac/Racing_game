@@ -2,6 +2,7 @@
 #include "Globals.h"
 #include "raylib.h"
 #include "ModulePhysics.h"
+#include "EntityManager.h"
 
 class Map {
 

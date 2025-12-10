@@ -65,18 +65,22 @@ public:
 	PhysBody* CreateCircle(int x, int y, int radius, b2BodyType type);
 	PhysBody* CreateRectangle(int x, int y, int width, int height, b2BodyType type);
 	PhysBody* CreateRectangleSensor(int x, int y, int width, int height, b2BodyType type);
-	PhysBody* CreateChain(int x, int y, const int* points, int size, b2BodyType type);
+	PhysBody* CreateChain(int x, int y, const int* points, int size, b2BodyType type); 
 	PhysBody* CreatePolygon(int x, int y, int* points, int count, b2BodyType type);
 
 	void BeginContact(b2Contact* contact) override;
 	void EndContact(b2Contact* contact) override;
 
 	void DestroyPhysBody(PhysBody* pbody); //called in the cleanUp
-
+	void SetCameraDebug(Camera2D camera) { cam = camera; }
 private:
 
 	b2World* world = nullptr;
 	b2Vec2 gravity = { 0,9.81f };
 	bool debug;
+
+	//mouse joint
+	b2Body* mouseGround = nullptr;
 	
+	Camera2D cam;
 };

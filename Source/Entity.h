@@ -1,25 +1,33 @@
 #pragma once
 #include <memory>
 #include "Vector2D.h"
-#include "Globals.h"
-#include<vector>
+//#include "Globals.h"
+#include "Application.h"
+#include <vector>
 #include "raylib.h"
+#include "box2d/box2d.h"
+#include "ModulePhysics.h"
+#include "Module.h"
 
 enum class EntityType
 {
-	PLAYER
+	PLAYER,
+	AI,
+	TURBO_ON_ROAD,
+	ROCK
 };
 
 class PhysBody;
+class ModuleGame;
 
 class Entity : public std::enable_shared_from_this<Entity>
 {
 public:
 
 	Entity() {}
-	Entity(const Vector2D& pos);
+	//Entity(const Vector2D& pos);
 	Entity(float x, float y);
-	Entity(EntityType type) : type(type), active(true) {}
+	Entity(Module* _listener, const Vector2D& pos, EntityType _type);
 
 	virtual ~Entity() = default;
 
@@ -36,6 +44,11 @@ public:
 	virtual bool Update(float dt)
 	{
 		return true;
+	}
+	virtual bool Render() 
+	{
+		return true;
+
 	}
 
 	virtual bool CleanUp()
@@ -85,13 +98,14 @@ public:
 
 protected:
 	Vector2D position;
+	PhysBody* physBody;
+	Module* listener;
+
 public:
 
 	EntityType type;
 	bool active = true;
 	bool pendingToDelete = false;
 
-	// Possible properties, it depends on how generic we
-	// want our Entity class, maybe it's not renderable...
 	bool renderable = true;
 };

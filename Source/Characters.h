@@ -3,7 +3,7 @@
 
 
 class Characters :public Entity {
-	Characters();
+
 protected:
 	struct Statistics {
 		int acceleration;
@@ -19,8 +19,16 @@ protected:
 	void usePower();
 	void iniciate();
 
+	enum class State {
+		IDLE,
+		ATTACK,
+		STUNNED,
+	};
+	State state;
 
 public:
+	Characters();
+
 	inline int getAcceleration() {
 		return stats.acceleration;
 	}

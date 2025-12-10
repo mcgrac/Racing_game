@@ -4,7 +4,7 @@
 #include "ModuleGame.h"
 #include "ModuleAudio.h"
 #include "ModulePhysics.h"
-
+//#include "EntityManager.h"
 
 ModuleGame::ModuleGame(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
@@ -24,21 +24,34 @@ bool ModuleGame::Start()
 
 	entityManager = new EntityManager();
 
-	//create player
-	//entityManager->CreateEntity(EntityType::PLAYER);
-
-	player = new Player(Vector2D(400.0f, 300.0f));
-
+	//CREATION ENTITIES
+	//Player
+	player = new Player(this, Vector2D(400.0f, 400.0f), EntityType::PLAYER);
+	entityManager->AddEntity(player);
+	//Ai
+	
+	//then ask to level one where is the parrila de alida and position them there
+	
 	//create level
-	currentMap = new Level1(App->physics, this);
+	currentMap = new Level1(App->physics, this, entityManager);
 	currentMap->Start();
 
+	//canmera inicialization
 	camera = new GameCamera(SCREEN_WIDTH, SCREEN_HEIGHT);
 	camera->SetSmoothSpeed(.15f);
-
 	camera->CenterOn(player->GetCenter());
 
+	//call start entity manager -> call start of all entities
+	entityManager->Start();
 	return ret;
+}
+
+update_status ModuleGame::PreUpdate()
+{
+	//BeginMode2D(camera->GetRaylibCamera());
+
+	App->physics->SetCameraDebug(camera->GetRaylibCamera());
+	return UPDATE_CONTINUE;
 }
 
 
@@ -48,13 +61,13 @@ update_status ModuleGame::Update()
 	float dt = GetFrameTime();
 
 	if (entityManager) { entityManager->Update(dt); }
-	else { LOG("Entity manager error Module Game\n"); }
+	else { std::cout<<"Entity manager update error Module Game\n"; }
 
 	//std::cout << "MODULE GAME UPDATE" << std::endl;
-	//currentMap->Update();
+	currentMap->Update();
 
-	if (player) { player->Update(dt); }
-	else { LOG("Player error Module Game\n"); }
+	//if (player) { player->Update(dt); }
+	//else { LOG("Player error Module Game\n"); }
 
 
 	if (camera && player)
@@ -70,13 +83,14 @@ update_status ModuleGame::PostUpdate()
 {
 	//--------------RENDER-----------------
 	//Raylib camera behaviour (start camera mode)
-	BeginMode2D(camera->GetRaylibCamera());
+	//BeginMode2D(camera->GetRaylibCamera());
 	//render map background (floor)
 	if (currentMap) { currentMap->RenderBackground(); }
-	//player
-	if (player) { player->Render(); }
+	//render entities
+	entityManager->Render();
+
 	//render top elements
-	if (currentMap) { currentMap->RenderTop(); }
+	//if (currentMap) { currentMap->RenderTop(); }
 
 	EndMode2D();
 	//--------------------------------------
@@ -84,7 +98,7 @@ update_status ModuleGame::PostUpdate()
 
 
 	//--------------------------------------
-	return UPDATE_CONTINUE;;
+	return UPDATE_CONTINUE;
 }
 
 // Unload assets
@@ -109,4 +123,44 @@ bool ModuleGame::CleanUp()
 	LOG("Unloading Intro scene");
 
 	return true;
+}
+
+void ModuleGame::OnCollision(PhysBody* physA, PhysBody* physB) {
+	// Obtener las entidades desde los PhysBody
+	Entity* entityA = reinterpret_cast<Entity*>(physA->body->GetUserData().pointer);
+	Entity* entityB = reinterpret_cast<Entity*>(physB->body->GetUserData().pointer);
+
+	if (!entityA || !entityB) {
+		LOG("WARNING: Collision with null entity");
+		return;
+	}
+
+	//LOG("COLLISION: %d vs %d", (int)entityA->GetType(), (int)entityB->GetType());
+
+	// Manejar colisiones según el tipo
+	//switch (entityA->GetType()) {
+	//case EntityType::PLAYER:
+	//	HandlePlayerCollision(entityA, entityB);
+	//	break;
+
+	//case EntityType::TURBO_ON_ROAD:
+	//	HandleTurboCollision(entityA, entityB);
+	//	break;
+
+	//case EntityType::ROCK:
+	//	HandleRockCollision(entityA, entityB);
+	//	break;
+
+	//default:
+	//	break;
+	//}
+}
+
+void ModuleGame::OnCollisionEnd(PhysBody* physA, PhysBody* physB) {
+	Entity* entityA = reinterpret_cast<Entity*>(physA->body->GetUserData().pointer);
+	Entity* entityB = reinterpret_cast<Entity*>(physB->body->GetUserData().pointer);
+
+	if (!entityA || !entityB) return;
+
+	//LOG("COLLISION END: %d vs %d", (int)entityA->GetType(), (int)entityB->GetType());
 }

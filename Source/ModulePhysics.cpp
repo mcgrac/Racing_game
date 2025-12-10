@@ -81,14 +81,31 @@ ModulePhysics::~ModulePhysics()
 bool ModulePhysics::Start()
 {
 	LOG("Creating Physics 2D environment");
+	//set gravity to zero
+	gravity.Set(0.0f, 0.0f);
 
 	world = new b2World(b2Vec2(gravity));
+
+	//for mouse joint
+	b2BodyDef bd;
+	mouseGround = world->CreateBody(&bd);
+
 	world->SetContactListener(this);
+
+	world->SetAllowSleeping(true); //optimization
+	world->SetContinuousPhysics(true); //better physics detection at high speed
 	return true;
 }
 
 update_status ModulePhysics::PreUpdate()
 {
+	float dt = GetFrameTime();
+
+	int32 velocityIterations = 8;   // velocity iterations accuraccy
+	int32 positionIterations = 3;   // position iteratiuon accuracy
+
+	//Update world
+	world->Step(dt, velocityIterations, positionIterations);
 
 	return UPDATE_CONTINUE;
 }
@@ -97,7 +114,6 @@ update_status ModulePhysics::PreUpdate()
 update_status ModulePhysics::PostUpdate()
 {
 	
-
 	if (IsKeyPressed(KEY_F1))
 	{
 		debug = !debug;
@@ -110,6 +126,7 @@ update_status ModulePhysics::PostUpdate()
 
 	// Bonus code: this will iterate all objects in the world and draw the circles
 	// You need to provide your own macro to translate meters to pixels
+	BeginMode2D(cam);
 	for (b2Body* b = world->GetBodyList(); b; b = b->GetNext())
 	{
 		for(b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext())
@@ -178,12 +195,8 @@ update_status ModulePhysics::PostUpdate()
 				}
 				break;
 			}
-
-			
 		}
 	}
-
-	
 	return UPDATE_CONTINUE;
 }
 
@@ -194,7 +207,10 @@ bool ModulePhysics::CleanUp()
 	LOG("Destroying physics world");
 
 	// Delete the whole physics world!
-	
+	if (world) {
+		delete world;
+		world = nullptr;
+	}
 
 	return true;
 }
@@ -278,25 +294,26 @@ PhysBody* ModulePhysics::CreateRectangle(int x, int y, int width, int height, b2
 	b2BodyDef bodyDef;
 	bodyDef.type = type;
 	bodyDef.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
-	bodyDef.userData.pointer = reinterpret_cast<uintptr_t>(pbody);
+	//bodyDef.userData.pointer = reinterpret_cast<uintptr_t>(pbody);
 
 	b2Body* b = world->CreateBody(&bodyDef);
 	b2PolygonShape box;
-	//box.SetAsBox(PIXEL_TO_METERS(width) * 0.5f, PIXEL_TO_METERS(height) * 0.5f);
-	box.SetAsBox(PIXEL_TO_METERS(width) * 1, PIXEL_TO_METERS(height) * 1);
+	box.SetAsBox(PIXEL_TO_METERS(width) * 0.5f, PIXEL_TO_METERS(height) * 0.5f);
 
 	b2FixtureDef fixture;
 	fixture.shape = &box;
-	fixture.density = 1.0f;
+	fixture.density = 1.0f;		 //default density
+	fixture.friction = 0.3f;     // default friction
+	fixture.restitution = 0.0f;  // default bounce
 
 	b->CreateFixture(&fixture);
 
 	pbody->body = b;
-	//pbody->width = (int)(width * 0.5f);
-	//pbody->height = (int)(height * 0.5f);
-
 	pbody->width = width;
 	pbody->height = height;
+
+	b->GetUserData().pointer = reinterpret_cast<uintptr_t>(pbody);
+
 	return pbody;
 }
 
