@@ -126,6 +126,7 @@ update_status ModulePhysics::PostUpdate()
 
 	// Bonus code: this will iterate all objects in the world and draw the circles
 	// You need to provide your own macro to translate meters to pixels
+	//BeginMode2D(cam);
 	for (b2Body* b = world->GetBodyList(); b; b = b->GetNext())
 	{
 		for(b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext())
@@ -194,12 +195,8 @@ update_status ModulePhysics::PostUpdate()
 				}
 				break;
 			}
-
-			
 		}
 	}
-
-	
 	return UPDATE_CONTINUE;
 }
 
@@ -301,8 +298,7 @@ PhysBody* ModulePhysics::CreateRectangle(int x, int y, int width, int height, b2
 
 	b2Body* b = world->CreateBody(&bodyDef);
 	b2PolygonShape box;
-	//box.SetAsBox(PIXEL_TO_METERS(width) * 0.5f, PIXEL_TO_METERS(height) * 0.5f);
-	box.SetAsBox(PIXEL_TO_METERS(width) * 1, PIXEL_TO_METERS(height) * 1);
+	box.SetAsBox(PIXEL_TO_METERS(width) * 0.5f, PIXEL_TO_METERS(height) * 0.5f);
 
 	b2FixtureDef fixture;
 	fixture.shape = &box;
@@ -313,10 +309,8 @@ PhysBody* ModulePhysics::CreateRectangle(int x, int y, int width, int height, b2
 	b->CreateFixture(&fixture);
 
 	pbody->body = b;
-	pbody->width = (int)(width * 0.5f);
-	pbody->height = (int)(height * 0.5f);
-	//pbody->width = width;
-	//pbody->height = height;
+	pbody->width = width;
+	pbody->height = height;
 
 	b->GetUserData().pointer = reinterpret_cast<uintptr_t>(pbody);
 

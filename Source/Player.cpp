@@ -1,78 +1,25 @@
-#include "Globals.h"
+ï»¿#include "Globals.h"
 #include "Player.h"
-
-//Player::Player()
-//    : Entity(0.0f, 0.0f),
-//    textureLoaded(false),
-//    width(texture.width),           // Ancho del rectángulo del coche
-//    height(texture.height),         // Alto del rectángulo del coche
-//    rotation(0.0f),
-//    velocity(0.0f),
-//    maxSpeed(400.0f),       // Velocidad máxima en píxeles/segundo
-//    acceleration(300.0f),   // Aceleración en píxeles/segundo²
-//    deceleration(150.0f),   // Fricción natural
-//    brakeForce(500.0f),     // Fuerza de frenado
-//    turnSpeed(180.0f),      // Grados por segundo
-//    minTurnSpeed(50.0f) {   // Velocidad mínima para girar
-//    texture = { 0 };
-//}
-
-//Player::Player(float startX, float startY, const char* texturePath)
-//    : Entity(startX, startY),  // Llama al constructor Entity(float, float)
-//    textureLoaded(false),
-//    width(texture.width),           // Ancho del rectángulo del coche
-//    height(texture.height),         // Alto del rectángulo del coche
-//    rotation(0.0f),
-//    velocity(0.0f),
-//    maxSpeed(400.0f),       // Velocidad máxima en píxeles/segundo
-//    acceleration(300.0f),   // Aceleración en píxeles/segundo²
-//    deceleration(150.0f),   // Fricción natural
-//    brakeForce(500.0f),     // Fuerza de frenado
-//    turnSpeed(180.0f),      // Grados por segundo
-//    minTurnSpeed(50.0f) {   // Velocidad mínima para girar
-//    texture = { 0 };
-//    LoadTexture(texturePath);
-//}
-
-//Player::Player(const Vector2D& startPos, const char* texturePath)
-//    : Entity(startPos),
-//    textureLoaded(false),
-//    width(texture.width),           // Ancho del rectángulo del coche
-//    height(texture.height),         // Alto del rectángulo del coche
-//    rotation(0.0f),
-//    velocity(0.0f),
-//    maxSpeed(400.0f),       // Velocidad máxima en píxeles/segundo
-//    acceleration(300.0f),   // Aceleración en píxeles/segundo²
-//    deceleration(150.0f),   // Fricción natural
-//    brakeForce(500.0f),     // Fuerza de frenado
-//    turnSpeed(180.0f),      // Grados por segundo
-//    minTurnSpeed(50.0f) {   // Velocidad mínima para girar
-//    texture = { 0 };
-//    LoadTexture(texturePath);
-//}
 
 Player::Player(Module* _listener, const Vector2D& startPos, EntityType _type)
     : Entity(_listener, startPos, _type),
-    speed (200.0f),
+    speed(200.0f),
     textureLoaded(false),
-    width(texture.width),           // Ancho del rectángulo del coche
-    height(texture.height),         // Alto del rectángulo del coche
-    rotation(0.0f),
-    velocity(0.0f),
-    maxSpeed(400.0f),       // Velocidad máxima en píxeles/segundo
-    acceleration(300.0f),   // Aceleración en píxeles/segundo²
-    deceleration(150.0f),   // Fricción natural
-    brakeForce(500.0f),     // Fuerza de frenado
-    turnSpeed(180.0f),      // Grados por segundo
-    minTurnSpeed(50.0f)     // Velocidad mínima para girar
+    width(texture.width),           // Ancho del rectÃ¡ngulo del coche
+    height(texture.height),         // Alto del rectÃ¡ngulo del coche
+    maxForwardSpeed(30.0f),        // 72 km/h
+    maxBackwardSpeed(15.0f),        // 28.8 km/h
+    accelerationForce(65.0f),      // Fuerza de aceleraciÃ³n
+    brakeForce(40.0f),             // Fuerza de frenado
+    turnTorque(20.0f),             // Torque de giro
+    dragCoefficient(1.2f),         // Resistencia del aire
+    lateralDrag(1.5f),             // FricciÃ³n lateral
+    minSpeedToTurn(0.5f),           // Velocidad mÃ­nima para girar
+    rotation(0.0f)
 {   
     LoadTexture("Assets/Textures/Cars/CarChansey.png");
-    std::cout << "texture resolution : (width,height)" << texture.width << " , " << texture.height << std::endl;
     //create physbody
     InitPhysics();
-    //physBody = listener->App->physics->CreateRectangle(startPos.getX(), startPos.getY(), texture.width, texture.height, b2BodyType::b2_dynamicBody);
-    //physBody->listener = _listener; //begin contact in charge
-    //texture = { 0 };
 }
 
 Player::~Player()
@@ -88,10 +35,10 @@ void Player::InitPhysics()
     }
 
     physBody = listener->App->physics->CreateRectangle(
-        (int)position.getX() + ((int)position.getX() / 2),
-        (int)position.getY() + ((int)position.getY() / 2),
-        (int)texture.width * 0.5f,
-        (int)texture.height * 0.5f,
+        position.getX() + (texture.width / 2),
+        position.getY() + (texture.height / 2),
+        texture.width,
+        texture.height,
         b2_dynamicBody);
 
     if (physBody && physBody->body) {
@@ -113,11 +60,63 @@ void Player::InitPhysics()
 
         // OnCollision I will be able to do->
         // Entity* entity = reinterpret_cast<Entity*>(body->GetUserData().pointer);
+
+        physBody->listener = listener;
     }
 
     // already done in Entity, just for security
-    physBody->listener = listener;
+
 }
+
+float Player::GetRotation() const {
+    if (!physBody || !physBody->body) return 0.0f;
+    return physBody->body->GetAngle() * 180.0f / PI;
+}
+
+float Player::GetSpeed() const {
+    if (!physBody || !physBody->body) return 0.0f;
+    return physBody->body->GetLinearVelocity().Length();
+}
+
+float Player::GetSpeedKmh() const {
+    return GetSpeed() * 3.6f;
+}
+
+b2Vec2 Player::GetForwardVector() const {
+    float angle = physBody->body->GetAngle();
+
+    // **IMPLEMENTACIÃ“N ESTÃNDAR para Angulo 0 = ARRIBA (Y negativo)**
+    // Si angle = 0, sin(0) = 0, cos(0) = 1. Resultado: (0, -1) [Arriba]
+    return b2Vec2(sinf(angle), -cosf(angle));
+}
+b2Vec2 Player::GetRightVector() const {
+    b2Vec2 forward = GetForwardVector();
+
+    // 2. Calculamos el vector perpendicular.
+    // Usaremos la convenciÃ³n (y, -x) para obtener el vector a la derecha 
+    // (una rotaciÃ³n de 90 grados en sentido horario desde el vector forward).
+
+    // Si forward es (Fx, Fy), right serÃ¡ (Fy, -Fx)
+    return b2Vec2(-forward.y, forward.x);
+}
+
+void Player::SyncPositionFromPhysics()
+{
+    //meters
+    b2Vec2 pos = physBody->body->GetPosition();
+    //pixels
+    b2Vec2 posPixels;
+    posPixels.Set(METERS_TO_PIXELS(pos.x), METERS_TO_PIXELS(pos.y));
+
+    float angle = physBody->body->GetAngle();
+
+    // Convertir metros â†’ pÃ­xeles si usas escala
+    position.setX(posPixels.x - (width / 2.0f));
+    position.setY(posPixels.y - (height / 2.0f));
+
+    rotation = angle * RAD2DEG;
+}
+
 // Load assets
 bool Player::Start()
 {
@@ -164,42 +163,153 @@ bool Player::Update(float dt)
     std::cout<<"position Player: " << position << std::endl;
     std::cout << "position physBody (x, y): "
         << physBody->GetPosition().x << ", "
-        << physBody->GetPosition().y << std::endl;
+        << physBody->GetPosition().y << ", "
+        << "Rotation: " << rotation << ", "
+        << "Speed: " << speed << std::endl;
 
-    // Movement Logic
-    if (IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D)) {
-        position.setX(position.getX() + speed * dt);
-    }
-    if (IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A)) {
-        position.setX(position.getX() - speed * dt);
-    }
-    if (IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S)) {
-        position.setY(position.getY() + speed * dt);
-    }
-    if (IsKeyDown(KEY_UP) || IsKeyDown(KEY_W)) {
-        position.setY(position.getY() - speed * dt);
-    }
+    ////-----------INPUT CAR PHYSICS------------------
+    ApplyCarPhysics(dt);
+    SyncPositionFromPhysics();
+    ////----------------------------------------------
 
-    physBody->SetPos(position.getX(), position.getY());
+    return true;
+}
 
-    //-----------INPUT CAR PHYSICS------------------
-    // 1. Acceleration (W Key)
-    if (IsKeyDown(KEY_W)) {
-        velocity += acceleration * dt;
-        if (velocity > maxSpeed) {
-            velocity = maxSpeed;
+#pragma region DRAGS
+void Player::ApplyDrag()
+{
+    b2Body* body = physBody->body;
+
+    b2Vec2 currentVelocity = body->GetLinearVelocity();
+
+    // Aplicamos una fuerza de arrastre proporcional a la velocidad
+    // (Fuerza opuesta a la direcciÃ³n del movimiento).
+    // Usamos dragCoefficient para controlar la intensidad.
+    // F_drag = -dragCoefficient * currentVelocity
+    b2Vec2 dragForce = -dragCoefficient * currentVelocity;
+
+    // Para evitar la trepidaciÃ³n a velocidad 0, solo aplicamos la fuerza si hay movimiento
+    if (currentVelocity.LengthSquared() > 0.1f)
+    {
+        body->ApplyForceToCenter(dragForce, true);
+    }
+    else
+    {
+        // Si la velocidad es insignificante, la forzamos a 0 para detenerlo por completo
+        body->SetLinearVelocity(b2Vec2(0, 0));
+    }
+}
+void Player::ApplyLateralFriction()
+{
+    b2Body* body = physBody->body;
+
+    b2Vec2 currentVelocity = body->GetLinearVelocity();
+
+    // Obtener la direcciÃ³n perpendicular (lateral)
+    b2Vec2 rightVector = GetRightVector();
+    // Si GetForwardVector es (x, y), GetRightVector es (-y, x) o (y, -x).
+
+    // ProyecciÃ³n de la velocidad en la direcciÃ³n lateral (cuÃ¡nto se estÃ¡ "derrapando")
+    float lateralSpeed = b2Dot(currentVelocity, rightVector);
+
+    // 2. Impulso: Calculamos la fuerza necesaria para anular esa velocidad lateral.
+    // El impulso es proporcional a la masa y al coeficiente lateral.
+    b2Vec2 lateralImpulse = lateralSpeed * rightVector;
+    lateralImpulse *= body->GetMass() * lateralDrag;
+
+    // 3. Aplicar: Aplicamos el impulso negativo para cancelar el derrape.
+    body->ApplyLinearImpulse(-lateralImpulse, body->GetWorldCenter(), true);
+}
+#pragma endregion
+
+
+void Player::ApplyCarPhysics(float dt) {
+    b2Body* body = physBody->body;
+
+    b2Vec2 currentVelocity = body->GetLinearVelocity();
+    b2Vec2 forwardVector = GetForwardVector();
+
+    // ProyecciÃ³n de la velocidad en la direcciÃ³n hacia adelante
+    float speed = b2Dot(currentVelocity, forwardVector);
+    float absoluteSpeed = fabs(speed); // Velocidad sin direcciÃ³n (magnitud)
+
+    //-------------------------MOVING FORWARD/BACK--------------------------
+    // 2. Aplicar la aceleraciÃ³n si se pulsa 'W'
+    if (IsKeyDown(KEY_W))
+    {
+        // Solo aplica fuerza si no hemos alcanzado la velocidad mÃ¡xima hacia adelante
+        if (speed < maxForwardSpeed)
+        {
+            // F = m * a
+            // Aplicamos una fuerza proporcional a 'accelerationForce' en la direcciÃ³n hacia adelante.
+            b2Vec2 force = accelerationForce * forwardVector;
+            body->ApplyForceToCenter(force, true);
+            
         }
     }
+    // Opcional: Implementar frenado o marcha atrÃ¡s aquÃ­ (e.g., con KEY_S)
+    else if (IsKeyDown(KEY_S))
+    {
+        // Caso 1: Frenado (si vamos hacia adelante)
+        if (speed > 0.1f)
+        {
+            // Aplicamos una fuerza grande (brakeForce) en la direcciÃ³n opuesta al avance.
+            b2Vec2 brakeForceVector = -brakeForce * forwardVector;
+            body->ApplyForceToCenter(brakeForceVector, true);
+        }
+        // Caso 2: Marcha AtrÃ¡s (si estamos parados o ya vamos hacia atrÃ¡s)
+        else if (speed > -maxBackwardSpeed)
+        {
+            // Aplicamos la fuerza de aceleraciÃ³n (reducida) en la direcciÃ³n opuesta.
+            b2Vec2 reverseForce = -accelerationForce * 0.5f * forwardVector; // 0.5f para que sea mÃ¡s lenta
+            body->ApplyForceToCenter(reverseForce, true);
+        }
+    }
+    //-------------------------------------------------------------
+    //--------------------TURNING RIGHT AND LEFT---------------------
+    if (absoluteSpeed > minSpeedToTurn)
+    {
+        float torqueAmount = 0.0f;
 
-    //----------------------------------------------
-    return true;
+        if (IsKeyDown(KEY_D))
+        {
+            // Girar a la derecha (sentido horario, Box2D usa negativo)
+            torqueAmount = +turnTorque;
+        }
+        else if (IsKeyDown(KEY_A))
+        {
+            // Girar a la izquierda (sentido antihorario, Box2D usa positivo)
+            torqueAmount = -turnTorque;
+        }
+
+        // Aplicar el torque si se estÃ¡ girando
+        if (torqueAmount != 0.0f)
+        {
+            // Aplicar el torque al centro de masa del cuerpo
+            body->ApplyTorque(torqueAmount, true);
+        }
+    }
+    //------------------------------------------------------------
+    // 3. Aplicar arrastre/resistencia del aire (Drag)
+    // Esto es crucial para que el coche se ralentice cuando no se acelera
+    ApplyDrag();
+
+    // 4. Aplicar fricciÃ³n lateral
+    // Esto evita el derrape infinito y mantiene el coche alineado con su movimiento
+    ApplyLateralFriction();
+
+    // Actualizar la variable de velocidad para el HUD/Game
+    this->speed = speed;
 }
 
 bool Player::Render() {
     if (textureLoaded) {
-        DrawTexture(texture,
-            (int)position.getX(),
-            (int)position.getY(),
+
+        DrawTexturePro(texture,
+            {0,0,(float)texture.width, -(float)texture.height},
+            { position.getX(), position.getY(), (float)texture.width, (float)texture.height },
+            { texture.width / 2.0f, texture.height / 2.0f },
+            rotation,
             WHITE);
     }
     else {
@@ -208,6 +318,40 @@ bool Player::Render() {
             32, 32, RED);
     }
 
+// ********** DEBUG: DIBUJAR FORWARD VECTOR *****
+// 1. Obtener la posiciÃ³n central y el vector
+    b2Vec2 forwardVector = GetForwardVector();
+
+    // 2. Definir la longitud de la lÃ­nea del vector (e.g., 50 pÃ­xeles)
+    float vectorLength = 50.0f;
+    // 3. Calcular la posiciÃ³n final de la lÃ­nea
+    Vector2 endPosFor;
+    endPosFor.x = position.getX() + forwardVector.x * vectorLength;
+    endPosFor.y = position.getY() + forwardVector.y * vectorLength;
+
+    // 4. Dibujar la lÃ­nea (desde el centro hasta el punto final)
+    // Usamos un color distintivo (e.g., GREEN) para verlo claramente.
+    DrawLine(
+        (int)position.getX(),
+        (int)position.getY(),
+        (int)endPosFor.x,
+        (int)endPosFor.y,
+        GREEN
+    );
+    //2.VECTOR RIGHT
+    b2Vec2 rightvector = GetRightVector();
+    Vector2 endPos;
+    endPos.x = position.getX() + rightvector.x * vectorLength;
+    endPos.y = position.getY() + rightvector.y * vectorLength;
+
+    DrawLine(
+        (int)position.getX(),
+        (int)position.getY(),
+        (int)endPos.x,
+        (int)endPos.y,
+        YELLOW
+    );
+    // **********************************************
     return true;
 }
 

@@ -26,7 +26,7 @@ bool ModuleGame::Start()
 
 	//CREATION ENTITIES
 	//Player
-	player = new Player(this, Vector2D(400.0f, 300.0f), EntityType::PLAYER);
+	player = new Player(this, Vector2D(400.0f, 400.0f), EntityType::PLAYER);
 	entityManager->AddEntity(player);
 	//Ai
 	
@@ -50,6 +50,7 @@ update_status ModuleGame::PreUpdate()
 {
 	//BeginMode2D(camera->GetRaylibCamera());
 
+	App->physics->SetCameraDebug(camera->GetRaylibCamera());
 	return UPDATE_CONTINUE;
 }
 
@@ -82,7 +83,7 @@ update_status ModuleGame::PostUpdate()
 {
 	//--------------RENDER-----------------
 	//Raylib camera behaviour (start camera mode)
-	BeginMode2D(camera->GetRaylibCamera());
+	//BeginMode2D(camera->GetRaylibCamera());
 	//render map background (floor)
 	//if (currentMap) { currentMap->RenderBackground(); }
 	//render entities

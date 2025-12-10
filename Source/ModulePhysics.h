@@ -72,7 +72,7 @@ public:
 	void EndContact(b2Contact* contact) override;
 
 	void DestroyPhysBody(PhysBody* pbody); //called in the cleanUp
-
+	void SetCameraDebug(Camera2D camera) { cam = camera; }
 private:
 
 	b2World* world = nullptr;
@@ -82,4 +82,5 @@ private:
 	//mouse joint
 	b2Body* mouseGround = nullptr;
 	
+	Camera2D cam;
 };

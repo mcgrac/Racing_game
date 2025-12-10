@@ -107,7 +107,5 @@ public:
 	bool active = true;
 	bool pendingToDelete = false;
 
-	// Possible properties, it depends on how generic we
-	// want our Entity class, maybe it's not renderable...
 	bool renderable = true;
 };
