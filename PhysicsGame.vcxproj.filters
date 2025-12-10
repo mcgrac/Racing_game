@@ -64,7 +64,9 @@
     <ClCompile Include="Source\Meganium.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="Cleffa.cpp">
+    <ClCompile Include="Source\Cleffa.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Scene.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
@@ -161,6 +163,8 @@
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="Source\Cleffa.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Scene.h">
       <Filter>Headers</Filter>
     </ClInclude>
