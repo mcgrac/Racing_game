@@ -3,10 +3,10 @@
 #include "p2Point.h"
 #include "Application.h"
 #include "Entity.h"
-
+#include "Characters.h"
 #include"raylib.h"
 
-class Player : public Entity
+class Player : public Characters
 {
 public:
 	//Player();
@@ -55,26 +55,30 @@ public:
 	bool LoadTexture(const char* texturePath);
 	void UnloadTexture();
 
+
 private:
 
-	float speed;
+	void LoadAnimations();
+	void UpdateAnims(float dt) override;
+	//float speed;
 	Texture texture;
-	bool textureLoaded;
+	//bool textureLoaded;
 
-	// Car dimensions
-	float width;
-	float height;
+	//// Car dimensions
+	//float width;
+	//float height;
 
-	//Car physics variables
-	float maxForwardSpeed;      // Velocidad máxima hacia adelante (m/s)
-	float maxBackwardSpeed;     // Velocidad máxima marcha atrás (m/s)
-	float accelerationForce;    // Fuerza de aceleración
-	float brakeForce;           // Fuerza de frenado
-	float turnTorque;           // Torque de giro (rota el physBody)
-	float dragCoefficient;      // Resistencia del aire
-	float lateralDrag;          // Fricción lateral (anti-drift)
-	float minSpeedToTurn;       // Velocidad mínima para poder girar
-	float rotation;
+	////Car physics variables
+	//float maxForwardSpeed;      // Velocidad máxima hacia adelante (m/s)
+	//float maxBackwardSpeed;     // Velocidad máxima marcha atrás (m/s)
+	//float accelerationForce;    // Fuerza de aceleración
+	//float brakeForce;           // Fuerza de frenado
+	//float turnTorque;           // Torque de giro (rota el physBody)
+	//float dragCoefficient;      // Resistencia del aire
+	//float lateralDrag;          // Fricción lateral (anti-drift)
+	//float minSpeedToTurn;       // Velocidad mínima para poder girar
+	//float rotation;
+
 
 	// Helpers
 	b2Vec2 GetForwardVector() const;

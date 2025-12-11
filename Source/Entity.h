@@ -1,13 +1,13 @@
 #pragma once
 #include <memory>
 #include "Vector2D.h"
-//#include "Globals.h"
 #include "Application.h"
 #include <vector>
 #include "raylib.h"
 #include "box2d/box2d.h"
 #include "ModulePhysics.h"
 #include "Module.h"
+#include "Animation.h"
 
 enum class EntityType
 {

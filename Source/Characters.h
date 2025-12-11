@@ -4,6 +4,11 @@
 
 class Characters :public Entity {
 
+public:
+	Characters(Module* _listener, const Vector2D& startPos, EntityType _type);
+
+	inline void SetIsPlayer(bool b) { isPlayer = b; }
+
 protected:
 	struct Statistics {
 		int acceleration;
@@ -24,10 +29,9 @@ protected:
 		ATTACK,
 		STUNNED,
 	};
-	State state;
-
-public:
-	Characters();
+	State currentState;
+	State previousState;
+	float stateTimer;
 
 	inline int getAcceleration() {
 		return stats.acceleration;
@@ -53,4 +57,32 @@ public:
 	inline void setOffRoad(int road) {
 		stats.offRoad = road;
 	}
+
+	//variables
+	float speed;
+	bool textureLoaded;
+	bool isPlayer;
+
+	// Car dimensions
+	float width;
+	float height;
+
+	//Car physics variables
+	float maxForwardSpeed;      // Velocidad máxima hacia adelante (m/s)
+	float maxBackwardSpeed;     // Velocidad máxima marcha atrás (m/s)
+	float accelerationForce;    // Fuerza de aceleración
+	float brakeForce;           // Fuerza de frenado
+	float turnTorque;           // Torque de giro (rota el physBody)
+	float dragCoefficient;      // Resistencia del aire
+	float lateralDrag;          // Fricción lateral (anti-drift)
+	float minSpeedToTurn;       // Velocidad mínima para poder girar
+	float rotation;
+
+	//Animations
+	Animation idleAnimation;
+	Animation stunnedAnimation;
+	Animation attackAnimation;
+
+	void UpdateState(float dt);
+	virtual void UpdateAnims(float dt) = 0;
 };

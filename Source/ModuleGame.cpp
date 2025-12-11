@@ -248,10 +248,19 @@ void ModuleGame::CreatePlayers()
 
 		racers.push_back(racer);
 		entityManager->AddEntity(racer);
+
+		//the first racer created is the player
+		if (i == 0) {
+			player = racer;
+			racer->SetIsPlayer(true);
+		}
+		else {
+			racer->SetIsPlayer(false);
+		}
 	}
 
 	// El primer coche es el controlado por el jugador
-	player = racers[0];
+	//player = racers[0];
 
 	// Configurar la cámara para seguir al jugador
 	if (camera) {

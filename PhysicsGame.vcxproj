@@ -188,6 +188,7 @@
     <ClInclude Include="Source/ModuleRender.h" />
     <ClInclude Include="Source/ModuleWindow.h" />
     <ClInclude Include="Source/p2Point.h" />
+    <ClInclude Include="Source\Animation.h" />
     <ClInclude Include="Source\BadgesScreen.h" />
     <ClInclude Include="Source\Button.h" />
     <ClInclude Include="Source\Characters.h" />
@@ -217,6 +218,7 @@
     <ClCompile Include="Source/ModulePhysics.cpp" />
     <ClCompile Include="Source/ModuleRender.cpp" />
     <ClCompile Include="Source/ModuleWindow.cpp" />
+    <ClCompile Include="Source\Animation.cpp" />
     <ClCompile Include="Source\BadgesScreen.cpp" />
     <ClCompile Include="Source\Button.cpp" />
     <ClCompile Include="Source\Characters.cpp" />

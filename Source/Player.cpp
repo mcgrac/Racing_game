@@ -2,22 +2,9 @@
 #include "Player.h"
 
 Player::Player(Module* _listener, const Vector2D& startPos, EntityType _type, uint16 category, uint16 maskBits, int16 groupIndex)
-    : Entity(_listener, startPos, _type),
-    speed(200.0f),
-    textureLoaded(false),
-    width(texture.width),           // Ancho del rectángulo del coche
-    height(texture.height),         // Alto del rectángulo del coche
-    maxForwardSpeed(30.0f),        // 72 km/h
-    maxBackwardSpeed(15.0f),        // 28.8 km/h
-    accelerationForce(65.0f),      // Fuerza de aceleración
-    brakeForce(40.0f),             // Fuerza de frenado
-    turnTorque(20.0f),             // Torque de giro
-    dragCoefficient(1.2f),         // Resistencia del aire
-    lateralDrag(1.5f),             // Fricción lateral
-    minSpeedToTurn(0.5f),           // Velocidad mínima para girar
-    rotation(0.0f)
+    : Characters(_listener, startPos, _type)
 {   
-    LoadTexture("Assets/Textures/Cars/CarChansey.png");
+    LoadAnimations();
     //create physbody
     InitPhysics(category, maskBits, groupIndex);
 }
@@ -35,10 +22,10 @@ void Player::InitPhysics(uint16 category, uint16 maskBits, int16 groupIndex)
     }
 
     physBody = listener->App->physics->CreateRectangle(
-        position.getX() + (texture.width / 2),
-        position.getY() + (texture.height / 2),
-        texture.width,
-        texture.height,
+        position.getX() + (width / 2),
+        position.getY() + (height / 2),
+        width,
+        height,
         b2_dynamicBody,
         category,
         maskBits,
@@ -145,6 +132,47 @@ void Player::UnloadTexture() {
         texture = { 0 };
     }
 }
+void Player::LoadAnimations()
+{
+    //Idle animations
+    idleAnimation.AddTexture("Assets/Textures/Cars/CarChanseyIdle1.png");
+    idleAnimation.AddTexture("Assets/Textures/Cars/CarChanseyIdle2.png");
+
+    
+    // Obtain size textures
+    if (idleAnimation.IsValid()) {
+        Texture2D firstTex = idleAnimation.GetCurrentTexture();
+        width = firstTex.width;
+        height = firstTex.height;
+        std::cout << "Player animations loaded (size: %dx%d)" << (int)width << ", " << (int)height << std::endl;
+        textureLoaded = true;
+    }
+    else {
+        std::cout << "Error getting size animations" <<std::endl;
+        width = 64;
+        height = 64;
+    }
+}
+#pragma endregion
+
+#pragma region ANIMATIONS
+void Player::UpdateAnims(float dt)
+{
+    switch (currentState)
+    {
+    case Characters::State::IDLE:
+        idleAnimation.Update(dt);
+        break;
+    case Characters::State::ATTACK:
+        attackAnimation.Update(dt);
+        break;
+    case Characters::State::STUNNED:
+        stunnedAnimation.Update(dt);
+        break;
+    default:
+        break;
+    }
+}
 #pragma endregion
 
 Vector2D Player::GetCenter() const {
@@ -163,6 +191,11 @@ bool Player::CleanUp()
 // Update: draw background
 bool Player::Update(float dt)
 {
+    //if (!active) { return; }
+
+    UpdateState(dt); //check if there is a temporal state, like stunned
+    UpdateAnims(dt); //update current animation depending on the state
+
     //std::cout<<"position Player: " << position << std::endl;
     //std::cout << "position physBody (x, y): "
     //    << physBody->GetPosition().x << ", "
@@ -170,11 +203,18 @@ bool Player::Update(float dt)
     //    << "Rotation: " << rotation << ", "
     //    << "Speed: " << speed << std::endl;
 
-    ////-----------INPUT CAR PHYSICS------------------
-    ApplyCarPhysics(dt);
-    SyncPositionFromPhysics();
-    ////----------------------------------------------
+    //only control car if it is the player
+    if(isPlayer)
+    {
+        ////-----------INPUT CAR PHYSICS------------------
+        ApplyCarPhysics(dt);
+        ////----------------------------------------------
+    }
+    else {
+        //AI control
+    }
 
+    SyncPositionFromPhysics();
     return true;
 }
 
@@ -264,7 +304,7 @@ void Player::ApplyCarPhysics(float dt) {
         else if (speed > -maxBackwardSpeed)
         {
             // Aplicamos la fuerza de aceleración (reducida) en la dirección opuesta.
-            b2Vec2 reverseForce = -accelerationForce * 0.5f * forwardVector; // 0.5f para que sea más lenta
+            b2Vec2 reverseForce = -accelerationForce * .95f * forwardVector; // 0.5f para que sea más lenta
             body->ApplyForceToCenter(reverseForce, true);
         }
     }
@@ -306,14 +346,61 @@ void Player::ApplyCarPhysics(float dt) {
 }
 
 bool Player::Render() {
+
+    // Obtener posición y rotación del cuerpo físico
+    b2Vec2 pos = physBody->body->GetPosition();
+    float drawX = METERS_TO_PIXELS(pos.x);
+    float drawY = METERS_TO_PIXELS(pos.y);
+
+    // Obtener la textura actual según el estado
+    Texture2D currentTexture;
+    switch (currentState) {
+    case State::IDLE:
+        currentTexture = idleAnimation.GetCurrentTexture();
+        break;
+
+    case State::STUNNED:
+        currentTexture = stunnedAnimation.GetCurrentTexture();
+        break;
+
+    case State::ATTACK:
+        currentTexture = attackAnimation.GetCurrentTexture();
+        break;
+    }
+
+    // Rectángulo de origen (toda la textura)
+    Rectangle sourceRect = {
+        0, 0,
+        (float)currentTexture.width,
+        -(float)currentTexture.height
+    };
+
+    // Rectángulo de destino
+    Rectangle destRect = {
+        drawX,
+        drawY,
+        width,
+        height
+    };
+
+    // Origen para la rotación (centro)
+    Vector2 origin = { width * 0.5f, height * 0.5f };
+
     if (textureLoaded) {
 
-        DrawTexturePro(texture,
-            {0,0,(float)texture.width, -(float)texture.height},
-            { position.getX(), position.getY(), (float)texture.width, (float)texture.height },
-            { texture.width / 2.0f, texture.height / 2.0f },
+        DrawTexturePro(currentTexture,
+            sourceRect,
+            destRect,
+            origin,
             rotation,
             WHITE);
+
+        //DrawTexturePro(texture,
+        //    { 0,0,(float)texture.width, -(float)texture.height },
+        //    { position.getX(), position.getY(), (float)texture.width, (float)texture.height },
+        //    { texture.width / 2.0f, texture.height / 2.0f },
+        //    rotation,
+        //    WHITE);
     }
     else {
         DrawRectangle((int)position.getX(),
@@ -321,22 +408,24 @@ bool Player::Render() {
             32, 32, RED);
     }
 
-// ********** DEBUG: DIBUJAR FORWARD VECTOR *****
+#pragma region DEBUG DRAWING
+    // ********** DEBUG: DIBUJAR FORWARD VECTOR *****
 // 1. Obtener la posición central y el vector
     b2Vec2 forwardVector = GetForwardVector();
+    b2Vec2 positioning = { position.getX() + (width / 2), position.getY() + (height / 2) };
 
     // 2. Definir la longitud de la línea del vector (e.g., 50 píxeles)
     float vectorLength = 50.0f;
     // 3. Calcular la posición final de la línea
     Vector2 endPosFor;
-    endPosFor.x = position.getX() + forwardVector.x * vectorLength;
-    endPosFor.y = position.getY() + forwardVector.y * vectorLength;
+    endPosFor.x = positioning.x + forwardVector.x * vectorLength;
+    endPosFor.y = positioning.y + forwardVector.y * vectorLength;
 
     // 4. Dibujar la línea (desde el centro hasta el punto final)
     // Usamos un color distintivo (e.g., GREEN) para verlo claramente.
     DrawLine(
-        (int)position.getX(),
-        (int)position.getY(),
+        (int)positioning.x,
+        (int)positioning.y,
         (int)endPosFor.x,
         (int)endPosFor.y,
         GREEN
@@ -344,17 +433,19 @@ bool Player::Render() {
     //2.VECTOR RIGHT
     b2Vec2 rightvector = GetRightVector();
     Vector2 endPos;
-    endPos.x = position.getX() + rightvector.x * vectorLength;
-    endPos.y = position.getY() + rightvector.y * vectorLength;
+    endPos.x = positioning.x + rightvector.x * vectorLength;
+    endPos.y = positioning.y + rightvector.y * vectorLength;
 
     DrawLine(
-        (int)position.getX(),
-        (int)position.getY(),
+        (int)positioning.x,
+        (int)positioning.y,
         (int)endPos.x,
         (int)endPos.y,
         YELLOW
     );
     // **********************************************
+#pragma endregion
+
     return true;
 }
 
