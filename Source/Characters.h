@@ -5,10 +5,46 @@
 class Characters :public Entity {
 
 public:
-	Characters(Module* _listener, const Vector2D& startPos, EntityType _type);
+	Characters(Module* _listener, const Vector2D& startPos, EntityType _type, uint16 category, uint16 maskBits, int16 groupIndex = 0);
 
 	inline void SetIsPlayer(bool b) { isPlayer = b; }
 
+	//wayPoints IA
+	void SetWaypoints(const std::vector<Vector2D>& points);
+	const std::vector<Vector2D>& GetWaypoints() const { return waypoints; }
+	int GetCurrentWaypointIndex() const { return currentWaypointIndex; }
+	Vector2D GetCurrentWaypoint() const;
+	Vector2D GetNextWaypoint() const;
+	void AdvanceToNextWaypoint();
+	void ResetWaypoints();
+	//read waypoints
+	void WaypointLoader(const char* path);
+
+	//getters/setters
+	inline int getAcceleration() {
+		return stats.acceleration;
+	}
+	inline int getMaxSpeed() {
+		return stats.maxSpeed;
+	}
+	inline int getTurbo() {
+		return stats.turbo;
+	}
+	inline int getOffRoad() {
+		return stats.offRoad;
+	}
+	inline void setAcceleration(float acc) {
+		accelerationForce = acc;
+	}
+	inline void setMaxSpeed(float MaxS) {
+		maxForwardSpeed = MaxS;
+	}
+	inline void setTurbo(int turbo) {
+		stats.turbo = turbo;
+	}
+	inline void setOffRoad(int road) {
+		stats.offRoad = road;
+	}
 protected:
 	struct Statistics {
 		int acceleration;
@@ -33,34 +69,11 @@ protected:
 	State previousState;
 	float stateTimer;
 
-	inline int getAcceleration() {
-		return stats.acceleration;
-	}
-	inline int getMaxSpeed() {
-		return stats.maxSpeed;
-	}
-	inline int getTurbo() {
-		return stats.turbo;
-	}
-	inline int getOffRoad() {
-		return stats.offRoad;
-	}
-	inline void setAcceleration(int acc) {
-		stats.acceleration = acc;
-	}
-	inline void setMaxSpeed(int MaxS) {
-		stats.maxSpeed = MaxS;
-	}
-	inline void setTurbo(int turbo) {
-		stats.turbo = turbo;
-	}
-	inline void setOffRoad(int road) {
-		stats.offRoad = road;
-	}
-
 	//variables
 	float speed;
 	bool textureLoaded;
+
+	//control
 	bool isPlayer;
 
 	// Car dimensions
@@ -82,6 +95,12 @@ protected:
 	Animation idleAnimation;
 	Animation stunnedAnimation;
 	Animation attackAnimation;
+
+	//IA
+	std::vector<Vector2D> waypoints;
+	int currentWaypointIndex;
+	float waypointReachRadius;  // Radio para considerar alcanzado un waypoint
+	bool loopWaypoints;  // true = circuito cerrado, false = ir y volver
 
 	void UpdateState(float dt);
 	virtual void UpdateAnims(float dt) = 0;

@@ -189,7 +189,7 @@
     <ClInclude Include="Source/ModuleWindow.h" />
     <ClInclude Include="Source/p2Point.h" />
     <ClInclude Include="Source\Animation.h" />
-
+    <ClInclude Include="Source\Boost.h" />
     <ClInclude Include="Source\Chansey.h" />
     <ClInclude Include="Source\Characters.h" />
     <ClInclude Include="Source\Cleffa.h" />
@@ -225,6 +225,7 @@
     <ClCompile Include="Source/ModuleRender.cpp" />
     <ClCompile Include="Source/ModuleWindow.cpp" />
     <ClCompile Include="Source\Animation.cpp" />
+    <ClCompile Include="Source\Boost.cpp" />
     <ClCompile Include="Source\Chansey.cpp" />
     <ClCompile Include="Source\BadgesScreen.cpp" />
     <ClCompile Include="Source\Button.cpp" />

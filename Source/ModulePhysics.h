@@ -51,6 +51,18 @@ public:
 	Entity* entity = nullptr;
 	// TODO 6: Add a pointer to a module that might want to listen to a collision from this body
 };
+
+enum PhysicCategory {
+
+	//tangible objects
+	DEFAULT = 1 << 0,
+	CARS = 1 << 1,
+	WALLS = 1 << 2,
+	SENSORS = 1 << 3,
+	DESTRUCTIBLE = 1 << 4,
+
+};
+
 // Module --------------------------------------
 class ModulePhysics : public Module, public b2ContactListener // TODO
 {
@@ -66,8 +78,9 @@ public:
 	PhysBody* CreateCircle(int x, int y, int radius, b2BodyType type);
 	PhysBody* CreateRectangle(int x, int y, int width, int height, b2BodyType type, uint16 categoryBits, uint16 maskBits, int16 groupIndex);
 	PhysBody* CreateRectangleSensor(int x, int y, int width, int height, b2BodyType type);
-	PhysBody* CreateChain(int x, int y, const int* points, int size, b2BodyType type); 
-	PhysBody* CreatePolygon(int x, int y, int* points, int count, b2BodyType type);
+	PhysBody* CreateRectangleSensor(int x, int y, int width, int height, b2BodyType type, uint16 categoryBits, uint16 maskBits, int16 groupIndex);
+	PhysBody* CreateChain(int x, int y, const int* points, int size, b2BodyType type, uint16 categoryBits, uint16 maskBits, int16 groupIndex);
+	PhysBody* CreatePolygon(int x, int y, int* points, int count, b2BodyType type, uint16 categoryBits, uint16 maskBits, int16 groupIndex);
 
 	void BeginContact(b2Contact* contact) override;
 	void EndContact(b2Contact* contact) override;

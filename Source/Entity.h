@@ -8,6 +8,10 @@
 #include "ModulePhysics.h"
 #include "Module.h"
 #include "Animation.h"
+#include <fstream>      
+#include <sstream>      
+#include <string>       
+#include <vector>  
 
 enum class EntityType
 {
@@ -45,6 +49,7 @@ public:
 	{
 		return true;
 	}
+
 	virtual bool Render() 
 	{
 		return true;
