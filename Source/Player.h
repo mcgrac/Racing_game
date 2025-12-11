@@ -3,16 +3,16 @@
 #include "p2Point.h"
 #include "Application.h"
 #include "Entity.h"
-
+#include "Characters.h"
 #include"raylib.h"
 
-class Player : public Entity
+class Player : public Characters
 {
 public:
 	//Player();
 	//Player(float startX, float startY, const char* texturePath);
 	//Player(const Vector2D& startPos, const char* texturePath);
-	Player(Module* _listener, const Vector2D& startPos, EntityType _type);
+	Player(Module* _listener, const Vector2D& startPos, EntityType _type, uint16 category, uint16 maskBits, int16 groupIndex = 0);
 
 	virtual ~Player();
 
@@ -43,7 +43,7 @@ public:
 	void SetTurnSpeed(float turn) { turnTorque = turn; }
 #pragma endregion
 
-	void InitPhysics();
+	void InitPhysics(uint16 category, uint16 maskBits, int16 groupIndex);
 
 	bool IsTextureLoaded() const { return textureLoaded; }
 	void ApplyDrag();
@@ -55,26 +55,30 @@ public:
 	bool LoadTexture(const char* texturePath);
 	void UnloadTexture();
 
+
 private:
 
-	float speed;
+	void LoadAnimations();
+	void UpdateAnims(float dt) override;
+	//float speed;
 	Texture texture;
-	bool textureLoaded;
+	//bool textureLoaded;
 
-	// Car dimensions
-	float width;
-	float height;
+	//// Car dimensions
+	//float width;
+	//float height;
 
-	//Car physics variables
-	float maxForwardSpeed;      // Velocidad máxima hacia adelante (m/s)
-	float maxBackwardSpeed;     // Velocidad máxima marcha atrás (m/s)
-	float accelerationForce;    // Fuerza de aceleración
-	float brakeForce;           // Fuerza de frenado
-	float turnTorque;           // Torque de giro (rota el physBody)
-	float dragCoefficient;      // Resistencia del aire
-	float lateralDrag;          // Fricción lateral (anti-drift)
-	float minSpeedToTurn;       // Velocidad mínima para poder girar
-	float rotation;
+	////Car physics variables
+	//float maxForwardSpeed;      // Velocidad máxima hacia adelante (m/s)
+	//float maxBackwardSpeed;     // Velocidad máxima marcha atrás (m/s)
+	//float accelerationForce;    // Fuerza de aceleración
+	//float brakeForce;           // Fuerza de frenado
+	//float turnTorque;           // Torque de giro (rota el physBody)
+	//float dragCoefficient;      // Resistencia del aire
+	//float lateralDrag;          // Fricción lateral (anti-drift)
+	//float minSpeedToTurn;       // Velocidad mínima para poder girar
+	//float rotation;
+
 
 	// Helpers
 	b2Vec2 GetForwardVector() const;
