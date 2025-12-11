@@ -38,9 +38,9 @@ public:
 	const Texture2D& GetTexture() const { return texture; }
 #pragma endregion
 #pragma region SETTERS
-	void SetMaxSpeed(float speed) { maxForwardSpeed = speed; }
-	void SetAcceleration(float accel) { accelerationForce = accel; }
-	void SetTurnSpeed(float turn) { turnTorque = turn; }
+	//void SetMaxSpeed(float speed) { maxForwardSpeed = speed; }
+	//void SetAcceleration(float accel) { accelerationForce = accel; }
+	//void SetTurnSpeed(float turn) { turnTorque = turn; }
 #pragma endregion
 
 	void InitPhysics(uint16 category, uint16 maskBits, int16 groupIndex);
@@ -60,25 +60,15 @@ private:
 
 	void LoadAnimations();
 	void UpdateAnims(float dt) override;
-	//float speed;
+
 	Texture texture;
-	//bool textureLoaded;
 
-	//// Car dimensions
-	//float width;
-	//float height;
-
-	////Car physics variables
-	//float maxForwardSpeed;      // Velocidad máxima hacia adelante (m/s)
-	//float maxBackwardSpeed;     // Velocidad máxima marcha atrás (m/s)
-	//float accelerationForce;    // Fuerza de aceleración
-	//float brakeForce;           // Fuerza de frenado
-	//float turnTorque;           // Torque de giro (rota el physBody)
-	//float dragCoefficient;      // Resistencia del aire
-	//float lateralDrag;          // Fricción lateral (anti-drift)
-	//float minSpeedToTurn;       // Velocidad mínima para poder girar
-	//float rotation;
-
+	//AI controls
+	// Control IA
+	void ApplyAIControl(float dt);
+	float CalculateSteeringAngle(const Vector2D& targetPos);
+	bool ShouldAccelerate(const Vector2D& targetPos);
+	bool ShouldBrake(const Vector2D& targetPos);
 
 	// Helpers
 	b2Vec2 GetForwardVector() const;

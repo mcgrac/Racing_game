@@ -2,7 +2,7 @@
 #include "Player.h"
 
 Player::Player(Module* _listener, const Vector2D& startPos, EntityType _type, uint16 category, uint16 maskBits, int16 groupIndex)
-    : Characters(_listener, startPos, _type)
+    : Characters(_listener, startPos, _type, category, maskBits)
 {   
     LoadAnimations();
     //create physbody
@@ -206,12 +206,10 @@ bool Player::Update(float dt)
     //only control car if it is the player
     if(isPlayer)
     {
-        ////-----------INPUT CAR PHYSICS------------------
         ApplyCarPhysics(dt);
-        ////----------------------------------------------
     }
     else {
-        //AI control
+        ApplyAIControl(dt);
     }
 
     SyncPositionFromPhysics();
@@ -263,6 +261,166 @@ void Player::ApplyLateralFriction()
     // 3. Aplicar: Aplicamos el impulso negativo para cancelar el derrape.
     body->ApplyLinearImpulse(-lateralImpulse, body->GetWorldCenter(), true);
 }
+#pragma endregion
+
+#pragma region AI CONTROL
+void Player::ApplyAIControl(float dt)
+{
+    if (waypoints.empty()) {
+        LOG("WARNING: AI has no waypoints!");
+        return;
+    }
+
+    b2Body* body = physBody->body;
+    b2Vec2 currentVelocity = body->GetLinearVelocity();
+    b2Vec2 forwardVector = GetForwardVector();
+
+    float speed = b2Dot(currentVelocity, forwardVector);
+    float absoluteSpeed = fabs(speed);
+
+    // 1. Obtener el waypoint objetivo
+    Vector2D targetWaypoint = GetCurrentWaypoint();
+    Vector2D currentPos = GetCenter();
+
+    // 2. Verificar si hemos alcanzado el waypoint
+    float distanceToWaypoint = currentPos.distanceEuclidean(targetWaypoint);
+
+    if (distanceToWaypoint < waypointReachRadius) {
+        AdvanceToNextWaypoint();
+        targetWaypoint = GetCurrentWaypoint();
+    }
+
+    // 3. Calcular ángulo de steering (dirección hacia el objetivo)
+    float steeringAngle = CalculateSteeringAngle(targetWaypoint);
+
+    // 4. Decidir aceleración/frenado
+    bool shouldAccelerate = ShouldAccelerate(targetWaypoint);
+    bool shouldBrake = ShouldBrake(targetWaypoint);
+
+    // -------- ACELERACIÓN --------
+    if (shouldAccelerate && !shouldBrake)
+    {
+        if (speed < maxForwardSpeed)
+        {
+            b2Vec2 force = (accelerationForce * 0.9f) * forwardVector;
+            body->ApplyForceToCenter(force, true);
+        }
+    }
+
+    // -------- FRENADO --------
+    if (shouldBrake && speed > 0.1f)
+    {
+        b2Vec2 brakeForceVector = -brakeForce * forwardVector;
+        body->ApplyForceToCenter(brakeForceVector, true);
+    }
+
+    // -------- GIRO --------
+    if (absoluteSpeed > minSpeedToTurn)
+    {
+        // Umbral para considerar que necesitamos girar (en radianes)
+        float turnThreshold = 0.1f;  // ~5.7 grados
+
+        if (fabs(steeringAngle) > turnThreshold)
+        {
+            // steeringAngle > 0 → girar a la derecha (sentido horario)
+            // steeringAngle < 0 → girar a la izquierda (antihorario)
+
+            // Limitar el torque según el ángulo
+            float torqueAmount = steeringAngle * turnTorque;
+
+            // Clamp para evitar giros bruscos
+            if (torqueAmount > turnTorque) torqueAmount = turnTorque;
+            if (torqueAmount < -turnTorque) torqueAmount = -turnTorque;
+
+            body->ApplyTorque(torqueAmount, true);
+        }
+    }
+
+    // -------- FÍSICA (mismo que jugador) --------
+    ApplyDrag();
+    ApplyLateralFriction();
+
+    this->speed = speed;
+}
+#pragma region AUXILIARS AI
+float Player::CalculateSteeringAngle(const Vector2D& targetPos)
+{
+    // 1. Obtener posición actual del coche (centro)
+    Vector2D currentPos = GetCenter();
+
+    // 2. Calcular vector desde el coche hasta el objetivo
+    Vector2D toTarget = targetPos - currentPos;
+    toTarget.normalized();
+
+    // 3. Obtener el vector forward del coche
+    b2Vec2 forward = GetForwardVector();
+
+    // 4. Calcular el ángulo entre forward y toTarget
+    // dot product: cos(θ) = A·B / (|A||B|)
+    float dot = forward.x * toTarget.getX() + forward.y * toTarget.getY();
+
+    // cross product (componente z): determina el signo del ángulo
+    // cross_z = Ax*By - Ay*Bx
+    float cross = forward.x * toTarget.getY() - forward.y * toTarget.getX();
+
+    // 5. Calcular el ángulo con atan2
+    float angle = atan2f(cross, dot);
+
+    // angle > 0 → objetivo a la derecha
+    // angle < 0 → objetivo a la izquierda
+
+    return angle;
+}
+
+bool Player::ShouldAccelerate(const Vector2D& targetPos)
+{
+    Vector2D currentPos = GetCenter();
+    float distanceToTarget = currentPos.distanceEuclidean(targetPos);
+
+    // Calcular el ángulo hacia el objetivo
+    float steeringAngle = fabs(CalculateSteeringAngle(targetPos));
+
+    // No acelerar si estamos girando mucho (curva cerrada)
+    if (steeringAngle > PI / 4.0f) {  // > 45 grados
+        return false;
+    }
+
+    // Acelerar si estamos lejos del objetivo
+    if (distanceToTarget > 100.0f) {
+        return true;
+    }
+
+    // Acelerar si vamos despacio
+    if (GetSpeed() < maxForwardSpeed * 0.7f) {
+        return true;
+    }
+
+    return false;
+}
+
+bool Player::ShouldBrake(const Vector2D& targetPos)
+{
+    Vector2D currentPos = GetCenter();
+    Vector2D nextWaypoint = GetNextWaypoint();
+
+    // Calcular el ángulo de la próxima curva
+    float angleToNext = fabs(CalculateSteeringAngle(nextWaypoint));
+
+    // Frenar si la próxima curva es cerrada y vamos rápido
+    if (angleToNext > PI / 3.0f && GetSpeed() > maxForwardSpeed * 0.6f) {  // > 60 grados
+        return true;
+    }
+
+    // Frenar si estamos muy cerca del waypoint
+    float distanceToTarget = currentPos.distanceEuclidean(targetPos);
+    if (distanceToTarget < waypointReachRadius * 1.5f) {
+        return true;
+    }
+
+    return false;
+}
+#pragma endregion
+
 #pragma endregion
 
 
@@ -443,6 +601,41 @@ bool Player::Render() {
         (int)endPos.y,
         YELLOW
     );
+
+
+    // Dibujar waypoints si es IA
+    if (!isPlayer && !waypoints.empty())
+    {
+        // Dibujar todos los waypoints
+        for (size_t i = 0; i < waypoints.size(); i++)
+        {
+            Color color = (i == currentWaypointIndex) ? RED : BLUE;
+            DrawCircle(
+                (int)waypoints[i].getX(),
+                (int)waypoints[i].getY(),
+                8.0f,
+                color
+            );
+            DrawText(
+                TextFormat("%d", i),
+                (int)waypoints[i].getX() - 5,
+                (int)waypoints[i].getY() - 20,
+                15,
+                WHITE
+            );
+        }
+
+        // Dibujar línea hacia el waypoint actual
+        Vector2D center = GetCenter();
+        Vector2D target = GetCurrentWaypoint();
+        DrawLine(
+            (int)center.getX(),
+            (int)center.getY(),
+            (int)target.getX(),
+            (int)target.getY(),
+            YELLOW
+        );
+    }
     // **********************************************
 #pragma endregion
 

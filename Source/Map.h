@@ -3,6 +3,11 @@
 #include "raylib.h"
 #include "ModulePhysics.h"
 #include "EntityManager.h"
+#include "Boost.h"
+#include <fstream>      
+#include <sstream>      
+#include <string>       
+#include <vector>  
 
 enum class MapType {
     LEVEL_1,
@@ -22,6 +27,7 @@ public:
     virtual void RenderBackground() = 0;  //render level each frame
     virtual void RenderTop() = 0;  //render level each frame
     virtual void CleanUp() = 0; // Libera memoria
+    virtual void UpdateMusic() = 0; //play music level in a loop
 
     virtual bool Load() = 0;
    

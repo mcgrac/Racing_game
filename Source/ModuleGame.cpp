@@ -6,16 +6,16 @@
 #include "ModulePhysics.h"
 //#include "EntityManager.h"
 
-enum PhysicCategory {
-
-	//tangible objects
-	DEFAULT = 1 << 0,
-	CARS = 1 << 1,
-	WALLS = 1 << 2,
-	SENSORS = 1 << 3,
-	DESTRUCTIBLE = 1 << 4,
-
-};
+//enum PhysicCategory {
+//
+//	//tangible objects
+//	DEFAULT = 1 << 0,
+//	CARS = 1 << 1,
+//	WALLS = 1 << 2,
+//	SENSORS = 1 << 3,
+//	DESTRUCTIBLE = 1 << 4,
+//
+//};
 
 enum PhysicGroup {
 	ZONE_DETECTORS = 1
@@ -82,7 +82,8 @@ update_status ModuleGame::Update()
 	if (entityManager) { entityManager->Update(dt); }
 	else { std::cout<<"Entity manager update error Module Game\n"; }
 
-	//currentMap->Update();
+	//loop music level
+	currentMap->UpdateMusic();
 
 
 	if (camera && player)
@@ -144,16 +145,23 @@ bool ModuleGame::CleanUp()
 
 void ModuleGame::OnCollision(PhysBody* physA, PhysBody* physB) {
 
-	//LOG("ModuleGame::OnCollision called");
+	LOG("ModuleGame::OnCollision called");
 
-	//if (physA && physA->entity) {
+	//Check which is the player and which is the other entity
+	//Entity* player = nullptr;
+	//Entity* other = nullptr;
+	//if ((physA && physA->entity) && (physB && physB->entity)) {
 	//	Entity* entityA = physA->entity;
-	//	LOG("Entity A type: %d", (int)entityA->GetType());
+	//	Entity* entityB = physB->entity;
 
 	//	// Puedes hacer casting si necesitas
-	//	if (entityA->GetType() == EntityType::PLAYER) {
-	//		Player* player = static_cast<Player*>(entityA);
-	//		// Hacer algo con el player...
+	//	if (entityA->type == EntityType::PLAYER) {
+	//		player = entityA;
+	//		other = entityB;
+	//	}
+	//	else {
+	//		player = entityB;
+	//		other = entityA;
 	//	}
 	//}
 
@@ -164,33 +172,32 @@ void ModuleGame::OnCollision(PhysBody* physA, PhysBody* physB) {
 
 
 	// Obtener las entidades desde los PhysBody
-	//Entity* entityA = reinterpret_cast<Entity*>(physA->body->GetUserData().pointer);
-	//Entity* entityB = reinterpret_cast<Entity*>(physB->body->GetUserData().pointer);
+	Entity* entityA = reinterpret_cast<Entity*>(physA->body->GetUserData().pointer);
+	Entity* entityB = reinterpret_cast<Entity*>(physB->body->GetUserData().pointer);
 
-	//if (!entityA || !entityB) {
-	//	LOG("WARNING: Collision with null entity");
-	//	return;
-	//}
+	if (!entityA || !entityB) {
+		LOG("WARNING: Collision with null entity");
+		return;
+	}
 
 	//LOG("COLLISION: %d vs %d", (int)entityA->GetType(), (int)entityB->GetType());
 
 	// Manejar colisiones según el tipo
-	//switch (entityA->GetType()) {
-	//case EntityType::PLAYER:
-	//	HandlePlayerCollision(entityA, entityB);
-	//	break;
+	switch (entityA->type) {
+	case EntityType::PLAYER:
+		//HandlePlayerCollision(entityA, entityB);
+		break;
 
-	//case EntityType::TURBO_ON_ROAD:
-	//	HandleTurboCollision(entityA, entityB);
-	//	break;
+	case EntityType::TURBO_ON_ROAD:
+		//HandleTurboCollision(entityA, entityB);
+		break;
 
-	//case EntityType::ROCK:
-	//	HandleRockCollision(entityA, entityB);
-	//	break;
-
-	//default:
-	//	break;
-	//}
+	case EntityType::ROCK:
+		//HandleRockCollision(entityA, entityB);
+		break;
+	default:
+		break;
+	}
 }
 
 void ModuleGame::OnCollisionEnd(PhysBody* physA, PhysBody* physB) {
@@ -202,6 +209,7 @@ void ModuleGame::OnCollisionEnd(PhysBody* physA, PhysBody* physB) {
 	//LOG("COLLISION END: %d vs %d", (int)entityA->GetType(), (int)entityB->GetType());
 }
 
+#pragma region LEVEL CREATION
 void ModuleGame::LoadLevel(int levelNumber)
 {
 	// Clean other map if existed
@@ -229,7 +237,6 @@ void ModuleGame::LoadLevel(int levelNumber)
 		LOG("Level %d loaded", levelNumber);
 	}
 }
-
 void ModuleGame::CreatePlayers()
 {
 	// Clean other cars
@@ -237,13 +244,13 @@ void ModuleGame::CreatePlayers()
 
 	// Crear los 4 coches (por ahora en posición temporal)
 	// Posición temporal porque luego se setearán en PositionPlayersOnGrid()
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < 2; i++) {
 		Player* racer = new Player(
 			this,
 			Vector2D(0.0f, 0.0f),  // Posición temporal
 			EntityType::PLAYER,
 			CARS,
-			CARS | DESTRUCTIBLE | WALLS
+			DEFAULT
 		);
 
 		racers.push_back(racer);
@@ -256,11 +263,11 @@ void ModuleGame::CreatePlayers()
 		}
 		else {
 			racer->SetIsPlayer(false);
+			racer->WaypointLoader("Assets/WaypointsAI.txt");
+			//racer->setAcceleration(61.0f);
+			racer->setMaxSpeed(8.5f);
 		}
 	}
-
-	// El primer coche es el controlado por el jugador
-	//player = racers[0];
 
 	// Configurar la cámara para seguir al jugador
 	if (camera) {
@@ -269,7 +276,6 @@ void ModuleGame::CreatePlayers()
 
 	LOG("Created %d racers", racers.size());
 }
-
 void ModuleGame::PositionPlayersOnGrid()
 {
 	const std::vector<Vector2D>& gridPositions = currentMap->GetStartingGrid();
@@ -283,7 +289,7 @@ void ModuleGame::PositionPlayersOnGrid()
 		racer->SetPosition(gridPos);
 
 		// Si tiene PhysBody, actualizar también su posición física
-		if (racer-> GetPhysBody() && racer->GetPhysBody()->body) {
+		if (racer->GetPhysBody() && racer->GetPhysBody()->body) {
 			b2Body* body = racer->GetPhysBody()->body;
 			body->SetTransform(
 				b2Vec2(PIXEL_TO_METERS(gridPos.getX()), PIXEL_TO_METERS(gridPos.getY())),
@@ -297,3 +303,6 @@ void ModuleGame::PositionPlayersOnGrid()
 			i + 1, gridPos.getX(), gridPos.getY());
 	}
 }
+#pragma endregion
+
+

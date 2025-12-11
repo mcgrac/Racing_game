@@ -1,11 +1,12 @@
 #include "Level1.h"
-
+     
 
 Level1::Level1(ModulePhysics* _physics, Module* _listener, EntityManager* _entityManager) : Map(MapType::LEVEL_1),
 	physics(_physics),
 	listener(_listener),
 	entityManager(_entityManager)
 {
+    
 }
 
 Level1::~Level1()
@@ -31,13 +32,19 @@ bool Level1::Load()
 {
 	std::cout << "LOADING LEVEL 1" << std::endl;
 
+    //textures load
 	floor = LoadTexture("Assets/Textures/Map/Background.png");
 	overMap = LoadTexture("Assets/Textures/Map/TopElementsMap.png");
+    
+    //sounds load
+    inGameMusic = LoadSound("Assets/Sound/Music/InGameMusicEncore.wav");
+    inGameMusicBeggining = LoadSound("Assets/Sound/Music/InGameMusicBeggining.wav");
 
 	InitializeStartingGrid();
+	LoadColliders("Assets/Coordinates.txt");
+    LoadBoosts();
 
-	LoadColliders();
-
+    PlaySound(inGameMusicBeggining); //play the intro of the level
 	return true;
 }
 
@@ -57,7 +64,18 @@ void Level1::CleanUp()
     UnloadTexture(floor);
     UnloadTexture(overMap);
 
+    UnloadSound(inGameMusic);
+    UnloadSound(inGameMusicBeggining);
+
     startingPositions.clear();
+}
+
+void Level1::UpdateMusic()
+{
+    if (!IsSoundPlaying(inGameMusicBeggining)) {
+        if(!IsSoundPlaying(inGameMusic))
+        PlaySound(inGameMusic);
+    }
 }
 
 void Level1::InitializeStartingGrid()
@@ -71,12 +89,12 @@ void Level1::InitializeStartingGrid()
     // Formato: 2 filas de 2 coches cada una
 
     // Fila 1 (pole position)
-    startingPositions.push_back(Vector2D(500.0f, 300.0f));  // Posición 1 (izquierda)
-    startingPositions.push_back(Vector2D(700.0f, 300.0f));  // Posición 2 (derecha)
+    startingPositions.emplace_back(Vector2D(1220.0f, 1980.0f));  // Posición 1 (izquierda)
+    startingPositions.emplace_back(Vector2D(1350.0f, 1980.0f));  // Posición 2 (derecha)
 
     // Fila 2
-    startingPositions.push_back(Vector2D(500.0f, 500.0f));  // Posición 3 (izquierda)
-    startingPositions.push_back(Vector2D(700.0f, 500.0f));  // Posición 4 (derecha)
+    startingPositions.emplace_back(Vector2D(1220.0f, 2110.0f));  // Posición 3 (izquierda)
+    startingPositions.emplace_back(Vector2D(1350.0f, 2110.0f));  // Posición 4 (derecha)
 
     // Rotaciones iniciales (todas mirando hacia arriba = 0 grados)
     // Si tu pista va en otra dirección, ajusta estos valores
@@ -87,7 +105,55 @@ void Level1::InitializeStartingGrid()
     LOG("Starting grid initialized with %d positions", startingPositions.size());
 }
 
-void Level1::LoadColliders()
+void Level1::LoadColliders(const char* filePath)
 {
     //Ap->physics->CreateChain(.....) (crear colliders del circuito)
+    LoadAllChains(filePath);
+}
+
+void Level1::LoadBoosts()
+{
+    //create boosts
+    Boost* b = new Boost(listener, Vector2D(1300.0f, 1700.0f), EntityType::TURBO_ON_ROAD, PhysicCategory::SENSORS, PhysicCategory::CARS);
+    boostsList.emplace_back(b);
+    entityManager->AddEntity(b);
+
+    
+}
+
+void Level1 :: LoadAllChains(const char* filePath)
+{
+    std::ifstream file(filePath);
+    if (!file.is_open()) {
+        std::cerr << "Error al abrir el archivo: " << filePath << std::endl;
+        return;
+    }
+    std::vector<int> pts;
+
+    int x, y;
+    std::string line;
+    while (std::getline(file, line))
+    {
+        // Eliminar espacios/tabs al inicio y final
+        line.erase(0, line.find_first_not_of(" \t"));
+        line.erase(line.find_last_not_of(" \t") + 1);
+
+        if (line == "END")
+        {
+            // Crear el collider con pts
+            physics->CreatePolygon(0, 0, pts.data(), pts.size(), b2_staticBody, PhysicCategory::WALLS, PhysicCategory::CARS, 0);
+            pts.clear();
+            continue;
+        }
+
+        std::stringstream ss(line);
+        if (ss >> x >> y)
+        {
+            pts.push_back(x);
+            pts.push_back(y);
+        }
+        else {
+            std::cerr << "No se pudieron leer coordenadas en la línea: " << line << std::endl;
+        }
+    }
 }

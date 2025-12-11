@@ -7,7 +7,6 @@
 
 #include <math.h>
 
-
 #pragma region PHYS_BODY
 b2Vec2 PhysBody::GetPosition() const {
 	b2Vec2 posMeters = body->GetPosition();
@@ -254,7 +253,7 @@ PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius, b2BodyType type)
 	return pbody;
 }
 
-PhysBody* ModulePhysics::CreateChain(int x, int y, const int* points, int size, b2BodyType type) {
+PhysBody* ModulePhysics::CreateChain(int x, int y, const int* points, int size, b2BodyType type, uint16 categoryBits, uint16 maskBits, int16 groupIndex) {
 
 	PhysBody* pbody = new PhysBody();
 
@@ -278,6 +277,9 @@ PhysBody* ModulePhysics::CreateChain(int x, int y, const int* points, int size, 
 	b2FixtureDef fixture;
 	fixture.shape = &shape;
 
+	fixture.filter.categoryBits = categoryBits;
+	fixture.filter.maskBits = maskBits;
+	fixture.filter.groupIndex = groupIndex;
 	b->CreateFixture(&fixture);
 
 	delete[] p;
@@ -307,11 +309,9 @@ PhysBody* ModulePhysics::CreateRectangle(int x, int y, int width, int height, b2
 	fixture.friction = 0.3f;     // default friction
 	fixture.restitution = 0.0f;  // default bounce
 
-	// TODO 2: Add filter categoryBits and maskBits to fixture
+
 	fixture.filter.categoryBits = categoryBits;
 	fixture.filter.maskBits = maskBits;
-
-	// TODO 5: Add groupIndex filter to fixture. Set default value to 0
 	fixture.filter.groupIndex = groupIndex;
 
 	b->CreateFixture(&fixture);
@@ -356,7 +356,41 @@ PhysBody* ModulePhysics::CreateRectangleSensor(int x, int y, int width, int heig
 	return pbody;
 }
 
-PhysBody* ModulePhysics::CreatePolygon(int x, int y, int* points, int count, b2BodyType type)
+PhysBody* ModulePhysics::CreateRectangleSensor(int x, int y, int width, int height, b2BodyType type, uint16 categoryBits, uint16 maskBits, int16 groupIndex)
+{
+	PhysBody* pbody = new PhysBody();
+
+	b2BodyDef bodyDef;
+	bodyDef.type = type;
+	bodyDef.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
+	bodyDef.userData.pointer = reinterpret_cast<uintptr_t>(pbody);
+
+	b2Body* b = world->CreateBody(&bodyDef);
+	b2PolygonShape box;
+	//box.SetAsBox(PIXEL_TO_METERS(width) * 0.5f, PIXEL_TO_METERS(height) * 0.5f);
+	box.SetAsBox(PIXEL_TO_METERS(width) * 1, PIXEL_TO_METERS(height) * 1);
+
+	b2FixtureDef fixture;
+	fixture.shape = &box;
+	fixture.density = 1.0f;
+	fixture.isSensor = true;
+
+	fixture.filter.categoryBits = categoryBits;
+	fixture.filter.maskBits = maskBits;
+	fixture.filter.groupIndex = groupIndex;
+
+	b->CreateFixture(&fixture);
+
+	pbody->body = b;
+	//pbody->width = (int)(width * 0.5f);
+	//pbody->height = (int)(height * 0.5f);
+
+	pbody->width = width;
+	pbody->height = height;
+	return pbody;
+}
+
+PhysBody* ModulePhysics::CreatePolygon(int x, int y, int* points, int count, b2BodyType type, uint16 categoryBits, uint16 maskBits, int16 groupIndex)
 {
 	// Crear body Box2D
 	b2BodyDef bodyDef;
@@ -380,6 +414,10 @@ PhysBody* ModulePhysics::CreatePolygon(int x, int y, int* points, int count, b2B
 	fix.density = 2.0f;
 	fix.friction = 0.5f;
 	fix.restitution = 0.1f;
+
+	fix.filter.categoryBits = categoryBits;
+	fix.filter.maskBits = maskBits;
+	fix.filter.groupIndex = groupIndex;
 
 	body->CreateFixture(&fix);
 
