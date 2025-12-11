@@ -16,6 +16,7 @@ enum class ColliderType {
     // ..
 };
 
+class Entity;
 
 class PhysBody
 {
@@ -47,7 +48,7 @@ public:
 	ColliderType ctype = ColliderType::UNKNOWN; //antes comentado
 	int width, height;
 	b2Body* body;
-	//Entity* entity = nullptr;
+	Entity* entity = nullptr;
 	// TODO 6: Add a pointer to a module that might want to listen to a collision from this body
 };
 // Module --------------------------------------
@@ -63,7 +64,7 @@ public:
 	bool CleanUp();
 
 	PhysBody* CreateCircle(int x, int y, int radius, b2BodyType type);
-	PhysBody* CreateRectangle(int x, int y, int width, int height, b2BodyType type);
+	PhysBody* CreateRectangle(int x, int y, int width, int height, b2BodyType type, uint16 categoryBits, uint16 maskBits, int16 groupIndex);
 	PhysBody* CreateRectangleSensor(int x, int y, int width, int height, b2BodyType type);
 	PhysBody* CreateChain(int x, int y, const int* points, int size, b2BodyType type); 
 	PhysBody* CreatePolygon(int x, int y, int* points, int count, b2BodyType type);
@@ -73,6 +74,8 @@ public:
 
 	void DestroyPhysBody(PhysBody* pbody); //called in the cleanUp
 	void SetCameraDebug(Camera2D camera) { cam = camera; }
+
+	void DrawDebug();
 private:
 
 	b2World* world = nullptr;

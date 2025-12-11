@@ -1,7 +1,7 @@
 ﻿#include "Globals.h"
 #include "Player.h"
 
-Player::Player(Module* _listener, const Vector2D& startPos, EntityType _type)
+Player::Player(Module* _listener, const Vector2D& startPos, EntityType _type, uint16 category, uint16 maskBits, int16 groupIndex)
     : Entity(_listener, startPos, _type),
     speed(200.0f),
     textureLoaded(false),
@@ -19,7 +19,7 @@ Player::Player(Module* _listener, const Vector2D& startPos, EntityType _type)
 {   
     LoadTexture("Assets/Textures/Cars/CarChansey.png");
     //create physbody
-    InitPhysics();
+    InitPhysics(category, maskBits, groupIndex);
 }
 
 Player::~Player()
@@ -27,7 +27,7 @@ Player::~Player()
     UnloadTexture();
 }
 
-void Player::InitPhysics()
+void Player::InitPhysics(uint16 category, uint16 maskBits, int16 groupIndex)
 {
     if (!listener->App->physics) {
         LOG("ERROR: Physics module is null!");
@@ -39,7 +39,10 @@ void Player::InitPhysics()
         position.getY() + (texture.height / 2),
         texture.width,
         texture.height,
-        b2_dynamicBody);
+        b2_dynamicBody,
+        category,
+        maskBits,
+        groupIndex);
 
     if (physBody && physBody->body) {
         //set body
@@ -55,13 +58,13 @@ void Player::InitPhysics()
 
         physBody->body->ResetMassData(); //Necessary for recalculation of mass, centre of mass etc...
 
-        //overwrite pointer to the Player (Entity)
-        physBody->body->GetUserData().pointer = reinterpret_cast<uintptr_t>(this);
-
         // OnCollision I will be able to do->
         // Entity* entity = reinterpret_cast<Entity*>(body->GetUserData().pointer);
 
         physBody->listener = listener;
+
+        //save player's reference in the phys body
+        physBody->entity = this;
     }
 
     // already done in Entity, just for security
@@ -160,12 +163,12 @@ bool Player::CleanUp()
 // Update: draw background
 bool Player::Update(float dt)
 {
-    std::cout<<"position Player: " << position << std::endl;
-    std::cout << "position physBody (x, y): "
-        << physBody->GetPosition().x << ", "
-        << physBody->GetPosition().y << ", "
-        << "Rotation: " << rotation << ", "
-        << "Speed: " << speed << std::endl;
+    //std::cout<<"position Player: " << position << std::endl;
+    //std::cout << "position physBody (x, y): "
+    //    << physBody->GetPosition().x << ", "
+    //    << physBody->GetPosition().y << ", "
+    //    << "Rotation: " << rotation << ", "
+    //    << "Speed: " << speed << std::endl;
 
     ////-----------INPUT CAR PHYSICS------------------
     ApplyCarPhysics(dt);

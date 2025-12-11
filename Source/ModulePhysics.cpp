@@ -92,8 +92,8 @@ bool ModulePhysics::Start()
 
 	world->SetContactListener(this);
 
-	world->SetAllowSleeping(true); //optimization
-	world->SetContinuousPhysics(true); //better physics detection at high speed
+	//world->SetAllowSleeping(true); //optimization
+	//world->SetContinuousPhysics(true); //better physics detection at high speed
 	return true;
 }
 
@@ -119,84 +119,84 @@ update_status ModulePhysics::PostUpdate()
 		debug = !debug;
 	}
 
-	if (!debug)
-	{
-		return UPDATE_CONTINUE;
-	}
+	//if (!debug)
+	//{
+	//	return UPDATE_CONTINUE;
+	//}
 
 	// Bonus code: this will iterate all objects in the world and draw the circles
 	// You need to provide your own macro to translate meters to pixels
-	BeginMode2D(cam);
-	for (b2Body* b = world->GetBodyList(); b; b = b->GetNext())
-	{
-		for(b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext())
-		{
-			switch(f->GetType())
-			{
-				// Draw circles ------------------------------------------------
-				case b2Shape::e_circle:
-				{
-					b2CircleShape* shape = (b2CircleShape*)f->GetShape();
-					b2Vec2 pos = f->GetBody()->GetPosition();
-					
-					DrawCircle(METERS_TO_PIXELS(pos.x), METERS_TO_PIXELS(pos.y), (float)METERS_TO_PIXELS(shape->m_radius), Color{0, 0, 0, 128});
-				}
-				break;
+	//BeginMode2D(cam);
+	//for (b2Body* b = world->GetBodyList(); b; b = b->GetNext())
+	//{
+	//	for(b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext())
+	//	{
+	//		switch(f->GetType())
+	//		{
+	//			// Draw circles ------------------------------------------------
+	//			case b2Shape::e_circle:
+	//			{
+	//				b2CircleShape* shape = (b2CircleShape*)f->GetShape();
+	//				b2Vec2 pos = f->GetBody()->GetPosition();
+	//				
+	//				DrawCircle(METERS_TO_PIXELS(pos.x), METERS_TO_PIXELS(pos.y), (float)METERS_TO_PIXELS(shape->m_radius), Color{0, 0, 0, 128});
+	//			}
+	//			break;
 
-				// Draw polygons ------------------------------------------------
-				case b2Shape::e_polygon:
-				{
-					b2PolygonShape* polygonShape = (b2PolygonShape*)f->GetShape();
-					int32 count = polygonShape->m_count;
-					b2Vec2 prev, v;
+	//			// Draw polygons ------------------------------------------------
+	//			case b2Shape::e_polygon:
+	//			{
+	//				b2PolygonShape* polygonShape = (b2PolygonShape*)f->GetShape();
+	//				int32 count = polygonShape->m_count;
+	//				b2Vec2 prev, v;
 
-					for(int32 i = 0; i < count; ++i)
-					{
-						v = b->GetWorldPoint(polygonShape->m_vertices[i]);
-						if(i > 0)
-							DrawLine(METERS_TO_PIXELS(prev.x), METERS_TO_PIXELS(prev.y), METERS_TO_PIXELS(v.x), METERS_TO_PIXELS(v.y), RED);
+	//				for(int32 i = 0; i < count; ++i)
+	//				{
+	//					v = b->GetWorldPoint(polygonShape->m_vertices[i]);
+	//					if(i > 0)
+	//						DrawLine(METERS_TO_PIXELS(prev.x), METERS_TO_PIXELS(prev.y), METERS_TO_PIXELS(v.x), METERS_TO_PIXELS(v.y), RED);
 
-						prev = v;
-					}
+	//					prev = v;
+	//				}
 
-					v = b->GetWorldPoint(polygonShape->m_vertices[0]);
-					DrawLine(METERS_TO_PIXELS(prev.x), METERS_TO_PIXELS(prev.y), METERS_TO_PIXELS(v.x), METERS_TO_PIXELS(v.y), RED);
-				}
-				break;
+	//				v = b->GetWorldPoint(polygonShape->m_vertices[0]);
+	//				DrawLine(METERS_TO_PIXELS(prev.x), METERS_TO_PIXELS(prev.y), METERS_TO_PIXELS(v.x), METERS_TO_PIXELS(v.y), RED);
+	//			}
+	//			break;
 
-				// Draw chains contour -------------------------------------------
-				case b2Shape::e_chain:
-				{
-					b2ChainShape* shape = (b2ChainShape*)f->GetShape();
-					b2Vec2 prev, v;
+	//			// Draw chains contour -------------------------------------------
+	//			case b2Shape::e_chain:
+	//			{
+	//				b2ChainShape* shape = (b2ChainShape*)f->GetShape();
+	//				b2Vec2 prev, v;
 
-					for(int32 i = 0; i < shape->m_count; ++i)
-					{
-						v = b->GetWorldPoint(shape->m_vertices[i]);
-						if(i > 0)
-							DrawLine(METERS_TO_PIXELS(prev.x), METERS_TO_PIXELS(prev.y), METERS_TO_PIXELS(v.x), METERS_TO_PIXELS(v.y), GREEN);
-						prev = v;
-					}
+	//				for(int32 i = 0; i < shape->m_count; ++i)
+	//				{
+	//					v = b->GetWorldPoint(shape->m_vertices[i]);
+	//					if(i > 0)
+	//						DrawLine(METERS_TO_PIXELS(prev.x), METERS_TO_PIXELS(prev.y), METERS_TO_PIXELS(v.x), METERS_TO_PIXELS(v.y), GREEN);
+	//					prev = v;
+	//				}
 
-					v = b->GetWorldPoint(shape->m_vertices[0]);
-					DrawLine(METERS_TO_PIXELS(prev.x), METERS_TO_PIXELS(prev.y), METERS_TO_PIXELS(v.x), METERS_TO_PIXELS(v.y), GREEN);
-				}
-				break;
+	//				v = b->GetWorldPoint(shape->m_vertices[0]);
+	//				DrawLine(METERS_TO_PIXELS(prev.x), METERS_TO_PIXELS(prev.y), METERS_TO_PIXELS(v.x), METERS_TO_PIXELS(v.y), GREEN);
+	//			}
+	//			break;
 
-				// Draw a single segment(edge) ----------------------------------
-				case b2Shape::e_edge:
-				{
-					b2EdgeShape* shape = (b2EdgeShape*)f->GetShape();
-					b2Vec2 v1, v2;
+	//			// Draw a single segment(edge) ----------------------------------
+	//			case b2Shape::e_edge:
+	//			{
+	//				b2EdgeShape* shape = (b2EdgeShape*)f->GetShape();
+	//				b2Vec2 v1, v2;
 
-					v1 = b->GetWorldPoint(shape->m_vertex0);
-					v1 = b->GetWorldPoint(shape->m_vertex1);
-					DrawLine(METERS_TO_PIXELS(v1.x), METERS_TO_PIXELS(v1.y), METERS_TO_PIXELS(v2.x), METERS_TO_PIXELS(v2.y), BLUE);
-				}
-				break;
-			}
-		}
-	}
+	//				v1 = b->GetWorldPoint(shape->m_vertex0);
+	//				v1 = b->GetWorldPoint(shape->m_vertex1);
+	//				DrawLine(METERS_TO_PIXELS(v1.x), METERS_TO_PIXELS(v1.y), METERS_TO_PIXELS(v2.x), METERS_TO_PIXELS(v2.y), BLUE);
+	//			}
+	//			break;
+	//		}
+	//	}
+	//}
 	return UPDATE_CONTINUE;
 }
 
@@ -287,14 +287,15 @@ PhysBody* ModulePhysics::CreateChain(int x, int y, const int* points, int size, 
 	return pbody;
 }
 
-PhysBody* ModulePhysics::CreateRectangle(int x, int y, int width, int height, b2BodyType type)
+PhysBody* ModulePhysics::CreateRectangle(int x, int y, int width, int height, b2BodyType type, uint16 categoryBits, uint16 maskBits, int16 groupIndex)
 {
 	PhysBody* pbody = new PhysBody();
+	pbody->listener = nullptr;
 
 	b2BodyDef bodyDef;
 	bodyDef.type = type;
 	bodyDef.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
-	//bodyDef.userData.pointer = reinterpret_cast<uintptr_t>(pbody);
+	bodyDef.userData.pointer = reinterpret_cast<uintptr_t>(pbody);
 
 	b2Body* b = world->CreateBody(&bodyDef);
 	b2PolygonShape box;
@@ -306,14 +307,22 @@ PhysBody* ModulePhysics::CreateRectangle(int x, int y, int width, int height, b2
 	fixture.friction = 0.3f;     // default friction
 	fixture.restitution = 0.0f;  // default bounce
 
+	// TODO 2: Add filter categoryBits and maskBits to fixture
+	fixture.filter.categoryBits = categoryBits;
+	fixture.filter.maskBits = maskBits;
+
+	// TODO 5: Add groupIndex filter to fixture. Set default value to 0
+	fixture.filter.groupIndex = groupIndex;
+
 	b->CreateFixture(&fixture);
 
 	pbody->body = b;
 	pbody->width = width;
 	pbody->height = height;
 
-	b->GetUserData().pointer = reinterpret_cast<uintptr_t>(pbody);
+	//b->GetUserData().pointer = reinterpret_cast<uintptr_t>(pbody);
 
+	std::cout << "Created PhysBody: %p for body at (%d, %d)" << pbody << " " << x << " " << y << std::endl;
 	return pbody;
 }
 
@@ -399,19 +408,136 @@ void ModulePhysics::DestroyPhysBody(PhysBody* pbody)
 	delete pbody;
 }
 
+void ModulePhysics::DrawDebug()
+{
+	if(debug)
+	{
+		for (b2Body* b = world->GetBodyList(); b; b = b->GetNext())
+		{
+			for (b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext())
+			{
+				switch (f->GetType())
+				{
+					// Draw circles ------------------------------------------------
+				case b2Shape::e_circle:
+				{
+					b2CircleShape* shape = (b2CircleShape*)f->GetShape();
+					b2Vec2 pos = f->GetBody()->GetPosition();
+
+					DrawCircle(METERS_TO_PIXELS(pos.x), METERS_TO_PIXELS(pos.y), (float)METERS_TO_PIXELS(shape->m_radius), Color{ 0, 0, 0, 128 });
+				}
+				break;
+
+				// Draw polygons ------------------------------------------------
+				case b2Shape::e_polygon:
+				{
+					b2PolygonShape* polygonShape = (b2PolygonShape*)f->GetShape();
+					int32 count = polygonShape->m_count;
+					b2Vec2 prev, v;
+
+					for (int32 i = 0; i < count; ++i)
+					{
+						v = b->GetWorldPoint(polygonShape->m_vertices[i]);
+						if (i > 0)
+							DrawLine(METERS_TO_PIXELS(prev.x), METERS_TO_PIXELS(prev.y), METERS_TO_PIXELS(v.x), METERS_TO_PIXELS(v.y), RED);
+
+						prev = v;
+					}
+
+					v = b->GetWorldPoint(polygonShape->m_vertices[0]);
+					DrawLine(METERS_TO_PIXELS(prev.x), METERS_TO_PIXELS(prev.y), METERS_TO_PIXELS(v.x), METERS_TO_PIXELS(v.y), RED);
+				}
+				break;
+
+				// Draw chains contour -------------------------------------------
+				case b2Shape::e_chain:
+				{
+					b2ChainShape* shape = (b2ChainShape*)f->GetShape();
+					b2Vec2 prev, v;
+
+					for (int32 i = 0; i < shape->m_count; ++i)
+					{
+						v = b->GetWorldPoint(shape->m_vertices[i]);
+						if (i > 0)
+							DrawLine(METERS_TO_PIXELS(prev.x), METERS_TO_PIXELS(prev.y), METERS_TO_PIXELS(v.x), METERS_TO_PIXELS(v.y), GREEN);
+						prev = v;
+					}
+
+					v = b->GetWorldPoint(shape->m_vertices[0]);
+					DrawLine(METERS_TO_PIXELS(prev.x), METERS_TO_PIXELS(prev.y), METERS_TO_PIXELS(v.x), METERS_TO_PIXELS(v.y), GREEN);
+				}
+				break;
+
+				// Draw a single segment(edge) ----------------------------------
+				case b2Shape::e_edge:
+				{
+					b2EdgeShape* shape = (b2EdgeShape*)f->GetShape();
+					b2Vec2 v1, v2;
+
+					v1 = b->GetWorldPoint(shape->m_vertex0);
+					v1 = b->GetWorldPoint(shape->m_vertex1);
+					DrawLine(METERS_TO_PIXELS(v1.x), METERS_TO_PIXELS(v1.y), METERS_TO_PIXELS(v2.x), METERS_TO_PIXELS(v2.y), BLUE);
+				}
+				break;
+				}
+			}
+		}
+	}
+}
+
 void ModulePhysics::BeginContact(b2Contact* contact)
 {
-	//std::cout << "BeginContact Physics" << std::endl;
+	std::cout << "BEGIN CONTACT CALLED" << std::endl;
 
+	//std::cout << "BeginContact Physics" << std::endl;
+	if (!contact) return;
+
+    std::cout << "Contact valid, gettin fixtures" << std::endl;
 	b2Fixture* fixtureA = contact->GetFixtureA();
 	b2Fixture* fixtureB = contact->GetFixtureB();
+
+	if (!fixtureA || !fixtureB) {
+		std::cout << "ERROR: One of the fixtures is null!"<<std::endl;
+		return;
+	}
+
+	std::cout << "Fixtures valid, gettin bodies" << std::endl;
 
 	b2Body* bodyA = fixtureA->GetBody();
 	b2Body* bodyB = fixtureB->GetBody();
 
-	// Obtener PhysBody de cada cuerpo (usando UserData)
-	PhysBody* physA = (PhysBody*)bodyA->GetUserData().pointer;
-	PhysBody* physB = (PhysBody*)bodyB->GetUserData().pointer;
+	if (!bodyA || !bodyB) {
+		std::cout << "ERROR: One of the bodies is null!" << std::endl;
+		return;
+	}
+
+	std::cout << "Bodies valid, getting user data" << std::endl;
+
+	b2BodyUserData dataA = bodyA->GetUserData();
+	b2BodyUserData dataB = bodyB->GetUserData();
+
+	std::cout << "userData pointer A" << (void*)dataA.pointer << std::endl;
+	std::cout << "userData pointer B" << (void*)dataB.pointer << std::endl;
+	//// Obtener PhysBody de cada cuerpo (usando UserData)
+	//PhysBody* physA = (PhysBody*)bodyA->GetUserData().pointer;
+	//PhysBody* physB = (PhysBody*)bodyB->GetUserData().pointer;
+
+
+	//PhysBody* physA = (PhysBody*)dataA.pointer;
+	//PhysBody* physB = (PhysBody*)dataB.pointer;
+
+	PhysBody* physA = reinterpret_cast<PhysBody*>(dataA.pointer);
+	PhysBody* physB = reinterpret_cast<PhysBody*>(dataB.pointer);
+
+
+	if (!physA || !physB) {
+		std::cout<< "WARNING: One PhysBody is null(might be ground / walls)" <<std::endl;
+		return;
+	}
+
+	std::cout << "PhysA: %p, PhysB: %p" << physA << " "<< physB << std::endl;;
+	std::cout << "PhysA->listener: %p" << physA->listener << std::endl;
+	std::cout << "PhysB->listener: %p" <<  physB->listener << std::endl;
 
 	if (physA && physA->listener) {
 		//std::cout << "BeginContact2" << std::endl;
@@ -424,11 +550,13 @@ void ModulePhysics::BeginContact(b2Contact* contact)
 		physB->listener->OnCollision(physB, physA);
 	}
 
+	std::cout << "Begin contact finished succesfully" << std::endl;
 }
 
 void ModulePhysics::EndContact(b2Contact* contact)
 {
 	//std::cout << "End contact physics" << std::endl;
+	if (!contact) return;
 
 	b2Fixture* fixtureA = contact->GetFixtureA();
 	b2Fixture* fixtureB = contact->GetFixtureB();

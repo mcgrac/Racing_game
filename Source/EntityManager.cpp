@@ -78,7 +78,7 @@ Entity* EntityManager::CreateEntity(Module* listener, EntityType type, Vector2D 
 	switch (type)
 	{
 	case EntityType::PLAYER:
-		entity = new Player(listener, Vector2D(400.0f, 300.0f), type);
+		//entity = new Player(listener, Vector2D(400.0f, 300.0f), type);
 		break;
 
 	default:

@@ -8,8 +8,9 @@ public:
     Level1(ModulePhysics* _physics, Module* _listener, EntityManager* _entityManager);
     ~Level1();
 
-    void Start() override;
-    void Update() override;
+    //void Start() override;
+    //void Update() override;
+    bool Load() override;
     void RenderBackground() override;
     void RenderTop() override;
     void CleanUp() override;
@@ -17,6 +18,9 @@ public:
 protected:
 
 private:
+
+    void InitializeStartingGrid();
+    void LoadColliders();
 
     ModulePhysics* physics;
     Module* listener; // listener for everithing

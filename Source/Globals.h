@@ -1,7 +1,7 @@
 #pragma once
 
 #include "raylib.h"
-
+#include "iostream"
 #include <stdio.h>
 
 #define LOG(format, ...) log(__FILE__, __LINE__, format, __VA_ARGS__);

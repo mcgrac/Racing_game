@@ -34,10 +34,21 @@ public:
 	void OnCollision(PhysBody* physA, PhysBody* physB) override;
 	void OnCollisionEnd(PhysBody* physA, PhysBody* physB) override;
 
+	
 private:
 
+	void LoadLevel(int levelNumber);
+	void CreatePlayers();
+	void PositionPlayersOnGrid();
+
 	Map* currentMap = nullptr;
+
+	std::vector<Player*> racers;
 	Player* player = nullptr;
 	GameCamera* camera = nullptr;
+
 	EntityManager* entityManager = nullptr;
+
+	//testing
+	Player* playerTesting = nullptr;
 };

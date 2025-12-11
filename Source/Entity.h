@@ -88,14 +88,14 @@ public:
 	};
 
 	// Getters
-	const Vector2D& GetPosition() const { return position; }
-	float GetX() const { return position.getX(); }
-	float GetY() const { return position.getY(); }
+	inline const Vector2D& GetPosition() const { return position; }
+	inline float GetX() const { return position.getX(); }
+	inline float GetY() const { return position.getY(); }
 
 	// Setters
-	void SetPosition(const Vector2D& pos) { position = pos; }
-	void SetPosition(float x, float y) { position.setX(x); position.setY(y); }
-
+	inline void SetPosition(const Vector2D& pos) { position = pos; }
+	inline void SetPosition(float x, float y) { position.setX(x); position.setY(y); }
+	inline PhysBody* GetPhysBody() { return physBody; }
 protected:
 	Vector2D position;
 	PhysBody* physBody;

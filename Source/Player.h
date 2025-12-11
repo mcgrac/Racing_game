@@ -12,7 +12,7 @@ public:
 	//Player();
 	//Player(float startX, float startY, const char* texturePath);
 	//Player(const Vector2D& startPos, const char* texturePath);
-	Player(Module* _listener, const Vector2D& startPos, EntityType _type);
+	Player(Module* _listener, const Vector2D& startPos, EntityType _type, uint16 category, uint16 maskBits, int16 groupIndex = 0);
 
 	virtual ~Player();
 
@@ -43,7 +43,7 @@ public:
 	void SetTurnSpeed(float turn) { turnTorque = turn; }
 #pragma endregion
 
-	void InitPhysics();
+	void InitPhysics(uint16 category, uint16 maskBits, int16 groupIndex);
 
 	bool IsTextureLoaded() const { return textureLoaded; }
 	void ApplyDrag();

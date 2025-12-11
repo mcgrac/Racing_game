@@ -9,19 +9,23 @@ enum class GameSceneState {
 	FINISH_RACE,
 	CHARACTER_SELECTION
 };
+
 class SceneManager {
 
 private:
 
-	int currentScreenID();
+	//int currentScreenID();
 
 public:
+
+	SceneManager();
+	~SceneManager();
 
 	void Start();
 	void Update();
 
-	void SwitchScreen(int screenID);
-	void MoveSelector();
+	//void SwitchScreen(int screenID);
+	//void MoveSelector();
 
 
 
