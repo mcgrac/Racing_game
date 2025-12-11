@@ -33,6 +33,8 @@ void Button::Press()
         isPressed = true;
         pressTime = 0.0f;
         PlaySound(pressSound);
+        //ADD HERE THE BUTTON FUNCTIONALLITY
+
     }
 }
 

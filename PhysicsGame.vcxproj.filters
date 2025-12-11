@@ -55,6 +55,18 @@
     <ClCompile Include="Source\Map.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Chansey.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Pachirisu.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Meganium.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Cleffa.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Scene.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
@@ -74,6 +86,9 @@
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="Source\Button.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\StartScreen.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="Source\Vector2D.cpp">
@@ -142,6 +157,18 @@
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="Source\PositionTracker.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Chansey.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Pachirisu.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Meganium.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Cleffa.h">
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="Source\Scene.h">

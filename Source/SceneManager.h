@@ -11,7 +11,6 @@ enum class GameSceneState {
 };
 
 class SceneManager {
-
 private:
 
 	//int currentScreenID();

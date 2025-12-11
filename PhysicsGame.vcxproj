@@ -189,9 +189,12 @@
     <ClInclude Include="Source/ModuleWindow.h" />
     <ClInclude Include="Source/p2Point.h" />
     <ClInclude Include="Source\Animation.h" />
+
+    <ClInclude Include="Source\Chansey.h" />
+    <ClInclude Include="Source\Characters.h" />
+    <ClInclude Include="Source\Cleffa.h" />
     <ClInclude Include="Source\BadgesScreen.h" />
     <ClInclude Include="Source\Button.h" />
-    <ClInclude Include="Source\Characters.h" />
     <ClInclude Include="Source\CharacterSelectionScreen.h" />
     <ClInclude Include="Source\Entity.h" />
     <ClInclude Include="Source\EntityManager.h" />
@@ -201,7 +204,9 @@
     <ClInclude Include="Source\Interactables.h" />
     <ClInclude Include="Source\Level1.h" />
     <ClInclude Include="Source\Map.h" />
+    <ClInclude Include="Source\Meganium.h" />
     <ClInclude Include="Source\ModuleGame.h" />
+    <ClInclude Include="Source\Pachirisu.h" />
     <ClInclude Include="Source\Player.h" />
     <ClInclude Include="Source\PositionTracker.h" />
     <ClInclude Include="Source\Scene.h" />
@@ -211,6 +216,7 @@
     <ClInclude Include="Source\Vector2D.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source/Cleffa.cpp" />
     <ClCompile Include="Source/Application.cpp" />
     <ClCompile Include="Source/Log.cpp" />
     <ClCompile Include="Source/Main.cpp" />
@@ -219,6 +225,7 @@
     <ClCompile Include="Source/ModuleRender.cpp" />
     <ClCompile Include="Source/ModuleWindow.cpp" />
     <ClCompile Include="Source\Animation.cpp" />
+    <ClCompile Include="Source\Chansey.cpp" />
     <ClCompile Include="Source\BadgesScreen.cpp" />
     <ClCompile Include="Source\Button.cpp" />
     <ClCompile Include="Source\Characters.cpp" />
@@ -231,7 +238,9 @@
     <ClCompile Include="Source\Interactables.cpp" />
     <ClCompile Include="Source\Level1.cpp" />
     <ClCompile Include="Source\Map.cpp" />
+    <ClCompile Include="Source\Meganium.cpp" />
     <ClCompile Include="Source\ModuleGame.cpp" />
+    <ClCompile Include="Source\Pachirisu.cpp" />
     <ClCompile Include="Source\Player.cpp" />
     <ClCompile Include="Source\PositionTracker.cpp" />
     <ClCompile Include="Source\Scene.cpp" />
