@@ -525,12 +525,12 @@ void ModulePhysics::DrawDebug()
 
 void ModulePhysics::BeginContact(b2Contact* contact)
 {
-	std::cout << "BEGIN CONTACT CALLED" << std::endl;
+	//std::cout << "BEGIN CONTACT CALLED" << std::endl;
 
 	//std::cout << "BeginContact Physics" << std::endl;
 	if (!contact) return;
 
-    std::cout << "Contact valid, gettin fixtures" << std::endl;
+    //std::cout << "Contact valid, gettin fixtures" << std::endl;
 	b2Fixture* fixtureA = contact->GetFixtureA();
 	b2Fixture* fixtureB = contact->GetFixtureB();
 
@@ -539,7 +539,7 @@ void ModulePhysics::BeginContact(b2Contact* contact)
 		return;
 	}
 
-	std::cout << "Fixtures valid, gettin bodies" << std::endl;
+	//std::cout << "Fixtures valid, gettin bodies" << std::endl;
 
 	b2Body* bodyA = fixtureA->GetBody();
 	b2Body* bodyB = fixtureB->GetBody();
@@ -549,13 +549,13 @@ void ModulePhysics::BeginContact(b2Contact* contact)
 		return;
 	}
 
-	std::cout << "Bodies valid, getting user data" << std::endl;
+	//std::cout << "Bodies valid, getting user data" << std::endl;
 
 	b2BodyUserData dataA = bodyA->GetUserData();
 	b2BodyUserData dataB = bodyB->GetUserData();
 
-	std::cout << "userData pointer A" << (void*)dataA.pointer << std::endl;
-	std::cout << "userData pointer B" << (void*)dataB.pointer << std::endl;
+	//std::cout << "userData pointer A" << (void*)dataA.pointer << std::endl;
+	//std::cout << "userData pointer B" << (void*)dataB.pointer << std::endl;
 	//// Obtener PhysBody de cada cuerpo (usando UserData)
 	//PhysBody* physA = (PhysBody*)bodyA->GetUserData().pointer;
 	//PhysBody* physB = (PhysBody*)bodyB->GetUserData().pointer;
@@ -573,9 +573,9 @@ void ModulePhysics::BeginContact(b2Contact* contact)
 		return;
 	}
 
-	std::cout << "PhysA: %p, PhysB: %p" << physA << " "<< physB << std::endl;;
-	std::cout << "PhysA->listener: %p" << physA->listener << std::endl;
-	std::cout << "PhysB->listener: %p" <<  physB->listener << std::endl;
+	//std::cout << "PhysA: %p, PhysB: %p" << physA << " "<< physB << std::endl;;
+	//std::cout << "PhysA->listener: %p" << physA->listener << std::endl;
+	//std::cout << "PhysB->listener: %p" <<  physB->listener << std::endl;
 
 	if (physA && physA->listener) {
 		//std::cout << "BeginContact2" << std::endl;
@@ -588,7 +588,7 @@ void ModulePhysics::BeginContact(b2Contact* contact)
 		physB->listener->OnCollision(physB, physA);
 	}
 
-	std::cout << "Begin contact finished succesfully" << std::endl;
+	//std::cout << "Begin contact finished succesfully" << std::endl;
 }
 
 void ModulePhysics::EndContact(b2Contact* contact)

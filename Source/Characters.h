@@ -33,18 +33,22 @@ public:
 	inline int getOffRoad() {
 		return stats.offRoad;
 	}
-	inline void setAcceleration(float acc) {
+	inline void SetAcceleration(float acc) {
 		accelerationForce = acc;
 	}
-	inline void setMaxSpeed(float MaxS) {
+	inline void SetMaxSpeed(float MaxS) {
 		maxForwardSpeed = MaxS;
 	}
-	inline void setTurbo(int turbo) {
-		stats.turbo = turbo;
+	inline void SetIsBoosted(bool b) {
+		isBoosted = b;
 	}
-	inline void setOffRoad(int road) {
+	inline void SetOffRoad(int road) {
 		stats.offRoad = road;
 	}
+	inline void SetTurboPower(float f) {
+		turboPower = f;
+	}
+
 protected:
 	struct Statistics {
 		int acceleration;
@@ -76,6 +80,11 @@ protected:
 	//control
 	bool isPlayer;
 
+	//boost
+	bool isBoosted;
+	float turboPower;
+	float boostTimer;
+
 	// Car dimensions
 	float width;
 	float height;
@@ -104,4 +113,5 @@ protected:
 
 	void UpdateState(float dt);
 	virtual void UpdateAnims(float dt) = 0;
+	virtual void Boost(float dt) = 0;
 };

@@ -11,7 +11,7 @@ Characters::Characters(Module* _listener, const Vector2D& startPos, EntityType _
 	height(0.0f),         // Alto del rectángulo del coche
 	maxForwardSpeed(10.0f),        // 72 km/h
 	maxBackwardSpeed(25.0f),        // 28.8 km/h
-	accelerationForce(62.0f),      // Fuerza de aceleración
+	accelerationForce(63.0f),      // Fuerza de aceleración
 	brakeForce(40.0f),             // Fuerza de frenado
 	turnTorque(15.0f),             // Torque de giro
 	dragCoefficient(1.1f),         // Resistencia del aire
@@ -21,7 +21,10 @@ Characters::Characters(Module* _listener, const Vector2D& startPos, EntityType _
 	isPlayer(false),
 	currentWaypointIndex(0),
 	waypointReachRadius(50.0f),  // 50 píxeles de radio
-	loopWaypoints(true)
+	loopWaypoints(true),
+	isBoosted(false),
+	boostTimer(0.0f),
+	turboPower(0.0f)
 {
 	currentState = State::IDLE;
 	previousState = State::IDLE;

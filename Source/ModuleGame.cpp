@@ -145,11 +145,11 @@ bool ModuleGame::CleanUp()
 
 void ModuleGame::OnCollision(PhysBody* physA, PhysBody* physB) {
 
-	LOG("ModuleGame::OnCollision called");
+	std::cout << "ModuleGame::OnCollision called" <<std::endl;
 
 	//Check which is the player and which is the other entity
-	//Entity* player = nullptr;
-	//Entity* other = nullptr;
+	Entity* player = nullptr;
+	Entity* other = nullptr;
 	//if ((physA && physA->entity) && (physB && physB->entity)) {
 	//	Entity* entityA = physA->entity;
 	//	Entity* entityB = physB->entity;
@@ -172,28 +172,38 @@ void ModuleGame::OnCollision(PhysBody* physA, PhysBody* physB) {
 
 
 	// Obtener las entidades desde los PhysBody
-	Entity* entityA = reinterpret_cast<Entity*>(physA->body->GetUserData().pointer);
-	Entity* entityB = reinterpret_cast<Entity*>(physB->body->GetUserData().pointer);
+	//Entity* entityA = reinterpret_cast<Entity*>(physA->body->GetUserData().pointer);
+	//Entity* entityB = reinterpret_cast<Entity*>(physB->body->GetUserData().pointer);
 
-	if (!entityA || !entityB) {
-		LOG("WARNING: Collision with null entity");
-		return;
+	Entity* entityA = physA->entity;
+	Entity* entityB = physB->entity;
+
+	if (entityA->type == EntityType::PLAYER) {
+		player = entityA;
+		other = entityB;
+	}
+	else if(entityB->type == EntityType::PLAYER) {
+		player = entityB;
+		other = entityA;
 	}
 
 	//LOG("COLLISION: %d vs %d", (int)entityA->GetType(), (int)entityB->GetType());
 
-	// Manejar colisiones según el tipo
-	switch (entityA->type) {
-	case EntityType::PLAYER:
-		//HandlePlayerCollision(entityA, entityB);
-		break;
-
+	// depending with which things the player has collided
+	switch (other->type) {
+		{
 	case EntityType::TURBO_ON_ROAD:
-		//HandleTurboCollision(entityA, entityB);
+		std::cout << "COLLISION TURBO" << std::endl;
+		Player* p = dynamic_cast<Player*>(player);
+		p->SetIsBoosted(true);
+		p->SetTurboPower(1.0f);
+		p->SetMaxSpeed(15.0f);
+
 		break;
+		}
 
 	case EntityType::ROCK:
-		//HandleRockCollision(entityA, entityB);
+
 		break;
 	default:
 		break;
@@ -250,7 +260,7 @@ void ModuleGame::CreatePlayers()
 			Vector2D(0.0f, 0.0f),  // Posición temporal
 			EntityType::PLAYER,
 			CARS,
-			DEFAULT
+			DEFAULT | SENSORS
 		);
 
 		racers.push_back(racer);
@@ -264,8 +274,8 @@ void ModuleGame::CreatePlayers()
 		else {
 			racer->SetIsPlayer(false);
 			racer->WaypointLoader("Assets/WaypointsAI.txt");
-			//racer->setAcceleration(61.0f);
-			racer->setMaxSpeed(8.5f);
+			racer->SetMaxSpeed(8.0f);
+			racer->type == EntityType::AI;
 		}
 	}
 

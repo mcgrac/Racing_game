@@ -1,8 +1,8 @@
 #include "Meganium.h"
 
 void Meganium::iniciate() {
-	setAcceleration(3);
-	setMaxSpeed(4);
-	setTurbo(0);
-	setOffRoad(5);
+	SetAcceleration(3);
+	SetMaxSpeed(4);
+	//setTurbo(0);
+	SetOffRoad(5);
 }
