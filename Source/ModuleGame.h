@@ -39,6 +39,7 @@ private:
 
 	void LoadLevel(int levelNumber);
 	void CreatePlayers();
+	int GetRandomUnchosenPokemon(const std::vector<int>& chosenList);
 	void PositionPlayersOnGrid();
 
 	Map* currentMap = nullptr;

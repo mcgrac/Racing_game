@@ -50,6 +50,19 @@ public:
 	}
 
 protected:
+
+#pragma region GETTERS
+	// Getters for dimensions
+	float GetWidth() const { return width; }
+	float GetHeight() const { return height; }
+	// centerd position
+	Vector2D GetCenter() const;
+	float GetCenterX() const { return position.getX() + GetWidth() / 2.0f; }
+	float GetCenterY() const { return position.getY() + GetHeight() / 2.0f; }
+	//others
+	inline float GetSpeed() const { return physBody->body->GetLinearVelocity().Length(); };
+#pragma endregion
+
 	struct Statistics {
 		int acceleration;
 		int maxSpeed;
@@ -114,4 +127,8 @@ protected:
 	void UpdateState(float dt);
 	virtual void UpdateAnims(float dt) = 0;
 	virtual void Boost(float dt) = 0;
+
+	//Helpers
+	b2Vec2 GetForwardVector() const;
+	b2Vec2 GetRightVector() const;
 };

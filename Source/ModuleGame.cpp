@@ -255,6 +255,76 @@ void ModuleGame::CreatePlayers()
 	// Crear los 4 coches (por ahora en posición temporal)
 	// Posición temporal porque luego se setearán en PositionPlayersOnGrid()
 	for (int i = 0; i < 2; i++) {
+
+#pragma region UNIMPLEMENTED SYSTEM OF CHOOSING CHARACTERS AND CREATION
+		////Entity* racer;
+		//if (i == 0) {
+
+		//	switch (//int ChosenPokemonByPlayer):
+		//		{
+		//		case //1:
+		//			//racer = create cleffa
+		//			//currentMap->AddChosenCharacter(ChosenPokemonByPlayer)
+		//			break;
+		//		case //2:
+		//			//racer = create chansey
+		//			//currentMap->AddChosenCharacter(ChosenPokemonByPlayer)
+		//			break;
+		//		case //3:
+		//			//racer = create pachirisu
+		//			//currentMap->AddChosenCharacter(ChosenPokemonByPlayer)
+		//			break;
+		//		case //4:
+		//			//racer = create meganium
+		//			//currentMap->AddChosenCharacter(ChosenPokemonByPlayer)
+		//			break;
+		//		default:
+		//			break;
+		//		}
+		//		//Player = racer; (change variable player (Player* -> Entity*))
+		//		//racer->SetIsPlayer(true);
+
+		//}
+		//else {
+		//	//randonmly check choosenPokemonList in level 1 and randomnly choose an unchosen number and create the corresponding pokemon
+		//	int randomPokemon = GetRandomUnchosenPokemon(currentMap->GetPokemonsTakenList());
+		//	currentMap->AddChosenCharacter(randomPokemon);
+
+		//	switch (//int randomPokemon):
+		//		{
+		//		case //1:
+		//			//racer = create cleffa
+		//			//currentMap->AddChosenCharacter(ChosenPokemonByPlayer)
+		//			break;
+		//		case //2:
+		//			//racer = create chansey
+		//			//currentMap->AddChosenCharacter(ChosenPokemonByPlayer)
+		//			break;
+		//		case //3:
+		//			//racer = create pachirisu
+		//			//currentMap->AddChosenCharacter(ChosenPokemonByPlayer)
+		//			break;
+		//		case //4:
+		//			//racer = create meganium
+		//			//currentMap->AddChosenCharacter(ChosenPokemonByPlayer)
+		//			break;
+		//		default:
+		//			break;
+		//		}
+
+		//		//racer->SetIsPlayer(false);
+		//		//racer->type == EntityType::AI;
+		//		//FOR DOING THE NEXT TWO THINGS A DYNAMYC CAST IS NEEDED
+		//		//racer->WaypointLoader("Assets/WaypointsAI.txt");
+		//		//racer->SetMaxSpeed(8.0f);
+
+
+		//}
+
+		////racers.push_back(racer)
+		////entityManager->AddEntity(racer);
+#pragma endregion
+
 		Player* racer = new Player(
 			this,
 			Vector2D(0.0f, 0.0f),  // Posición temporal
@@ -286,6 +356,26 @@ void ModuleGame::CreatePlayers()
 
 	LOG("Created %d racers", racers.size());
 }
+
+int ModuleGame::GetRandomUnchosenPokemon(const std::vector<int>& chosenList)
+{
+	while (true) {
+		int number = 1 + (rand() % 4); // entre 1 y 4
+
+		// comprobar si ya está escogido
+		bool alreadyChosen = false;
+		for (int n : chosenList) {
+			if (n == number) {
+				alreadyChosen = true;
+				break;
+			}
+		}
+
+		if (!alreadyChosen)
+			return number;
+	}
+}
+
 void ModuleGame::PositionPlayersOnGrid()
 {
 	const std::vector<Vector2D>& gridPositions = currentMap->GetStartingGrid();

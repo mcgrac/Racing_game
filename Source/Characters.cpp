@@ -104,6 +104,23 @@ void Characters::WaypointLoader(const char* path)
 	std::cout << "========================" << std::endl;
 }
 
+#pragma region HELPERS
+Vector2D Characters::GetCenter() const {
+	return Vector2D(position.getX() + GetWidth() / 2.0f,
+		position.getY() + GetHeight() / 2.0f);
+}
+b2Vec2 Characters::GetForwardVector() const {
+	float angle = physBody->body->GetAngle();
+	return b2Vec2(sinf(angle), -cosf(angle));
+}
+b2Vec2 Characters::GetRightVector() const {
+	b2Vec2 forward = GetForwardVector();
+	return b2Vec2(-forward.y, forward.x);
+}
+#pragma endregion
+
+
+
 #pragma region WAYPOINT SYSTEM
 void Characters::SetWaypoints(const std::vector<Vector2D>& points)
 {

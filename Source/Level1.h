@@ -16,8 +16,6 @@ public:
     void CleanUp() override;
     void UpdateMusic() override;
 
-protected:
-
 private:
 
     void InitializeStartingGrid();
@@ -39,5 +37,4 @@ private:
     //music
     Sound inGameMusicBeggining;
     Sound inGameMusic;
-
 };

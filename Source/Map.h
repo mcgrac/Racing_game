@@ -37,8 +37,20 @@ public:
 
     MapType GetMapType() const { return mapType; }
 
+    //characetsr control
+    inline void AddChosenCharacter(int i) { pokemonsTaken.emplace_back(i); }
+    inline std::vector<int> GetPokemonsTakenList() { return pokemonsTaken; }
+
 protected:
     //virtual void CreateLevel();
     MapType mapType;
     std::vector<Vector2D> startingPositions;  // Posiciones de la parrilla
+private:
+
+    //list of the types of pokemons already created/choosed by the player
+    std::vector<int> pokemonsTaken;
+    //1->Cleffa
+    //2->Chansey
+    //3->Pachirisu
+    //4->Meganium
 };
