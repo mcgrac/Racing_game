@@ -187,8 +187,6 @@ void ModuleGame::OnCollision(PhysBody* physA, PhysBody* physB) {
 		other = entityA;
 	}
 
-	//LOG("COLLISION: %d vs %d", (int)entityA->GetType(), (int)entityB->GetType());
-
 	// depending with which things the player has collided
 	switch (other->type) {
 		{
@@ -217,6 +215,11 @@ void ModuleGame::OnCollisionEnd(PhysBody* physA, PhysBody* physB) {
 	//if (!entityA || !entityB) return;
 
 	//LOG("COLLISION END: %d vs %d", (int)entityA->GetType(), (int)entityB->GetType());
+}
+
+void ModuleGame::GetPokemonChoosenByPlayer()
+{
+	//ask scene manager or character selection scene which pokemon has been choosed
 }
 
 #pragma region LEVEL CREATION
@@ -260,27 +263,24 @@ void ModuleGame::CreatePlayers()
 		////Entity* racer;
 		//if (i == 0) {
 
-		//	switch (//int ChosenPokemonByPlayer):
+		//	switch (//choosenPokemon):
 		//		{
 		//		case //1:
 		//			//racer = create cleffa
-		//			//currentMap->AddChosenCharacter(ChosenPokemonByPlayer)
 		//			break;
 		//		case //2:
 		//			//racer = create chansey
-		//			//currentMap->AddChosenCharacter(ChosenPokemonByPlayer)
 		//			break;
 		//		case //3:
 		//			//racer = create pachirisu
-		//			//currentMap->AddChosenCharacter(ChosenPokemonByPlayer)
 		//			break;
 		//		case //4:
 		//			//racer = create meganium
-		//			//currentMap->AddChosenCharacter(ChosenPokemonByPlayer)
 		//			break;
 		//		default:
 		//			break;
 		//		}
+		// 		//currentMap->AddChosenCharacter(choosenPokemon)
 		//		//Player = racer; (change variable player (Player* -> Entity*))
 		//		//racer->SetIsPlayer(true);
 
@@ -288,30 +288,26 @@ void ModuleGame::CreatePlayers()
 		//else {
 		//	//randonmly check choosenPokemonList in level 1 and randomnly choose an unchosen number and create the corresponding pokemon
 		//	int randomPokemon = GetRandomUnchosenPokemon(currentMap->GetPokemonsTakenList());
-		//	currentMap->AddChosenCharacter(randomPokemon);
 
 		//	switch (//int randomPokemon):
 		//		{
 		//		case //1:
 		//			//racer = create cleffa
-		//			//currentMap->AddChosenCharacter(ChosenPokemonByPlayer)
 		//			break;
 		//		case //2:
 		//			//racer = create chansey
-		//			//currentMap->AddChosenCharacter(ChosenPokemonByPlayer)
 		//			break;
 		//		case //3:
 		//			//racer = create pachirisu
-		//			//currentMap->AddChosenCharacter(ChosenPokemonByPlayer)
 		//			break;
 		//		case //4:
 		//			//racer = create meganium
-		//			//currentMap->AddChosenCharacter(ChosenPokemonByPlayer)
 		//			break;
 		//		default:
 		//			break;
 		//		}
-
+		// 
+		//		//currentMap->AddChosenCharacter(randomPokemon)
 		//		//racer->SetIsPlayer(false);
 		//		//racer->type == EntityType::AI;
 		//		//FOR DOING THE NEXT TWO THINGS A DYNAMYC CAST IS NEEDED
