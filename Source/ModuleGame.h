@@ -34,17 +34,21 @@ public:
 	void OnCollision(PhysBody* physA, PhysBody* physB) override;
 	void OnCollisionEnd(PhysBody* physA, PhysBody* physB) override;
 
-	
+	void GetPokemonChoosenByPlayer(); //in this void we will set the int choosenPokemon.
+
 private:
 
 	void LoadLevel(int levelNumber);
 	void CreatePlayers();
+	int GetRandomUnchosenPokemon(const std::vector<int>& chosenList);
 	void PositionPlayersOnGrid();
 
 	Map* currentMap = nullptr;
 
 	std::vector<Player*> racers;
 	Player* player = nullptr;
+	int choosenPlayer;
+
 	GameCamera* camera = nullptr;
 
 	EntityManager* entityManager = nullptr;

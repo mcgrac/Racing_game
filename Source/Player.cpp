@@ -61,13 +61,11 @@ void Player::InitPhysics(uint16 category, uint16 maskBits, int16 groupIndex)
 float Player::GetRotation() const {
     if (!physBody || !physBody->body) return 0.0f;
     return physBody->body->GetAngle() * 180.0f / PI;
-}
-
+}  
 float Player::GetSpeed() const {
     if (!physBody || !physBody->body) return 0.0f;
     return physBody->body->GetLinearVelocity().Length();
 }
-
 float Player::GetSpeedKmh() const {
     return GetSpeed() * 3.6f;
 }
@@ -173,6 +171,7 @@ void Player::UpdateAnims(float dt)
         break;
     }
 }
+
 #pragma endregion
 
 Vector2D Player::GetCenter() const {
@@ -192,7 +191,6 @@ bool Player::CleanUp()
 bool Player::Update(float dt)
 {
     //if (!active) { return; }
-
     UpdateState(dt); //check if there is a temporal state, like stunned
     UpdateAnims(dt); //update current animation depending on the state
 
@@ -209,7 +207,7 @@ bool Player::Update(float dt)
         ApplyCarPhysics(dt);
     }
     else {
-        ApplyAIControl(dt);
+        //ApplyAIControl(dt);
     }
 
     SyncPositionFromPhysics();
@@ -425,6 +423,8 @@ bool Player::ShouldBrake(const Vector2D& targetPos)
 
 
 void Player::ApplyCarPhysics(float dt) {
+    std::cout << "Is boosted: " << isBoosted << std::endl;
+
     b2Body* body = physBody->body;
 
     b2Vec2 currentVelocity = body->GetLinearVelocity();
@@ -499,8 +499,26 @@ void Player::ApplyCarPhysics(float dt) {
     // Esto evita el derrape infinito y mantiene el coche alineado con su movimiento
     ApplyLateralFriction();
 
+    //check for the boost
+    Boost(dt);
+
     // Actualizar la variable de velocidad para el HUD/Game
-    this->speed = speed;
+    this->speed = speed + turboPower;
+}
+
+void Player::Boost(float dt)
+{
+    if (!isBoosted) { 
+        SetMaxSpeed(10.0f); //setVelocity with no boost
+        return; 
+    }
+
+    turboPower -= dt;
+    std::cout << turboPower << std::endl;
+    if (turboPower <= 0.0f) {
+        isBoosted = false;
+        turboPower = 0.0f;
+    }
 }
 
 bool Player::Render() {

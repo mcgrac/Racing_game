@@ -33,19 +33,36 @@ public:
 	inline int getOffRoad() {
 		return stats.offRoad;
 	}
-	inline void setAcceleration(float acc) {
+	inline void SetAcceleration(float acc) {
 		accelerationForce = acc;
 	}
-	inline void setMaxSpeed(float MaxS) {
+	inline void SetMaxSpeed(float MaxS) {
 		maxForwardSpeed = MaxS;
 	}
-	inline void setTurbo(int turbo) {
-		stats.turbo = turbo;
+	inline void SetIsBoosted(bool b) {
+		isBoosted = b;
 	}
-	inline void setOffRoad(int road) {
+	inline void SetOffRoad(int road) {
 		stats.offRoad = road;
 	}
+	inline void SetTurboPower(float f) {
+		turboPower = f;
+	}
+
 protected:
+
+#pragma region GETTERS
+	// Getters for dimensions
+	float GetWidth() const { return width; }
+	float GetHeight() const { return height; }
+	// centerd position
+	Vector2D GetCenter() const;
+	float GetCenterX() const { return position.getX() + GetWidth() / 2.0f; }
+	float GetCenterY() const { return position.getY() + GetHeight() / 2.0f; }
+	//others
+	inline float GetSpeed() const { return physBody->body->GetLinearVelocity().Length(); };
+#pragma endregion
+
 	struct Statistics {
 		int acceleration;
 		int maxSpeed;
@@ -76,6 +93,11 @@ protected:
 	//control
 	bool isPlayer;
 
+	//boost
+	bool isBoosted;
+	float turboPower;
+	float boostTimer;
+
 	// Car dimensions
 	float width;
 	float height;
@@ -104,4 +126,9 @@ protected:
 
 	void UpdateState(float dt);
 	virtual void UpdateAnims(float dt) = 0;
+	virtual void Boost(float dt) = 0;
+
+	//Helpers
+	b2Vec2 GetForwardVector() const;
+	b2Vec2 GetRightVector() const;
 };

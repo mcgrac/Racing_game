@@ -11,7 +11,7 @@ Characters::Characters(Module* _listener, const Vector2D& startPos, EntityType _
 	height(0.0f),         // Alto del rectángulo del coche
 	maxForwardSpeed(10.0f),        // 72 km/h
 	maxBackwardSpeed(25.0f),        // 28.8 km/h
-	accelerationForce(62.0f),      // Fuerza de aceleración
+	accelerationForce(63.0f),      // Fuerza de aceleración
 	brakeForce(40.0f),             // Fuerza de frenado
 	turnTorque(15.0f),             // Torque de giro
 	dragCoefficient(1.1f),         // Resistencia del aire
@@ -21,7 +21,10 @@ Characters::Characters(Module* _listener, const Vector2D& startPos, EntityType _
 	isPlayer(false),
 	currentWaypointIndex(0),
 	waypointReachRadius(50.0f),  // 50 píxeles de radio
-	loopWaypoints(true)
+	loopWaypoints(true),
+	isBoosted(false),
+	boostTimer(0.0f),
+	turboPower(0.0f)
 {
 	currentState = State::IDLE;
 	previousState = State::IDLE;
@@ -100,6 +103,23 @@ void Characters::WaypointLoader(const char* path)
 	}
 	std::cout << "========================" << std::endl;
 }
+
+#pragma region HELPERS
+Vector2D Characters::GetCenter() const {
+	return Vector2D(position.getX() + GetWidth() / 2.0f,
+		position.getY() + GetHeight() / 2.0f);
+}
+b2Vec2 Characters::GetForwardVector() const {
+	float angle = physBody->body->GetAngle();
+	return b2Vec2(sinf(angle), -cosf(angle));
+}
+b2Vec2 Characters::GetRightVector() const {
+	b2Vec2 forward = GetForwardVector();
+	return b2Vec2(-forward.y, forward.x);
+}
+#pragma endregion
+
+
 
 #pragma region WAYPOINT SYSTEM
 void Characters::SetWaypoints(const std::vector<Vector2D>& points)

@@ -60,6 +60,7 @@ private:
 
 	void LoadAnimations();
 	void UpdateAnims(float dt) override;
+	void Boost(float dt) override;
 
 	Texture texture;
 

@@ -145,11 +145,11 @@ bool ModuleGame::CleanUp()
 
 void ModuleGame::OnCollision(PhysBody* physA, PhysBody* physB) {
 
-	LOG("ModuleGame::OnCollision called");
+	std::cout << "ModuleGame::OnCollision called" <<std::endl;
 
 	//Check which is the player and which is the other entity
-	//Entity* player = nullptr;
-	//Entity* other = nullptr;
+	Entity* player = nullptr;
+	Entity* other = nullptr;
 	//if ((physA && physA->entity) && (physB && physB->entity)) {
 	//	Entity* entityA = physA->entity;
 	//	Entity* entityB = physB->entity;
@@ -172,28 +172,36 @@ void ModuleGame::OnCollision(PhysBody* physA, PhysBody* physB) {
 
 
 	// Obtener las entidades desde los PhysBody
-	Entity* entityA = reinterpret_cast<Entity*>(physA->body->GetUserData().pointer);
-	Entity* entityB = reinterpret_cast<Entity*>(physB->body->GetUserData().pointer);
+	//Entity* entityA = reinterpret_cast<Entity*>(physA->body->GetUserData().pointer);
+	//Entity* entityB = reinterpret_cast<Entity*>(physB->body->GetUserData().pointer);
 
-	if (!entityA || !entityB) {
-		LOG("WARNING: Collision with null entity");
-		return;
+	Entity* entityA = physA->entity;
+	Entity* entityB = physB->entity;
+
+	if (entityA->type == EntityType::PLAYER) {
+		player = entityA;
+		other = entityB;
+	}
+	else if(entityB->type == EntityType::PLAYER) {
+		player = entityB;
+		other = entityA;
 	}
 
-	//LOG("COLLISION: %d vs %d", (int)entityA->GetType(), (int)entityB->GetType());
-
-	// Manejar colisiones según el tipo
-	switch (entityA->type) {
-	case EntityType::PLAYER:
-		//HandlePlayerCollision(entityA, entityB);
-		break;
-
+	// depending with which things the player has collided
+	switch (other->type) {
+		{
 	case EntityType::TURBO_ON_ROAD:
-		//HandleTurboCollision(entityA, entityB);
+		std::cout << "COLLISION TURBO" << std::endl;
+		Player* p = dynamic_cast<Player*>(player);
+		p->SetIsBoosted(true);
+		p->SetTurboPower(1.0f);
+		p->SetMaxSpeed(15.0f);
+
 		break;
+		}
 
 	case EntityType::ROCK:
-		//HandleRockCollision(entityA, entityB);
+
 		break;
 	default:
 		break;
@@ -207,6 +215,11 @@ void ModuleGame::OnCollisionEnd(PhysBody* physA, PhysBody* physB) {
 	//if (!entityA || !entityB) return;
 
 	//LOG("COLLISION END: %d vs %d", (int)entityA->GetType(), (int)entityB->GetType());
+}
+
+void ModuleGame::GetPokemonChoosenByPlayer()
+{
+	//ask scene manager or character selection scene which pokemon has been choosed
 }
 
 #pragma region LEVEL CREATION
@@ -245,12 +258,75 @@ void ModuleGame::CreatePlayers()
 	// Crear los 4 coches (por ahora en posición temporal)
 	// Posición temporal porque luego se setearán en PositionPlayersOnGrid()
 	for (int i = 0; i < 2; i++) {
+
+#pragma region UNIMPLEMENTED SYSTEM OF CHOOSING CHARACTERS AND CREATION
+		////Entity* racer;
+		//if (i == 0) {
+
+		//	switch (//choosenPokemon):
+		//		{
+		//		case //1:
+		//			//racer = create cleffa
+		//			break;
+		//		case //2:
+		//			//racer = create chansey
+		//			break;
+		//		case //3:
+		//			//racer = create pachirisu
+		//			break;
+		//		case //4:
+		//			//racer = create meganium
+		//			break;
+		//		default:
+		//			break;
+		//		}
+		// 		//currentMap->AddChosenCharacter(choosenPokemon)
+		//		//Player = racer; (change variable player (Player* -> Entity*))
+		//		//racer->SetIsPlayer(true);
+
+		//}
+		//else {
+		//	//randonmly check choosenPokemonList in level 1 and randomnly choose an unchosen number and create the corresponding pokemon
+		//	int randomPokemon = GetRandomUnchosenPokemon(currentMap->GetPokemonsTakenList());
+
+		//	switch (//int randomPokemon):
+		//		{
+		//		case //1:
+		//			//racer = create cleffa
+		//			break;
+		//		case //2:
+		//			//racer = create chansey
+		//			break;
+		//		case //3:
+		//			//racer = create pachirisu
+		//			break;
+		//		case //4:
+		//			//racer = create meganium
+		//			break;
+		//		default:
+		//			break;
+		//		}
+		// 
+		//		//currentMap->AddChosenCharacter(randomPokemon)
+		//		//racer->SetIsPlayer(false);
+		//		//racer->type == EntityType::AI;
+		//		//FOR DOING THE NEXT TWO THINGS A DYNAMYC CAST IS NEEDED
+		//		//racer->WaypointLoader("Assets/WaypointsAI.txt");
+		//		//racer->SetMaxSpeed(8.0f);
+
+
+		//}
+
+		////racers.push_back(racer)
+		////entityManager->AddEntity(racer);
+#pragma endregion
+
 		Player* racer = new Player(
 			this,
 			Vector2D(0.0f, 0.0f),  // Posición temporal
 			EntityType::PLAYER,
 			CARS,
-			DEFAULT
+			DEFAULT | SENSORS
 		);
 
 		racers.push_back(racer);
@@ -264,8 +340,8 @@ void ModuleGame::CreatePlayers()
 		else {
 			racer->SetIsPlayer(false);
 			racer->WaypointLoader("Assets/WaypointsAI.txt");
-			//racer->setAcceleration(61.0f);
-			racer->setMaxSpeed(8.5f);
+			racer->SetMaxSpeed(8.0f);
+			racer->type == EntityType::AI;
 		}
 	}
 
@@ -276,6 +352,26 @@ void ModuleGame::CreatePlayers()
 
 	LOG("Created %d racers", racers.size());
 }
+
+int ModuleGame::GetRandomUnchosenPokemon(const std::vector<int>& chosenList)
+{
+	while (true) {
+		int number = 1 + (rand() % 4); // entre 1 y 4
+
+		// comprobar si ya está escogido
+		bool alreadyChosen = false;
+		for (int n : chosenList) {
+			if (n == number) {
+				alreadyChosen = true;
+				break;
+			}
+		}
+
+		if (!alreadyChosen)
+			return number;
+	}
+}
+
 void ModuleGame::PositionPlayersOnGrid()
 {
 	const std::vector<Vector2D>& gridPositions = currentMap->GetStartingGrid();
