@@ -489,23 +489,13 @@ void ModulePhysics::UseMouseJoint(Camera2D camera)
 {
 	if (!debug) { return; }
 
-
 	Vector2 mousePos = GetScreenToWorld2D(GetMousePosition(), camera);
-
 	float mouseX = mousePos.x;
 	float mouseY = mousePos.y;
 
 	b2Vec2 mouseWorld(
 		PIXEL_TO_METERS(mouseX),
 		PIXEL_TO_METERS(mouseY)
-	);
-
-
-	DrawCircle(
-		METERS_TO_PIXELS(mouseWorld.x),
-		METERS_TO_PIXELS(mouseWorld.y),
-		5,
-		RED
 	);
 
 	b2Body* mouseSelect = nullptr;
@@ -562,52 +552,6 @@ void ModulePhysics::UseMouseJoint(Camera2D camera)
 		world->DestroyJoint(mouseJoint);
 		mouseJoint = nullptr;
 	}
-
-	//// CLICK IZQUIERDO → crear joint
-	//if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && mouseJoint == nullptr)
-	//{
-	//	// Buscar body bajo el ratón
-	//	for (b2Body* b = world->GetBodyList(); b; b = b->GetNext())
-	//	{
-	//		if (b->GetType() != b2_dynamicBody) continue;
-
-	//		for (b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext())
-	//		{
-	//			if (f->TestPoint(mouseWorld))
-	//			{
-	//				std::cout << "Mouse over body" << std::endl;
-
-	//				b2MouseJointDef md;
-	//				md.bodyA = mouseGround;
-	//				md.bodyB = b;
-	//				md.target = mouseWorld;
-	//				md.maxForce = 1000.0f * b->GetMass();
-	//				md.collideConnected = true;
-
-	//				mouseJoint = (b2MouseJoint*)world->CreateJoint(&md);
-	//				b->SetAwake(true);
-
-	//				grabbedBody = reinterpret_cast<PhysBody*>(b->GetUserData().pointer);
-	//				break;
-	//			}
-	//		}
-	//		if (mouseJoint) break;
-	//	}
-	//}
-
-	//// MOVER ratón
-	//if (mouseJoint)
-	//{
-	//	mouseJoint->SetTarget(mouseWorld);
-	//}
-
-	//// SOLTAR click
-	//if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON) && mouseJoint)
-	//{
-	//	world->DestroyJoint(mouseJoint);
-	//	mouseJoint = nullptr;
-	//	grabbedBody = nullptr;
-	//}
 }
 
 void ModulePhysics::BeginContact(b2Contact* contact)

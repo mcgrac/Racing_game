@@ -25,16 +25,8 @@ bool ModuleGame::Start()
 	LOG("Loading Intro assets");
 	bool ret = true;
 
-	testingMouse = App->physics->CreateRectangle(800.0f, 800.0f, 200.0f, 200.0f, b2_dynamicBody, PhysicCategory::DEFAULT, PhysicCategory::DEFAULT, 0);
 	entityManager = new EntityManager();
 
-	//CREATION ENTITIES
-	//Player
-	//player = new Player(this, Vector2D(400.0f, 400.0f), EntityType::PLAYER, CARS, CARS | WALLS | DESTRUCTIBLE);
-	//entityManager->AddEntity(player);
-	//Ai
-	
-	
 	//load level
 	LoadLevel(1);
 	CreatePlayers();
@@ -49,8 +41,6 @@ bool ModuleGame::Start()
 	//call start entity manager -> call start of all entities
 	entityManager->Start();
 
-	//playerTesting = new Player(this, Vector2D(1000.0f, 1000.0f), EntityType::PLAYER, CARS, CARS);
-	//entityManager->AddEntity(playerTesting);
 	return ret;
 }
 
