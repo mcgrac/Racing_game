@@ -1,4 +1,5 @@
 #include "Characters.h"
+#include "Checkpoint.h"
 
 Characters::Characters(Module* _listener, const Vector2D& startPos, EntityType _type, uint16 category, uint16 maskBits, int16 groupIndex) :
 	Entity(_listener, startPos, _type),
@@ -17,11 +18,12 @@ Characters::Characters(Module* _listener, const Vector2D& startPos, EntityType _
 	minSpeedToTurn(0.5f),           // Velocidad mínima para girar
 	rotation(0.0f),
 	currentWaypointIndex(0),
-	waypointReachRadius(50.0f),  // 50 píxeles de radio
+	waypointReachRadius(100.0f),  // 50 píxeles de radio
 	loopWaypoints(true),
 	isBoosted(false),
 	boostTimer(0.0f),
-	turboPower(0.0f)
+	turboPower(0.0f),
+	checkpointArrived(0)
 {
 	currentState = State::IDLE;
 	previousState = State::IDLE;
@@ -99,6 +101,12 @@ void Characters::WaypointLoader(const char* path)
 		std::cout << "  ... and " << (waypoints.size() - 5) << " more waypoints" << std::endl;
 	}
 	std::cout << "========================" << std::endl;
+}
+
+float Characters::CalculateDistanceFromCheckpoint(Checkpoint* ch)
+{
+	Vector2D posCar = position;
+	return posCar.distanceEuclidean(ch->GetCenter());
 }
 
 //void Characters::CheckpointPassed(int idCheck)

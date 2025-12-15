@@ -8,8 +8,9 @@
 #include "raylib.h"
 #include <vector>
 
-#include"Level1.h"
+#include "Level1.h"
 #include "GameCamera.h"
+#include "PositionTracker.h"
 
 #include "Cleffa.h"
 #include "Meganium.h"
@@ -56,6 +57,6 @@ private:
 	int choosenPokemon = 2; //hardcode chansey selection
 
 	GameCamera* camera = nullptr;
-
+	PositionTracker* posTracker = nullptr;
 	EntityManager* entityManager = nullptr;
 };

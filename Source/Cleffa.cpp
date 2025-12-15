@@ -86,8 +86,10 @@ bool Cleffa::Start()
 void Cleffa::LoadAnimations()
 {
     //Idle animations
-    idleAnimation.AddTexture("Assets/Textures/Cars/CarChanseyIdle1.png");
-    idleAnimation.AddTexture("Assets/Textures/Cars/CarChanseyIdle2.png");
+    idleAnimation.AddTexture("Assets/Textures/Cars/CleffaIdle1.png");
+    idleAnimation.AddTexture("Assets/Textures/Cars/CleffaIdle2.png");
+    idleAnimation.AddTexture("Assets/Textures/Cars/CleffaIdle3.png");
+    idleAnimation.AddTexture("Assets/Textures/Cars/CleffaIdle4.png");
 
 
     // Obtain size textures

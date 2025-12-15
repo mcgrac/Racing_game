@@ -1,6 +1,7 @@
 #pragma once
 #include"Entity.h"
 
+class Checkpoint;
 
 class Characters :public Entity {
 
@@ -46,10 +47,20 @@ public:
 	inline void SetTurboPower(float f) {
 		turboPower = f;
 	}
+	inline void SetCheckpointArrived(int i) { checkpointArrived = i; }
+	inline void SetPositionInRace(int i) { positionInRace = i; }
+	inline void AddOneLap() { laps++; }
+
+	inline int GetCheckId() { return checkpointArrived; }
+	inline int GetLaps() { return laps; }
+	inline int GetPositionInRace() { return positionInRace; }
+	inline bool GetIsPlayer() { return isPlayer; }
+	float CalculateDistanceFromCheckpoint(Checkpoint* ch);
 
 protected:
 
-#pragma region GETTERS
+#pragma region GETTERS/SETTERS
+
 	inline float GetSpeed() const { return physBody->body->GetLinearVelocity().Length(); };
 #pragma endregion
 

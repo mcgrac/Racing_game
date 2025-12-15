@@ -39,7 +39,7 @@ void Meganium::InitPhysics(uint16 category, uint16 maskBits, int16 groupIndex)
         //set fixture
         b2Fixture* fixture = physBody->body->GetFixtureList();
         if (fixture) {
-            fixture->SetDensity(1.2f); //density (mass)
+            fixture->SetDensity(1.4f); //density (mass)
             fixture->SetFriction(0.4f); //friction with the floor
             fixture->SetRestitution(0.2f); //doesn't bounce
         }
@@ -87,8 +87,8 @@ bool Meganium::Start()
 void Meganium::LoadAnimations()
 {
     //Idle animations
-    idleAnimation.AddTexture("Assets/Textures/Cars/CarChanseyIdle1.png");
-    idleAnimation.AddTexture("Assets/Textures/Cars/CarChanseyIdle2.png");
+    idleAnimation.AddTexture("Assets/Textures/Cars/MeganiumIdle1.png");
+    idleAnimation.AddTexture("Assets/Textures/Cars/MeganiumIdle3.png");
 
 
     // Obtain size textures

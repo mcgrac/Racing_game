@@ -33,8 +33,7 @@ private:
     //bosts
     std::vector<Boost*> boostsList;
     
-    //checkpoints
-    std::vector<Checkpoint*> checkpointsList;
+
 
     //textures
     Texture2D floor;

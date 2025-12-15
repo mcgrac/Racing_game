@@ -4,6 +4,7 @@
 #include "ModuleGame.h"
 #include "ModuleAudio.h"
 #include "ModulePhysics.h"
+#include <random>
 
 enum PhysicGroup {
 	ZONE_DETECTORS = 1
@@ -41,6 +42,9 @@ bool ModuleGame::Start()
 	//call start entity manager -> call start of all entities
 	entityManager->Start();
 
+	//create position tracking and send al checkpoints
+	posTracker = new PositionTracker(currentMap->GetCheckpointsList());
+
 	return ret;
 }
 
@@ -70,6 +74,10 @@ update_status ModuleGame::Update()
 		camera->FollowPlayer(player);
 		camera->Update(dt);
 	}
+
+	//update position of all racers
+	posTracker->UpdatePositions(racers);
+
 	return UPDATE_CONTINUE;
 }
 
@@ -95,7 +103,40 @@ update_status ModuleGame::PostUpdate()
 	EndMode2D();
 	//--------------------------------------
 	//---------UI debug render--------------
+	//Show position of the player
+	if (player) {
 
+		Characters* playerCar = dynamic_cast<Characters*>(player);
+
+		// 1. Obtener los datos relevantes
+		int currentPosition = playerCar->GetPositionInRace();
+		int currentLap = playerCar->GetLaps() + 1; // Asumo que `laps` es vueltas completadas.
+
+		// 2. Construir el texto a mostrar
+		// Ejemplo: "POS: 1º / VUELTA: 2"
+		std::string debugText = "POS: ";
+
+		// Convertir la posición a cadena (con indicador ordinal si es necesario)
+		if (currentPosition > 0) {
+			// Se puede usar la lógica del PositionTracker para generar el ordinal (1º, 2º, 3º, etc.)
+			debugText += std::to_string(currentPosition) + (currentPosition == 1 ? "º" : " ");
+		}
+		else {
+			debugText += "? "; // Si aún no se ha calculado
+		}
+
+		debugText += " / VUELTA: " + std::to_string(currentLap);
+
+		// Opcional: Mostrar el progreso total (útil para debug de la lógica de clasificación)
+		// debugText += " (Progreso: " + std::to_string(positionTracker->CalculateTotalProgress(playerCar)) + ")";
+
+		// 3. Renderizar el texto
+		// **REEMPLAZAR** 'DrawText' con la función real de tu motor de renderizado.
+		// Asumo coordenadas fijas en la esquina superior izquierda (ej. 10, 10).
+		DrawText(
+			debugText.c_str(),
+			800, 10, 40, WHITE );
+	}
 
 	//--------------------------------------
 	return UPDATE_CONTINUE;
@@ -135,11 +176,11 @@ void ModuleGame::OnCollision(PhysBody* physA, PhysBody* physB) {
 	Entity* entityA = physA->entity;
 	Entity* entityB = physB->entity;
 
-	if (entityA->type == EntityType::PLAYER) {
+	if (entityA->type == EntityType::PLAYER || entityA->type == EntityType::AI) {
 		player = entityA;
 		other = entityB;
 	}
-	else if(entityB->type == EntityType::PLAYER) {
+	else if(entityB->type == EntityType::PLAYER || entityB->type == EntityType::AI) {
 		player = entityB;
 		other = entityA;
 	}
@@ -157,6 +198,23 @@ void ModuleGame::OnCollision(PhysBody* physA, PhysBody* physB) {
 	case EntityType::ROCK:
 
 		break;
+		{
+	case EntityType::CHECKPOINT:
+		//std::cout << "Collision Checkpoint" << std::endl;
+		Checkpoint* c = dynamic_cast<Checkpoint*>(other); //get id from checkpoint entity
+		Characters* chara = dynamic_cast<Characters*>(player); //set id checkpoint to player
+
+		//if the checkpoint is the first one and the one before is the last one means 1 lap has been completed
+		if (chara->GetCheckId() >= 10 && c->GetId() == 0) { 
+			chara->AddOneLap(); 
+			//std::cout << "Lap completed. Current laps completed: " << chara->GetLaps() << std::endl;
+		}
+
+		chara->SetCheckpointArrived(c->GetId()); //update last checkpoint racers
+
+		//std::cout << "Updates checkpoint character: " << chara->GetCheckId() << std::endl;
+		break;
+		}
 	default:
 		break;
 	}
@@ -230,8 +288,8 @@ void ModuleGame::CreatePlayers()
 						this,
 						Vector2D(0.0f, 0.0f),
 						EntityType::PLAYER,
-						PhysicCategory::DEFAULT,
-						PhysicCategory::SENSORS | WALLS | DESTRUCTIBLE
+						PhysicCategory::CARS,
+						PhysicCategory::CHECKPOINTS
 					);
 					break;
 				case 3:
@@ -266,6 +324,8 @@ void ModuleGame::CreatePlayers()
 			//randonmly check choosenPokemonList in level 1 and randomnly choose an unchosen number and create the corresponding pokemon
 			int randomPokemon = GetRandomUnchosenPokemon(currentMap->GetPokemonsTakenList());
 
+			std::cout << "Random choosed: " << randomPokemon << std::endl;
+
 			switch (randomPokemon){
 				case 1:
 					racer = new Cleffa(
@@ -273,7 +333,7 @@ void ModuleGame::CreatePlayers()
 						Vector2D(0.0f, 0.0f),
 						EntityType::AI,
 						PhysicCategory::AI,
-						PhysicCategory::DEFAULT
+						PhysicCategory::CHECKPOINTS
 					);
 					break;
 				case 2:
@@ -282,7 +342,7 @@ void ModuleGame::CreatePlayers()
 						Vector2D(0.0f, 0.0f),
 						EntityType::AI,
 						PhysicCategory::AI,
-						PhysicCategory::DEFAULT
+						PhysicCategory::CHECKPOINTS
 					);
 					break;
 				case 3:
@@ -291,7 +351,7 @@ void ModuleGame::CreatePlayers()
 						Vector2D(0.0f, 0.0f),
 						EntityType::AI,
 						PhysicCategory::AI,
-						PhysicCategory::DEFAULT
+						PhysicCategory::CHECKPOINTS
 					);
 					break;
 				case 4:
@@ -300,7 +360,7 @@ void ModuleGame::CreatePlayers()
 						Vector2D(0.0f, 0.0f),
 						EntityType::AI,
 						PhysicCategory::AI,
-						PhysicCategory::DEFAULT
+						PhysicCategory::CHECKPOINTS
 					);
 					break;
 				default:
@@ -321,29 +381,6 @@ void ModuleGame::CreatePlayers()
 
 		racers.push_back(racer);
 		entityManager->AddEntity(racer);
-
-		//Player* racer = new Player(
-		//	this,
-		//	Vector2D(0.0f, 0.0f),  // Posición temporal
-		//	EntityType::PLAYER,
-		//	CARS,
-		//	DEFAULT | SENSORS
-		//);
-
-		//racers.push_back(racer);
-		//entityManager->AddEntity(racer);
-
-		////the first racer created is the player
-		//if (i == 0) {
-		//	player = racer;
-		//	racer->SetIsPlayer(true);
-		//}
-		//else {
-		//	racer->SetIsPlayer(false);
-		//	racer->WaypointLoader("Assets/WaypointsAI.txt");
-		//	racer->SetMaxSpeed(8.0f);
-		//	racer->type == EntityType::AI;
-		//}
 	}
 
 	// Configurar la cámara para seguir al jugador
@@ -353,26 +390,28 @@ void ModuleGame::CreatePlayers()
 
 	LOG("Created %d racers", racers.size());
 }
-
 int ModuleGame::GetRandomUnchosenPokemon(const std::vector<int>& chosenList)
 {
-	while (true) {
-		int number = 1 + (rand() % 4); // entre 1 y 4
 
-		// comprobar si ya está escogido
-		bool alreadyChosen = false;
-		for (int n : chosenList) {
-			if (n == number) {
-				alreadyChosen = true;
-				break;
-			}
+	// Generador aleatorio (se inicializa con semilla basada en tiempo)
+	static std::random_device rd; // semilla real
+	static std::mt19937 gen(rd()); // Mersenne Twister
+
+	// Crear lista de números posibles que no estén escogidos
+	std::vector<int> availableNumbers;
+	for (int i = 1; i <= 4; ++i) {
+		if (std::find(chosenList.begin(), chosenList.end(), i) == chosenList.end()) {
+			availableNumbers.push_back(i);
 		}
-
-		if (!alreadyChosen)
-			return number;
 	}
-}
 
+	if (availableNumbers.empty())
+		return -1; // todos los Pokémon ya están elegidos
+
+	// Elegir un índice aleatorio de los disponibles
+	std::uniform_int_distribution<> dis(0, static_cast<int>(availableNumbers.size() - 1));
+	return availableNumbers[dis(gen)];
+}
 void ModuleGame::PositionPlayersOnGrid()
 {
 	const std::vector<Vector2D>& gridPositions = currentMap->GetStartingGrid();
