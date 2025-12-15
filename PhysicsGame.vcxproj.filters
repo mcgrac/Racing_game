@@ -94,10 +94,11 @@
     <ClCompile Include="Source\Animation.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Cleffa.cpp">
+    <ClCompile Include="Source\Boost.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Boost.cpp">
+    <ClCompile Include="Source/Cleffa.cpp" />
+    <ClCompile Include="Source\Checkpoint.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
   </ItemGroup>
@@ -202,6 +203,9 @@
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="Source\Boost.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Checkpoint.h">
       <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>

@@ -4,18 +4,6 @@
 #include "ModuleGame.h"
 #include "ModuleAudio.h"
 #include "ModulePhysics.h"
-//#include "EntityManager.h"
-
-//enum PhysicCategory {
-//
-//	//tangible objects
-//	DEFAULT = 1 << 0,
-//	CARS = 1 << 1,
-//	WALLS = 1 << 2,
-//	SENSORS = 1 << 3,
-//	DESTRUCTIBLE = 1 << 4,
-//
-//};
 
 enum PhysicGroup {
 	ZONE_DETECTORS = 1
@@ -145,35 +133,10 @@ bool ModuleGame::CleanUp()
 
 void ModuleGame::OnCollision(PhysBody* physA, PhysBody* physB) {
 
-	std::cout << "ModuleGame::OnCollision called" <<std::endl;
+	if (!physA->entity || !physB->entity) { return; }
 
-	//Check which is the player and which is the other entity
 	Entity* player = nullptr;
 	Entity* other = nullptr;
-	//if ((physA && physA->entity) && (physB && physB->entity)) {
-	//	Entity* entityA = physA->entity;
-	//	Entity* entityB = physB->entity;
-
-	//	// Puedes hacer casting si necesitas
-	//	if (entityA->type == EntityType::PLAYER) {
-	//		player = entityA;
-	//		other = entityB;
-	//	}
-	//	else {
-	//		player = entityB;
-	//		other = entityA;
-	//	}
-	//}
-
-	//if (physB && physB->entity) {
-	//	Entity* entityB = physB->entity;
-	//	LOG("Entity B type: %d", (int)entityB->GetType());
-	//}
-
-
-	// Obtener las entidades desde los PhysBody
-	//Entity* entityA = reinterpret_cast<Entity*>(physA->body->GetUserData().pointer);
-	//Entity* entityB = reinterpret_cast<Entity*>(physB->body->GetUserData().pointer);
 
 	Entity* entityA = physA->entity;
 	Entity* entityB = physB->entity;
@@ -192,14 +155,12 @@ void ModuleGame::OnCollision(PhysBody* physA, PhysBody* physB) {
 		{
 	case EntityType::TURBO_ON_ROAD:
 		std::cout << "COLLISION TURBO" << std::endl;
-		Player* p = dynamic_cast<Player*>(player);
-		p->SetIsBoosted(true);
-		p->SetTurboPower(1.0f);
-		p->SetMaxSpeed(15.0f);
-
+		Characters* c = dynamic_cast<Characters*>(player);
+		c->SetIsBoosted(true);
+		c->SetTurboPower(1.0f);
+		c->SetMaxSpeed(15.0f);
 		break;
 		}
-
 	case EntityType::ROCK:
 
 		break;
@@ -259,90 +220,137 @@ void ModuleGame::CreatePlayers()
 	// Posición temporal porque luego se setearán en PositionPlayersOnGrid()
 	for (int i = 0; i < 2; i++) {
 
-#pragma region UNIMPLEMENTED SYSTEM OF CHOOSING CHARACTERS AND CREATION
-		////Entity* racer;
-		//if (i == 0) {
+	    Entity* racer = nullptr;
+		if (i == 0) {
+			switch (choosenPokemon){
+				case 1:
+					racer = new Cleffa(
+						this,
+						Vector2D(0.0f, 0.0f),
+						EntityType::PLAYER,
+						PhysicCategory::CARS,
+						PhysicCategory::SENSORS|WALLS|DESTRUCTIBLE
+					);
+					break;
+				case 2:
+					racer = new Chansey(
+						this,
+						Vector2D(0.0f, 0.0f),
+						EntityType::PLAYER,
+						PhysicCategory::CARS,
+						PhysicCategory::SENSORS | WALLS | DESTRUCTIBLE
+					);
+					break;
+				case 3:
+					racer = new Pachirisu(
+						this,
+						Vector2D(0.0f, 0.0f),
+						EntityType::PLAYER,
+						PhysicCategory::CARS,
+						PhysicCategory::SENSORS | WALLS | DESTRUCTIBLE
+					);
+					break;
+				case 4:
+					racer = new Meganium(
+						this,
+						Vector2D(0.0f, 0.0f),
+						EntityType::PLAYER,
+						PhysicCategory::CARS,
+						PhysicCategory::SENSORS | WALLS | DESTRUCTIBLE
+					);
+					break;
+				default:
+					break;
+			}
 
-		//	switch (//choosenPokemon):
-		//		{
-		//		case //1:
-		//			//racer = create cleffa
-		//			break;
-		//		case //2:
-		//			//racer = create chansey
-		//			break;
-		//		case //3:
-		//			//racer = create pachirisu
-		//			break;
-		//		case //4:
-		//			//racer = create meganium
-		//			break;
-		//		default:
-		//			break;
-		//		}
-		// 		//currentMap->AddChosenCharacter(choosenPokemon)
-		//		//Player = racer; (change variable player (Player* -> Entity*))
-		//		//racer->SetIsPlayer(true);
+			currentMap->AddChosenCharacter(choosenPokemon);
+			player = racer; /*(change variable player (Player* -> Entity*))*/
+			racer->SetIsPlayer(true);
 
-		//}
-		//else {
-		//	//randonmly check choosenPokemonList in level 1 and randomnly choose an unchosen number and create the corresponding pokemon
-		//	int randomPokemon = GetRandomUnchosenPokemon(currentMap->GetPokemonsTakenList());
+		}
+		else {
 
-		//	switch (//int randomPokemon):
-		//		{
-		//		case //1:
-		//			//racer = create cleffa
-		//			break;
-		//		case //2:
-		//			//racer = create chansey
-		//			break;
-		//		case //3:
-		//			//racer = create pachirisu
-		//			break;
-		//		case //4:
-		//			//racer = create meganium
-		//			break;
-		//		default:
-		//			break;
-		//		}
-		// 
-		//		//currentMap->AddChosenCharacter(randomPokemon)
-		//		//racer->SetIsPlayer(false);
-		//		//racer->type == EntityType::AI;
-		//		//FOR DOING THE NEXT TWO THINGS A DYNAMYC CAST IS NEEDED
-		//		//racer->WaypointLoader("Assets/WaypointsAI.txt");
-		//		//racer->SetMaxSpeed(8.0f);
+			//randonmly check choosenPokemonList in level 1 and randomnly choose an unchosen number and create the corresponding pokemon
+			int randomPokemon = GetRandomUnchosenPokemon(currentMap->GetPokemonsTakenList());
+
+			switch (randomPokemon){
+				case 1:
+					racer = new Cleffa(
+						this,
+						Vector2D(0.0f, 0.0f),
+						EntityType::AI,
+						PhysicCategory::AI,
+						PhysicCategory::DEFAULT
+					);
+					break;
+				case 2:
+					racer = new Chansey(
+						this,
+						Vector2D(0.0f, 0.0f),
+						EntityType::AI,
+						PhysicCategory::AI,
+						PhysicCategory::DEFAULT
+					);
+					break;
+				case 3:
+					racer = new Pachirisu(
+						this,
+						Vector2D(0.0f, 0.0f),
+						EntityType::AI,
+						PhysicCategory::AI,
+						PhysicCategory::DEFAULT
+					);
+					break;
+				case 4:
+					racer = new Meganium(
+						this,
+						Vector2D(0.0f, 0.0f),
+						EntityType::AI,
+						PhysicCategory::AI,
+						PhysicCategory::DEFAULT
+					);
+					break;
+				default:
+					break;
+			}
+		 
+			currentMap->AddChosenCharacter(randomPokemon);
+			racer->SetIsPlayer(false);
+			//racer->type == EntityType::AI;
+			
+			//FOR DOING THE NEXT TWO THINGS A DYNAMYC CAST IS NEEDED
+			Characters* c = dynamic_cast<Characters*>(racer);
+			c->WaypointLoader("Assets/WaypointsAI.txt");
+			c->SetMaxSpeed(8.0f);
 
 
-		//}
-
-		////racers.push_back(racer)
-		////entityManager->AddEntity(racer);
-#pragma endregion
-
-		Player* racer = new Player(
-			this,
-			Vector2D(0.0f, 0.0f),  // Posición temporal
-			EntityType::PLAYER,
-			CARS,
-			DEFAULT | SENSORS
-		);
+		}
 
 		racers.push_back(racer);
 		entityManager->AddEntity(racer);
 
-		//the first racer created is the player
-		if (i == 0) {
-			player = racer;
-			racer->SetIsPlayer(true);
-		}
-		else {
-			racer->SetIsPlayer(false);
-			racer->WaypointLoader("Assets/WaypointsAI.txt");
-			racer->SetMaxSpeed(8.0f);
-			racer->type == EntityType::AI;
-		}
+		//Player* racer = new Player(
+		//	this,
+		//	Vector2D(0.0f, 0.0f),  // Posición temporal
+		//	EntityType::PLAYER,
+		//	CARS,
+		//	DEFAULT | SENSORS
+		//);
+
+		//racers.push_back(racer);
+		//entityManager->AddEntity(racer);
+
+		////the first racer created is the player
+		//if (i == 0) {
+		//	player = racer;
+		//	racer->SetIsPlayer(true);
+		//}
+		//else {
+		//	racer->SetIsPlayer(false);
+		//	racer->WaypointLoader("Assets/WaypointsAI.txt");
+		//	racer->SetMaxSpeed(8.0f);
+		//	racer->type == EntityType::AI;
+		//}
 	}
 
 	// Configurar la cámara para seguir al jugador
@@ -378,7 +386,7 @@ void ModuleGame::PositionPlayersOnGrid()
 
 	// Posicionar cada coche en su posición de la parrilla
 	for (size_t i = 0; i < racers.size() && i < gridPositions.size(); i++) {
-		Player* racer = racers[i];
+		Entity* racer = racers[i];
 		const Vector2D& gridPos = gridPositions[i];
 
 		// Setear la posición del Player

@@ -192,6 +192,7 @@
     <ClInclude Include="Source\Boost.h" />
     <ClInclude Include="Source\Chansey.h" />
     <ClInclude Include="Source\Characters.h" />
+    <ClInclude Include="Source\Checkpoint.h" />
     <ClInclude Include="Source\Cleffa.h" />
     <ClInclude Include="Source\BadgesScreen.h" />
     <ClInclude Include="Source\Button.h" />
@@ -231,6 +232,7 @@
     <ClCompile Include="Source\Button.cpp" />
     <ClCompile Include="Source\Characters.cpp" />
     <ClCompile Include="Source\CharacterSelectionScreen.cpp" />
+    <ClCompile Include="Source\Checkpoint.cpp" />
     <ClCompile Include="Source\Entity.cpp" />
     <ClCompile Include="Source\EntityManager.cpp" />
     <ClCompile Include="Source\GameCamera.cpp" />

@@ -15,3 +15,8 @@ Entity::Entity(Module* _listener, const Vector2D& pos, EntityType _type) :
 
 	//physBody->listener = _listener; // quién recibe BeginContact
 }
+
+Vector2D Entity::GetCenter() const {
+	return Vector2D(position.getX() + GetWidth() / 2.0f,
+		position.getY() + GetHeight() / 2.0f);
+}

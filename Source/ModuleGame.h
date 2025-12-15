@@ -11,6 +11,11 @@
 #include"Level1.h"
 #include "GameCamera.h"
 
+#include "Cleffa.h"
+#include "Meganium.h"
+#include "Chansey.h"
+#include "Pachirisu.h"
+
 class PhysBody;
 class PhysicEntity;
 class EntityManager;
@@ -29,7 +34,7 @@ public:
 	bool CleanUp();
 
 	GameCamera* GetCamera() const { return camera; }
-	Player* GetPlayer() const { return player; }
+	Entity* GetPlayer() const { return player; }
 
 	void OnCollision(PhysBody* physA, PhysBody* physB) override;
 	void OnCollisionEnd(PhysBody* physA, PhysBody* physB) override;
@@ -45,9 +50,10 @@ private:
 
 	Map* currentMap = nullptr;
 
-	std::vector<Player*> racers;
-	Player* player = nullptr;
-	int choosenPlayer;
+	//std::vector<Player*> racers;
+	std::vector<Entity*> racers;
+	Entity* player = nullptr;
+	int choosenPokemon = 2; //hardcode chansey selection
 
 	GameCamera* camera = nullptr;
 

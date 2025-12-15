@@ -7,8 +7,6 @@ class Characters :public Entity {
 public:
 	Characters(Module* _listener, const Vector2D& startPos, EntityType _type, uint16 category, uint16 maskBits, int16 groupIndex = 0);
 
-	inline void SetIsPlayer(bool b) { isPlayer = b; }
-
 	//wayPoints IA
 	void SetWaypoints(const std::vector<Vector2D>& points);
 	const std::vector<Vector2D>& GetWaypoints() const { return waypoints; }
@@ -52,14 +50,6 @@ public:
 protected:
 
 #pragma region GETTERS
-	// Getters for dimensions
-	float GetWidth() const { return width; }
-	float GetHeight() const { return height; }
-	// centerd position
-	Vector2D GetCenter() const;
-	float GetCenterX() const { return position.getX() + GetWidth() / 2.0f; }
-	float GetCenterY() const { return position.getY() + GetHeight() / 2.0f; }
-	//others
 	inline float GetSpeed() const { return physBody->body->GetLinearVelocity().Length(); };
 #pragma endregion
 
@@ -72,10 +62,6 @@ protected:
 	Statistics stats;
 	//afegir tilset
 	//afegir icona
-
-	//void function
-	void usePower();
-	void iniciate();
 
 	enum class State {
 		IDLE,
@@ -90,17 +76,18 @@ protected:
 	float speed;
 	bool textureLoaded;
 
-	//control
-	bool isPlayer;
+	//position in the race
+	int positionInRace;
+	int checkpointArrived;
+	int laps;
+
+	//score
+	float timeRace;
 
 	//boost
 	bool isBoosted;
 	float turboPower;
 	float boostTimer;
-
-	// Car dimensions
-	float width;
-	float height;
 
 	//Car physics variables
 	float maxForwardSpeed;      // Velocidad máxima hacia adelante (m/s)

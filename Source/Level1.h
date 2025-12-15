@@ -1,6 +1,8 @@
 #pragma once
 #include "Map.h"
 
+class Checkpoint;
+
 class Level1 : public Map {
 
 public:
@@ -22,6 +24,7 @@ private:
     void LoadColliders(const char* filePath);
     void LoadBoosts();
     void LoadAllChains(const char* filePath);
+    void LoadCheckpoints(const char* filePath);
 
     ModulePhysics* physics;
     Module* listener; // listener for everithing
@@ -30,6 +33,9 @@ private:
     //bosts
     std::vector<Boost*> boostsList;
     
+    //checkpoints
+    std::vector<Checkpoint*> checkpointsList;
+
     //textures
     Texture2D floor;
     Texture2D overMap;

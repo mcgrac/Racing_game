@@ -7,8 +7,6 @@ Characters::Characters(Module* _listener, const Vector2D& startPos, EntityType _
 	stunnedAnimation(0.2f), //0.2 seconds per frame
 	speed(200.0f),
 	textureLoaded(false),
-	width(0.0f),           // Ancho del rectángulo del coche
-	height(0.0f),         // Alto del rectángulo del coche
 	maxForwardSpeed(10.0f),        // 72 km/h
 	maxBackwardSpeed(25.0f),        // 28.8 km/h
 	accelerationForce(63.0f),      // Fuerza de aceleración
@@ -18,7 +16,6 @@ Characters::Characters(Module* _listener, const Vector2D& startPos, EntityType _
 	lateralDrag(1.5f),             // Fricción lateral
 	minSpeedToTurn(0.5f),           // Velocidad mínima para girar
 	rotation(0.0f),
-	isPlayer(false),
 	currentWaypointIndex(0),
 	waypointReachRadius(50.0f),  // 50 píxeles de radio
 	loopWaypoints(true),
@@ -104,11 +101,15 @@ void Characters::WaypointLoader(const char* path)
 	std::cout << "========================" << std::endl;
 }
 
-#pragma region HELPERS
-Vector2D Characters::GetCenter() const {
-	return Vector2D(position.getX() + GetWidth() / 2.0f,
-		position.getY() + GetHeight() / 2.0f);
+void Characters::CheckpointPassed(int idCheck)
+{
+	//If the checkpoint id is 0 and the previous one is the last one, add one lap
+	if (idCheck == 0 && (checkpointArrived == 29 || checkpointArrived == 28)) {
+
+	}
 }
+
+#pragma region HELPERS
 b2Vec2 Characters::GetForwardVector() const {
 	float angle = physBody->body->GetAngle();
 	return b2Vec2(sinf(angle), -cosf(angle));

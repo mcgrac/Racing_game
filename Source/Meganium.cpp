@@ -143,7 +143,13 @@ bool Meganium::Update(float dt)
     UpdateState(dt); //check if there is a temporal state, like stunned
     UpdateAnims(dt); //update current animation depending on the state
 
-    ApplyAIControl(dt);
+    if (isPlayer)
+    {
+        ApplyCarPhysics(dt);
+    }
+    else {
+        ApplyAIControl(dt);
+    }
     SyncPositionFromPhysics();
     return true;
 }
@@ -355,7 +361,91 @@ bool Meganium::ShouldBrake(const Vector2D& targetPos)
 
 #pragma endregion
 
+#pragma region NON AI CONTROL
+void Meganium::ApplyCarPhysics(float dt) {
+    std::cout << "Is boosted: " << isBoosted << std::endl;
 
+    b2Body* body = physBody->body;
+
+    b2Vec2 currentVelocity = body->GetLinearVelocity();
+    b2Vec2 forwardVector = GetForwardVector();
+
+    // Proyección de la velocidad en la dirección hacia adelante
+    float speed = b2Dot(currentVelocity, forwardVector);
+    float absoluteSpeed = fabs(speed); // Velocidad sin dirección (magnitud)
+
+    //-------------------------MOVING FORWARD/BACK--------------------------
+    // 2. Aplicar la aceleración si se pulsa 'W'
+    if (IsKeyDown(KEY_W))
+    {
+        // Solo aplica fuerza si no hemos alcanzado la velocidad máxima hacia adelante
+        if (speed < maxForwardSpeed)
+        {
+            // F = m * a
+            // Aplicamos una fuerza proporcional a 'accelerationForce' en la dirección hacia adelante.
+            b2Vec2 force = accelerationForce * forwardVector;
+            body->ApplyForceToCenter(force, true);
+
+        }
+    }
+    // Opcional: Implementar frenado o marcha atrás aquí (e.g., con KEY_S)
+    else if (IsKeyDown(KEY_S))
+    {
+        // Caso 1: Frenado (si vamos hacia adelante)
+        if (speed > 0.1f)
+        {
+            // Aplicamos una fuerza grande (brakeForce) en la dirección opuesta al avance.
+            b2Vec2 brakeForceVector = -brakeForce * forwardVector;
+            body->ApplyForceToCenter(brakeForceVector, true);
+        }
+        // Caso 2: Marcha Atrás (si estamos parados o ya vamos hacia atrás)
+        else if (speed > -maxBackwardSpeed)
+        {
+            // Aplicamos la fuerza de aceleración (reducida) en la dirección opuesta.
+            b2Vec2 reverseForce = -accelerationForce * .95f * forwardVector; // 0.5f para que sea más lenta
+            body->ApplyForceToCenter(reverseForce, true);
+        }
+    }
+    //-------------------------------------------------------------
+    //--------------------TURNING RIGHT AND LEFT---------------------
+    if (absoluteSpeed > minSpeedToTurn)
+    {
+        float torqueAmount = 0.0f;
+
+        if (IsKeyDown(KEY_D))
+        {
+            // Girar a la derecha (sentido horario, Box2D usa negativo)
+            torqueAmount = +turnTorque;
+        }
+        else if (IsKeyDown(KEY_A))
+        {
+            // Girar a la izquierda (sentido antihorario, Box2D usa positivo)
+            torqueAmount = -turnTorque;
+        }
+
+        // Aplicar el torque si se está girando
+        if (torqueAmount != 0.0f)
+        {
+            // Aplicar el torque al centro de masa del cuerpo
+            body->ApplyTorque(torqueAmount, true);
+        }
+    }
+    //------------------------------------------------------------
+    // 3. Aplicar arrastre/resistencia del aire (Drag)
+    // Esto es crucial para que el coche se ralentice cuando no se acelera
+    ApplyDrag();
+
+    // 4. Aplicar fricción lateral
+    // Esto evita el derrape infinito y mantiene el coche alineado con su movimiento
+    ApplyLateralFriction();
+
+    //check for the boost
+    Boost(dt);
+
+    // Actualizar la variable de velocidad para el HUD/Game
+    this->speed = speed + turboPower;
+}
+#pragma endregion
 
 void Meganium::Boost(float dt)
 {
