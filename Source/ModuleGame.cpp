@@ -27,13 +27,6 @@ bool ModuleGame::Start()
 
 	entityManager = new EntityManager();
 
-	//CREATION ENTITIES
-	//Player
-	//player = new Player(this, Vector2D(400.0f, 400.0f), EntityType::PLAYER, CARS, CARS | WALLS | DESTRUCTIBLE);
-	//entityManager->AddEntity(player);
-	//Ai
-	
-	
 	//load level
 	LoadLevel(1);
 	CreatePlayers();
@@ -48,8 +41,6 @@ bool ModuleGame::Start()
 	//call start entity manager -> call start of all entities
 	entityManager->Start();
 
-	//playerTesting = new Player(this, Vector2D(1000.0f, 1000.0f), EntityType::PLAYER, CARS, CARS);
-	//entityManager->AddEntity(playerTesting);
 	return ret;
 }
 
@@ -85,6 +76,9 @@ update_status ModuleGame::Update()
 //render in post-update
 update_status ModuleGame::PostUpdate()
 {
+	//MouseJoint
+	App->physics->UseMouseJoint(camera->GetRaylibCamera());
+
 	//--------------RENDER-----------------
 	//Raylib camera behaviour (start camera mode)
 	BeginMode2D(camera->GetRaylibCamera());
@@ -154,7 +148,6 @@ void ModuleGame::OnCollision(PhysBody* physA, PhysBody* physB) {
 	switch (other->type) {
 		{
 	case EntityType::TURBO_ON_ROAD:
-		std::cout << "COLLISION TURBO" << std::endl;
 		Characters* c = dynamic_cast<Characters*>(player);
 		c->SetIsBoosted(true);
 		c->SetTurboPower(1.0f);
@@ -237,7 +230,7 @@ void ModuleGame::CreatePlayers()
 						this,
 						Vector2D(0.0f, 0.0f),
 						EntityType::PLAYER,
-						PhysicCategory::CARS,
+						PhysicCategory::DEFAULT,
 						PhysicCategory::SENSORS | WALLS | DESTRUCTIBLE
 					);
 					break;

@@ -58,7 +58,4 @@ private:
 	GameCamera* camera = nullptr;
 
 	EntityManager* entityManager = nullptr;
-
-	//testing
-	Player* playerTesting = nullptr;
 };

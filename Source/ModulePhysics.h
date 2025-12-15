@@ -60,6 +60,7 @@ enum PhysicCategory {
 	SENSORS = 1 << 3,
 	DESTRUCTIBLE = 1 << 4,
 	AI = 1 << 5,
+	CHECKPOINTS = 1 << 6
 
 };
 
@@ -90,6 +91,8 @@ public:
 	void SetCameraDebug(Camera2D camera) { cam = camera; }
 
 	void DrawDebug();
+	void UseMouseJoint(Camera2D camera);
+
 private:
 
 	b2World* world = nullptr;
@@ -98,6 +101,8 @@ private:
 
 	//mouse joint
 	b2Body* mouseGround = nullptr;
+	b2MouseJoint* mouseJoint = nullptr;
+	PhysBody* grabbedBody = nullptr;
 	
 	Camera2D cam;
 };

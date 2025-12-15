@@ -364,7 +364,7 @@ bool Chansey::ShouldBrake(const Vector2D& targetPos)
 
 #pragma region NON AI CONTROL
 void Chansey::ApplyCarPhysics(float dt) {
-    std::cout << "Is boosted: " << isBoosted << std::endl;
+    //std::cout << "Is boosted: " << isBoosted << std::endl;
 
     b2Body* body = physBody->body;
 
@@ -457,7 +457,6 @@ void Chansey::Boost(float dt)
     }
 
     turboPower -= dt;
-    std::cout << turboPower << std::endl;
     if (turboPower <= 0.0f) {
         isBoosted = false;
         turboPower = 0.0f;
@@ -598,6 +597,25 @@ bool Chansey::Render() {
         );
     }
     // **********************************************
+
+    //dibujar centro body
+    // Obtener posición del cuerpo (en metros)
+
+    // Convertir a píxeles
+    float centerX = METERS_TO_PIXELS(pos.x);
+    float centerY = METERS_TO_PIXELS(pos.y);
+
+    // Dibujar un círculo pequeño en el centro
+    DrawCircle((int)centerX, (int)centerY, 5, MAGENTA);
+
+    // También podemos dibujar un texto para debug
+    DrawText(
+        TextFormat("Center (%.2f, %.2f)", centerX, centerY),
+        (int)centerX + 8,
+        (int)centerY - 8,
+        12,
+        MAGENTA
+    );
 #pragma endregion
 
     return true;

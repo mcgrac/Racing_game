@@ -111,6 +111,14 @@ Camera2D GameCamera::GetRaylibCamera() const {
     return cam;
 }
 
+Vector2 GameCamera::GetMousePositionPixelsWorld()
+{
+    Vector2 mousePosScreen = GetMousePosition();
+    Vector2 mousePosWorldPixels = GetScreenToWorld2D(mousePosScreen, GetRaylibCamera());
+
+    return mousePosWorldPixels;
+}
+
 void GameCamera::SetPosition(Vector2D newPos)
 {
     position = newPos;

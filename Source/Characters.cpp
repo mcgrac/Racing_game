@@ -101,13 +101,13 @@ void Characters::WaypointLoader(const char* path)
 	std::cout << "========================" << std::endl;
 }
 
-void Characters::CheckpointPassed(int idCheck)
-{
-	//If the checkpoint id is 0 and the previous one is the last one, add one lap
-	if (idCheck == 0 && (checkpointArrived == 29 || checkpointArrived == 28)) {
-
-	}
-}
+//void Characters::CheckpointPassed(int idCheck)
+//{
+//	//If the checkpoint id is 0 and the previous one is the last one, add one lap
+//	if (idCheck == 0 && (checkpointArrived == 29 || checkpointArrived == 28)) {
+//
+//	}
+//}
 
 #pragma region HELPERS
 b2Vec2 Characters::GetForwardVector() const {

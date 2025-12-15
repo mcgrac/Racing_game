@@ -86,8 +86,8 @@ bool Pachirisu::Start()
 void Pachirisu::LoadAnimations()
 {
     //Idle animations
-    idleAnimation.AddTexture("Assets/Textures/Cars/CarChanseyIdle1.png");
-    idleAnimation.AddTexture("Assets/Textures/Cars/CarChanseyIdle2.png");
+    idleAnimation.AddTexture("Assets/Textures/Cars/CarPachirisuIdle1.png");
+    idleAnimation.AddTexture("Assets/Textures/Cars/CarPachirisuIdle2.png");
 
 
     // Obtain size textures
