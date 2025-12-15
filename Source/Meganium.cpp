@@ -453,9 +453,7 @@ void Meganium::Boost(float dt)
         SetMaxSpeed(10.0f); //setVelocity with no boost
         return;
     }
-
     turboPower -= dt;
-    std::cout << turboPower << std::endl;
     if (turboPower <= 0.0f) {
         isBoosted = false;
         turboPower = 0.0f;

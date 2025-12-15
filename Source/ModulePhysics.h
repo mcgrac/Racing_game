@@ -91,6 +91,8 @@ public:
 	void SetCameraDebug(Camera2D camera) { cam = camera; }
 
 	void DrawDebug();
+	void UseMouseJoint(Camera2D camera);
+
 private:
 
 	b2World* world = nullptr;
@@ -99,6 +101,8 @@ private:
 
 	//mouse joint
 	b2Body* mouseGround = nullptr;
+	b2MouseJoint* mouseJoint = nullptr;
+	PhysBody* grabbedBody = nullptr;
 	
 	Camera2D cam;
 };

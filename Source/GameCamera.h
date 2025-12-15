@@ -37,6 +37,7 @@ public:
 	void CenterOn(float x, float y);
 
 	Camera2D GetRaylibCamera() const;
+	Vector2 GetMousePositionPixelsWorld();
 
 	// Getters
 	float GetX() const { return position.getX(); }

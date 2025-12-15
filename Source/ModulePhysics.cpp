@@ -2,7 +2,7 @@
 #include "Application.h"
 #include "ModuleRender.h"
 #include "ModulePhysics.h"
-
+#include <box2d/box2d.h>
 #include "p2Point.h"
 
 #include <math.h>
@@ -118,84 +118,8 @@ update_status ModulePhysics::PostUpdate()
 		debug = !debug;
 	}
 
-	//if (!debug)
-	//{
-	//	return UPDATE_CONTINUE;
-	//}
+	//UseMouseJoint();
 
-	// Bonus code: this will iterate all objects in the world and draw the circles
-	// You need to provide your own macro to translate meters to pixels
-	//BeginMode2D(cam);
-	//for (b2Body* b = world->GetBodyList(); b; b = b->GetNext())
-	//{
-	//	for(b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext())
-	//	{
-	//		switch(f->GetType())
-	//		{
-	//			// Draw circles ------------------------------------------------
-	//			case b2Shape::e_circle:
-	//			{
-	//				b2CircleShape* shape = (b2CircleShape*)f->GetShape();
-	//				b2Vec2 pos = f->GetBody()->GetPosition();
-	//				
-	//				DrawCircle(METERS_TO_PIXELS(pos.x), METERS_TO_PIXELS(pos.y), (float)METERS_TO_PIXELS(shape->m_radius), Color{0, 0, 0, 128});
-	//			}
-	//			break;
-
-	//			// Draw polygons ------------------------------------------------
-	//			case b2Shape::e_polygon:
-	//			{
-	//				b2PolygonShape* polygonShape = (b2PolygonShape*)f->GetShape();
-	//				int32 count = polygonShape->m_count;
-	//				b2Vec2 prev, v;
-
-	//				for(int32 i = 0; i < count; ++i)
-	//				{
-	//					v = b->GetWorldPoint(polygonShape->m_vertices[i]);
-	//					if(i > 0)
-	//						DrawLine(METERS_TO_PIXELS(prev.x), METERS_TO_PIXELS(prev.y), METERS_TO_PIXELS(v.x), METERS_TO_PIXELS(v.y), RED);
-
-	//					prev = v;
-	//				}
-
-	//				v = b->GetWorldPoint(polygonShape->m_vertices[0]);
-	//				DrawLine(METERS_TO_PIXELS(prev.x), METERS_TO_PIXELS(prev.y), METERS_TO_PIXELS(v.x), METERS_TO_PIXELS(v.y), RED);
-	//			}
-	//			break;
-
-	//			// Draw chains contour -------------------------------------------
-	//			case b2Shape::e_chain:
-	//			{
-	//				b2ChainShape* shape = (b2ChainShape*)f->GetShape();
-	//				b2Vec2 prev, v;
-
-	//				for(int32 i = 0; i < shape->m_count; ++i)
-	//				{
-	//					v = b->GetWorldPoint(shape->m_vertices[i]);
-	//					if(i > 0)
-	//						DrawLine(METERS_TO_PIXELS(prev.x), METERS_TO_PIXELS(prev.y), METERS_TO_PIXELS(v.x), METERS_TO_PIXELS(v.y), GREEN);
-	//					prev = v;
-	//				}
-
-	//				v = b->GetWorldPoint(shape->m_vertices[0]);
-	//				DrawLine(METERS_TO_PIXELS(prev.x), METERS_TO_PIXELS(prev.y), METERS_TO_PIXELS(v.x), METERS_TO_PIXELS(v.y), GREEN);
-	//			}
-	//			break;
-
-	//			// Draw a single segment(edge) ----------------------------------
-	//			case b2Shape::e_edge:
-	//			{
-	//				b2EdgeShape* shape = (b2EdgeShape*)f->GetShape();
-	//				b2Vec2 v1, v2;
-
-	//				v1 = b->GetWorldPoint(shape->m_vertex0);
-	//				v1 = b->GetWorldPoint(shape->m_vertex1);
-	//				DrawLine(METERS_TO_PIXELS(v1.x), METERS_TO_PIXELS(v1.y), METERS_TO_PIXELS(v2.x), METERS_TO_PIXELS(v2.y), BLUE);
-	//			}
-	//			break;
-	//		}
-	//	}
-	//}
 	return UPDATE_CONTINUE;
 }
 
@@ -333,7 +257,10 @@ PhysBody* ModulePhysics::CreateRectangle(int x, int y, int width, int height, b2
 
 	b2BodyDef bodyDef;
 	bodyDef.type = type;
-	bodyDef.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
+	bodyDef.position.Set(
+		PIXEL_TO_METERS(x + width * 0.5f),
+		PIXEL_TO_METERS(y + height * 0.5f)
+	);
 	bodyDef.userData.pointer = reinterpret_cast<uintptr_t>(pbody);
 
 	b2Body* b = world->CreateBody(&bodyDef);
@@ -357,9 +284,6 @@ PhysBody* ModulePhysics::CreateRectangle(int x, int y, int width, int height, b2
 	pbody->width = width;
 	pbody->height = height;
 
-	//b->GetUserData().pointer = reinterpret_cast<uintptr_t>(pbody);
-
-	std::cout << "Created PhysBody: %p for body at (%d, %d)" << pbody << " " << x << " " << y << std::endl;
 	return pbody;
 }
 
@@ -561,14 +485,136 @@ void ModulePhysics::DrawDebug()
 	}
 }
 
+void ModulePhysics::UseMouseJoint(Camera2D camera)
+{
+	if (!debug) { return; }
+
+
+	Vector2 mousePos = GetScreenToWorld2D(GetMousePosition(), camera);
+
+	float mouseX = mousePos.x;
+	float mouseY = mousePos.y;
+
+	b2Vec2 mouseWorld(
+		PIXEL_TO_METERS(mouseX),
+		PIXEL_TO_METERS(mouseY)
+	);
+
+
+	DrawCircle(
+		METERS_TO_PIXELS(mouseWorld.x),
+		METERS_TO_PIXELS(mouseWorld.y),
+		5,
+		RED
+	);
+
+	b2Body* mouseSelect = nullptr;
+
+	for (b2Body* b = world->GetBodyList(); b; b = b->GetNext()) {
+
+		if (b->GetType() != b2_dynamicBody) continue;
+
+		for (b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext()) {
+			if (mouseJoint == nullptr && mouseSelect == nullptr && IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
+
+				if (f->TestPoint(mouseWorld)) {
+
+					mouseSelect = b;
+					break;
+				}
+			}
+		}
+
+		if (mouseSelect) break;
+	}
+
+	if (mouseSelect && mouseJoint == nullptr) {
+
+		std::cout << "[MouseJoint] Creando MouseJoint\n";
+
+		b2MouseJointDef def;
+		def.bodyA = mouseGround;
+		def.bodyB = mouseSelect;
+		def.target = mouseWorld;
+		def.damping = 0.5f;
+		def.stiffness = 20.f;
+		def.maxForce = 100.f * mouseSelect->GetMass();
+
+		mouseJoint = (b2MouseJoint*)world->CreateJoint(&def);
+		mouseSelect->SetAwake(true);
+	}
+	
+	if (mouseJoint && IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
+
+		mouseJoint->SetTarget(mouseWorld);
+		b2Vec2 anchor = mouseJoint->GetAnchorB();
+		DrawLine(
+			METERS_TO_PIXELS(anchor.x),
+			METERS_TO_PIXELS(anchor.y),
+			mousePos.x,
+			mousePos.y,
+			RED
+		);
+	}
+	
+	if (mouseJoint && IsMouseButtonReleased(MOUSE_LEFT_BUTTON)) {
+
+		world->DestroyJoint(mouseJoint);
+		mouseJoint = nullptr;
+	}
+
+	//// CLICK IZQUIERDO → crear joint
+	//if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && mouseJoint == nullptr)
+	//{
+	//	// Buscar body bajo el ratón
+	//	for (b2Body* b = world->GetBodyList(); b; b = b->GetNext())
+	//	{
+	//		if (b->GetType() != b2_dynamicBody) continue;
+
+	//		for (b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext())
+	//		{
+	//			if (f->TestPoint(mouseWorld))
+	//			{
+	//				std::cout << "Mouse over body" << std::endl;
+
+	//				b2MouseJointDef md;
+	//				md.bodyA = mouseGround;
+	//				md.bodyB = b;
+	//				md.target = mouseWorld;
+	//				md.maxForce = 1000.0f * b->GetMass();
+	//				md.collideConnected = true;
+
+	//				mouseJoint = (b2MouseJoint*)world->CreateJoint(&md);
+	//				b->SetAwake(true);
+
+	//				grabbedBody = reinterpret_cast<PhysBody*>(b->GetUserData().pointer);
+	//				break;
+	//			}
+	//		}
+	//		if (mouseJoint) break;
+	//	}
+	//}
+
+	//// MOVER ratón
+	//if (mouseJoint)
+	//{
+	//	mouseJoint->SetTarget(mouseWorld);
+	//}
+
+	//// SOLTAR click
+	//if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON) && mouseJoint)
+	//{
+	//	world->DestroyJoint(mouseJoint);
+	//	mouseJoint = nullptr;
+	//	grabbedBody = nullptr;
+	//}
+}
+
 void ModulePhysics::BeginContact(b2Contact* contact)
 {
-	//std::cout << "BEGIN CONTACT CALLED" << std::endl;
-
-	//std::cout << "BeginContact Physics" << std::endl;
 	if (!contact) return;
 
-    //std::cout << "Contact valid, gettin fixtures" << std::endl;
+
 	b2Fixture* fixtureA = contact->GetFixtureA();
 	b2Fixture* fixtureB = contact->GetFixtureB();
 
@@ -577,7 +623,6 @@ void ModulePhysics::BeginContact(b2Contact* contact)
 		return;
 	}
 
-	//std::cout << "Fixtures valid, gettin bodies" << std::endl;
 
 	b2Body* bodyA = fixtureA->GetBody();
 	b2Body* bodyB = fixtureB->GetBody();
@@ -587,20 +632,9 @@ void ModulePhysics::BeginContact(b2Contact* contact)
 		return;
 	}
 
-	//std::cout << "Bodies valid, getting user data" << std::endl;
 
 	b2BodyUserData dataA = bodyA->GetUserData();
 	b2BodyUserData dataB = bodyB->GetUserData();
-
-	//std::cout << "userData pointer A" << (void*)dataA.pointer << std::endl;
-	//std::cout << "userData pointer B" << (void*)dataB.pointer << std::endl;
-	//// Obtener PhysBody de cada cuerpo (usando UserData)
-	//PhysBody* physA = (PhysBody*)bodyA->GetUserData().pointer;
-	//PhysBody* physB = (PhysBody*)bodyB->GetUserData().pointer;
-
-
-	//PhysBody* physA = (PhysBody*)dataA.pointer;
-	//PhysBody* physB = (PhysBody*)dataB.pointer;
 
 	PhysBody* physA = reinterpret_cast<PhysBody*>(dataA.pointer);
 	PhysBody* physB = reinterpret_cast<PhysBody*>(dataB.pointer);
@@ -611,27 +645,19 @@ void ModulePhysics::BeginContact(b2Contact* contact)
 		return;
 	}
 
-	//std::cout << "PhysA: %p, PhysB: %p" << physA << " "<< physB << std::endl;;
-	//std::cout << "PhysA->listener: %p" << physA->listener << std::endl;
-	//std::cout << "PhysB->listener: %p" <<  physB->listener << std::endl;
-
 	if (physA && physA->listener) {
-		//std::cout << "BeginContact2" << std::endl;
 		physA->listener->OnCollision(physA, physB);
 	}
 
 
 	if (physB && physB->listener) {
-		//std::cout << "BeginContact2" << std::endl;
 		physB->listener->OnCollision(physB, physA);
 	}
 
-	//std::cout << "Begin contact finished succesfully" << std::endl;
 }
 
 void ModulePhysics::EndContact(b2Contact* contact)
 {
-	//std::cout << "End contact physics" << std::endl;
 	if (!contact) return;
 
 	b2Fixture* fixtureA = contact->GetFixtureA();

@@ -61,4 +61,5 @@ private:
 
 	//testing
 	Player* playerTesting = nullptr;
+	PhysBody* testingMouse = nullptr;
 };
