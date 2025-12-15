@@ -6,6 +6,7 @@
 #include "GameScreen.h"
 #include "Button.h"
 #include "ModuleGame.cpp"
+//#include "raylib.h"
 
 void GameScreen::LoadTextures() {
 	backg = LoadTexture("Assets/Textures/Map/Background.png"); //
@@ -20,5 +21,9 @@ void GameScreen::Start() {
 	LoadSounds();
 }
 void GameScreen::Draw() {
-
+	
+}
+void GameScreen::UnloadAssets() {
+	UnloadTexture(backg);
+	UnloadTexture(Frontg);
 }

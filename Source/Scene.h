@@ -3,6 +3,7 @@
 #include "raylib.h"
 #include <vector>
 #include "Button.h"
+#include "SceneManager.h"
 
 class Scene {
 
@@ -21,9 +22,12 @@ public:
 	void Update();
 
 	void startTrasition();
+	void UnloadAssets();
 
 	void Draw();
 
 	std::vector<Button*> buttons;
+
+	SceneManager manager;
 
 };

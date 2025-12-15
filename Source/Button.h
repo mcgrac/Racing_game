@@ -18,7 +18,7 @@ public:
     void Draw();
 
     void Select();
-    void Press();              // Call this from Scene
+    void press();              // Call this from Scene
     void Release();
     bool IsPressed() const { return isPressed; }
     bool IsSelected() const { return isSelected; }
@@ -39,12 +39,26 @@ private:
     bool isSelected = false;
     float pressTime = 0.0f;
     float pressDuration;       // How long the button stays down
+
 };
 
 class ChangeSceneButton : public Button {
+public:
+    ChangeSceneButton();
     void press();
 };
 
+/*
+* class CharacterButton : public Button {
+
+};
+*/
+
+
 class MenuButton : public Button {
+    void press();
+};
+
+class CloseGameButton : Button {
     void press();
 };

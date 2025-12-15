@@ -4,6 +4,13 @@
 #include <vector>
 #include "Button.h"
 
+enum class StartMenuSelectedButton {
+	PLAY,
+	HELP,
+	BADGES,
+	QUIT
+};
+
 class StartScreen:public Scene {
 
 protected:
@@ -35,10 +42,15 @@ protected:
 
 	void LoadSounds();
 
+	void UpdateArrowState();
+
 public:
 	StartScreen();
 	void Start();
+	void Update();
 	void Draw();
-	int Id;
+	void UnloadAssets();
+	int buttonId;
+	StartMenuSelectedButton selButton;
 	
 };

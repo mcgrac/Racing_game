@@ -30,7 +30,7 @@ void Button::Select()
     }
 }
 
-void Button::Press()
+void Button::press()
 {
     if (!isPressed)
     {
@@ -71,4 +71,8 @@ void Button::Draw()
     }
     else
         DrawTexture(buttonUpSprite, (int)position.x, (int)position.y, WHITE);
+}
+
+void ChangeSceneButton::press() {
+    //sends the info about the target 
 }

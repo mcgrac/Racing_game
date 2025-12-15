@@ -21,11 +21,14 @@ private:
 
 	int currentScreenID();
 	std::vector<Scene*> scenes;
+	int indexScene;
 
 public:
 
 	SceneManager();
 	~SceneManager();
+
+	void sceneChange(GameSceneState newState);
 
 	void Start();
 	void Update();

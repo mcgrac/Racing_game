@@ -20,6 +20,7 @@ public:
 	GameScreen();
 	void Start();
 	void Draw();
+	void UnloadAssets();
 	int Id;
 	//std::vector<Button> buttons;
 };

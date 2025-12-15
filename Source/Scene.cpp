@@ -4,8 +4,7 @@
 #include <vector>
 
 class Scene {
-
-private:
+/*private:
 
 
 
@@ -15,5 +14,6 @@ public:
 	void Update();
 
 	void startTrasition();
-	void Draw();
+	void Draw();*/
+
 };

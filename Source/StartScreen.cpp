@@ -49,6 +49,8 @@ void StartScreen::Start() {
 	Vector2 vec = { 628, 672 };
 	Button* b = new Button(unpressed_badges, pressed_badges, unpressed_badges, buttonPressed, buttonSelected, vec);
 	buttons.push_back(b);
+
+	selButton = StartMenuSelectedButton::PLAY;
 }
 
 void StartScreen::Draw() {
@@ -56,10 +58,48 @@ void StartScreen::Draw() {
 	DrawTexture(backg, 0, 0, WHITE);
 	//draw Title 
 	DrawTexture(Title, 458, 64, WHITE);
-	//drow buttons
+	//draw buttons
 	for (int i = 0; i < buttons.size(); i++) {
 		buttons[i]->Draw();
 	}
+
+	//draw the arrow in the correct place
+	switch (selButton) {
+	case StartMenuSelectedButton::PLAY:
+		DrawTexture(Arrow, 578, 336, WHITE);
+		break;
+	case StartMenuSelectedButton::HELP:
+		DrawTexture(Arrow, 578, 448, WHITE);
+		break;
+	case StartMenuSelectedButton::BADGES:
+		DrawTexture(Arrow, 578, 560, WHITE);
+		break;
+	case StartMenuSelectedButton::QUIT:
+		DrawTexture(Arrow, 578, 672, WHITE);
+		break;
+	}
+}
+
+void StartScreen::UnloadAssets() {
+	//textures
+	UnloadTexture(backg);
+	UnloadTexture(Title);
+	UnloadTexture(Arrow);
+	UnloadTexture(unpressed_play);
+	UnloadTexture(pressed_play);
+	UnloadTexture(unpressed_help);
+	UnloadTexture(pressed_help);
+	UnloadTexture(unpressed_badges);
+	UnloadTexture(pressed_badges);
+	UnloadTexture(unpressed_quit);
+	UnloadTexture(pressed_quit);
+	//sounds
+	UnloadSound(buttonPressed);
+	UnloadSound(buttonSelected);
+}
+
+void StartScreen::Update() {
+	IsKeyDown(KEY_RIGHT)
 }
 
 

@@ -19,20 +19,25 @@ void SceneManager::Start()
 	//create a start screen and add it to the list 
 	Scene* s = new StartScreen();
 	scenes.push_back(s);
+	scenes[0]->manager = *this;
 
 	//create a character selection scene and add it
 	s = new CharacterSelectionScreen();
 	scenes.push_back(s);
+	scenes[1]->manager = *this;
 
 	//create an ingame scene and add it to the list
 	s = new GameScreen();
 	scenes.push_back(s);
+	scenes[2]->manager = *this;
 
 	//create and end screen
 	s = new GameOverScreen();
 	scenes.push_back(s);
+	scenes[3]->manager = *this;
 
 	state = GameSceneState::MAIN_MENU;
+	indexScene = 0;
 
 }
 
@@ -49,16 +54,25 @@ void SceneManager::render() {
 	//DRAW!!
 	switch (state) {
 	case GameSceneState::MAIN_MENU:
+		indexScene = 0;
 		scenes[0]->Draw();
 		break;
 	case GameSceneState::CHARACTER_SELECTION:
+		indexScene = 1;
 		scenes[1]->Draw();
 		break;
 	case GameSceneState::PLAYING:
+		indexScene = 2;
 		scenes[2]->Draw();
 		break;
 	case GameSceneState::FINISH_RACE:
+		indexScene = 3;
 		scenes[3]->Draw();
 		break;
 	}
+}
+
+void SceneManager::sceneChange(GameSceneState newState) {
+	scenes[indexScene]->UnloadAssets();
+	state = newState;
 }
