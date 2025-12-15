@@ -10,7 +10,7 @@ public:
         Texture2D buttonSelected,
         Sound pressSound, Sound selectSound,
         Vector2 position,
-        float pressDuration = 0.2f) {};
+        float pressDuration = 0.2f);
 
     ~Button() {}
 

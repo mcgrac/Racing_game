@@ -15,5 +15,5 @@ public:
 	void Update();
 
 	void startTrasition();
-
+	void Draw();
 };

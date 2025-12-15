@@ -104,7 +104,7 @@ update_status ModuleGame::PostUpdate()
 	BeginMode2D(camera->GetRaylibCamera());
 	//render map background (floor)
 	//add scene manager render
-
+	sceneManager->render();
 	
 	//if (currentMap) { currentMap->RenderBackground(); } //comented code
 	//render entities
