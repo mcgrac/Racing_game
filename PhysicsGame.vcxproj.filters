@@ -64,13 +64,7 @@
     <ClCompile Include="Source\Meganium.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Cleffa.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Scene.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\StartScreen.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="Source\CharacterSelectionScreen.cpp">
@@ -89,10 +83,22 @@
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="Source\StartScreen.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Vector2D.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="Source\GameCamera.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Animation.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Boost.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source/Cleffa.cpp" />
+    <ClCompile Include="Source\Checkpoint.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
   </ItemGroup>
@@ -191,6 +197,15 @@
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="Source\GameCamera.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Animation.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Boost.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Checkpoint.h">
       <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>

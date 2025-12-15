@@ -1,7 +1,7 @@
 #pragma once
 
 #include "raylib.h"
-
+#include "iostream"
 #include <stdio.h>
 
 #define LOG(format, ...) log(__FILE__, __LINE__, format, __VA_ARGS__);
@@ -16,6 +16,7 @@ void log(const char file[], int line, const char* format, ...);
 #define MIN( a, b ) ( ((a) < (b)) ? (a) : (b) )
 #define MAX( a, b ) ( ((a) > (b)) ? (a) : (b) )
 #define TO_BOOL( a )  ( (a != 0) ? true : false )
+#define PI 3.14159265358979323846f
 
 typedef unsigned int uint;
 typedef unsigned __int32 uint32;

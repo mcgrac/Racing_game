@@ -14,7 +14,6 @@ Button::Button(Texture2D buttonUp,
     selectSound(selectSound),
     position(position),
     pressDuration(pressDuration)
-    , callback(_callback)
 {
 }
 

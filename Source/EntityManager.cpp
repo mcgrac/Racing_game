@@ -1,6 +1,8 @@
 #include "EntityManager.h"
+#include "Player.h"
+#include"ModuleGame.h"
 
-EntityManager::EntityManager(Application * app, bool start_enabled) : Module(app, start_enabled)
+EntityManager::EntityManager(Application* app, bool start_enabled)
 {
 	//name = "entitymanager";
 }
@@ -68,15 +70,15 @@ bool EntityManager::CleanUp()
 	return ret;
 }
 
-std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
+Entity* EntityManager::CreateEntity(Module* listener, EntityType type, Vector2D position)
 {
-	std::shared_ptr<Entity> entity = std::make_shared<Entity>();
+	Entity* entity;
 
-	//L04: TODO 3a: Instantiate entity according to the type and add the new entity to the list of Entities
+	//create entities
 	switch (type)
 	{
 	case EntityType::PLAYER:
-		//entity = std::make_shared<Player>();
+		//entity = new Player(listener, Vector2D(400.0f, 300.0f), type);
 		break;
 
 	default:
@@ -85,16 +87,17 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 
 	entities.push_back(entity);
 
+	std::cout << "Entities list size: " << entities.size() << std::endl;
 	return entity;
 }
 
-void EntityManager::DestroyEntity(std::shared_ptr<Entity> entity)
+void EntityManager::DestroyEntity(Entity* entity)
 {
 	entity->CleanUp();
 	entities.remove(entity);
 }
 
-void EntityManager::AddEntity(std::shared_ptr<Entity> entity)
+void EntityManager::AddEntity(Entity* entity)
 {
 	if (entity != nullptr) entities.push_back(entity);
 }
@@ -104,7 +107,7 @@ bool EntityManager::Update(float dt)
 	bool ret = true;
 
 	//List to store entities pending deletion
-	std::list<std::shared_ptr<Entity>> pendingDelete;
+	std::list<Entity*> pendingDelete;
 
 	//Iterates over the entities and calls Update//List to store entities pending deletion
 	for (const auto entity : entities)
@@ -116,7 +119,7 @@ bool EntityManager::Update(float dt)
 		}
 
 		if (entity->active == false) continue;
-		ret = entity->Update(dt);
+		entity->Update(dt);
 	}
 
 	//Now iterates over the pendingDelete list and destroys the entities
@@ -125,5 +128,17 @@ bool EntityManager::Update(float dt)
 		DestroyEntity(entity);
 	}
 
+	return ret;
+}
+
+bool EntityManager::Render()
+{
+	bool ret = true;
+
+	for (const auto entity : entities) {
+
+		if (entity->active == false) continue;
+		ret = entity->Render();
+	}
 	return ret;
 }

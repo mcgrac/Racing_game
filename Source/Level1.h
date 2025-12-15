@@ -1,24 +1,46 @@
 #pragma once
 #include "Map.h"
 
+class Checkpoint;
+
 class Level1 : public Map {
 
 public:
 
-    Level1(ModulePhysics* physics, Module* _listener);
+    Level1(ModulePhysics* _physics, Module* _listener, EntityManager* _entityManager);
     ~Level1();
 
-    void Start() override;
-    void Update() override;
+    //void Start() override;
+    //void Update() override;
+    bool Load() override;
     void RenderBackground() override;
     void RenderTop() override;
     void CleanUp() override;
-
-protected:
+    void UpdateMusic() override;
 
 private:
 
+    void InitializeStartingGrid();
+    void LoadColliders(const char* filePath);
+    void LoadBoosts();
+    void LoadAllChains(const char* filePath);
+    void LoadCheckpoints(const char* filePath);
+
+    ModulePhysics* physics;
+    Module* listener; // listener for everithing
+    EntityManager* entityManager; //creation entities
+
+    //bosts
+    std::vector<Boost*> boostsList;
+    
+    //checkpoints
+    std::vector<Checkpoint*> checkpointsList;
+
+    //textures
     Texture2D floor;
     Texture2D overMap;
 
+    //music
+    Sound inGameMusicBeggining;
+    Sound inGameMusic;
 };
