@@ -98,6 +98,8 @@
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="Source/Cleffa.cpp" />
+      <Filter>Sources</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Checkpoint.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
