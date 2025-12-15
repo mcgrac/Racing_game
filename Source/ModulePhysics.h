@@ -60,6 +60,7 @@ enum PhysicCategory {
 	SENSORS = 1 << 3,
 	DESTRUCTIBLE = 1 << 4,
 	AI = 1 << 5,
+	CHECKPOINTS = 1 << 6
 
 };
 

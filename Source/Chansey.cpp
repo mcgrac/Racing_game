@@ -364,7 +364,7 @@ bool Chansey::ShouldBrake(const Vector2D& targetPos)
 
 #pragma region NON AI CONTROL
 void Chansey::ApplyCarPhysics(float dt) {
-    std::cout << "Is boosted: " << isBoosted << std::endl;
+    //std::cout << "Is boosted: " << isBoosted << std::endl;
 
     b2Body* body = physBody->body;
 

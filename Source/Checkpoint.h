@@ -4,12 +4,12 @@
 class Checkpoint: public Entity {
 public:
 
-	Checkpoint(Module* _listener, const Vector2D& pos, const int* points, float _rotation, EntityType _type, int _id, uint16 category, uint16 maskBits, int16 groupIndex = 0);
+	Checkpoint(Module* _listener, const Vector2D& pos, EntityType _type, int _id, uint16 category, uint16 maskBits, int16 groupIndex, const int* points, int size);
 	~Checkpoint();
 
 private:
 
-	void InitPhysics(uint16 category, uint16 maskBits, int16 groupIndex);
+	void InitPhysics(uint16 category, uint16 maskBits, int16 groupIndex, const int* points, int size);
+
 	int id; //to identify the checkpoints
-	float rotation;
 };

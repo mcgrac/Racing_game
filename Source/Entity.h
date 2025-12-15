@@ -97,11 +97,11 @@ public:
 	inline const Vector2D& GetPosition() const { return position; }
 	inline float GetX() const { return position.getX(); }
 	inline float GetY() const { return position.getY(); }
+	inline PhysBody* GetPhysBody() { return physBody; }
 
 	// Setters
 	inline void SetPosition(const Vector2D& pos) { position = pos; }
 	inline void SetPosition(float x, float y) { position.setX(x); position.setY(y); }
-	inline PhysBody* GetPhysBody() { return physBody; }
 	inline void SetIsPlayer(bool b) { isPlayer = b; }
 
 protected:
