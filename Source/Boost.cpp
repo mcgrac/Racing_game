@@ -32,11 +32,12 @@ void Boost::InitPhysics(uint16 category, uint16 maskBits, int16 groupIndex)
 	}
 
     physBody = listener->App->physics->CreateRectangleSensor(
-        position.getX() /*+ (width / 2)*/,
-        position.getY() /*+ (height / 2)*/,
+        position.getX(),
+        position.getY(),
         50.0f,
         50.0f,
-        b2_dynamicBody,
+        0.0f,
+        b2_staticBody,
         category,
         maskBits,
         groupIndex);

@@ -4,6 +4,7 @@
 #include "ModulePhysics.h"
 #include "EntityManager.h"
 #include "Boost.h"
+#include "Checkpoint.h"
 #include <fstream>      
 #include <sstream>      
 #include <string>       

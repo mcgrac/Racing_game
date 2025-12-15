@@ -31,6 +31,9 @@ private:
 	void SyncPositionFromPhysics();
 	void Boost(float dt) override;
 
+	//player control
+	void ApplyCarPhysics(float dt);
+
 	//AI controls
 	//Control IA
 	void ApplyAIControl(float dt);

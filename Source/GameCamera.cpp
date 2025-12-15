@@ -80,7 +80,7 @@ void GameCamera::SetViewportSize(float width, float height) {
     viewportHeight = height;
 }
 
-void GameCamera::FollowPlayer(Player* player) {
+void GameCamera::FollowPlayer(Entity* player) {
     if (!player) return;
 
     LOG("Establishing center");

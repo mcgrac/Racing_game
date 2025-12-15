@@ -46,6 +46,7 @@ bool Level1::Load()
 	InitializeStartingGrid();
 	LoadColliders("Assets/Coordinates.txt");
     LoadBoosts();
+    LoadCheckpoints("Assets/Checkpoints.txt");
 
     PlaySound(inGameMusicBeggining); //play the intro of the level
 	return true;
@@ -85,10 +86,8 @@ void Level1::InitializeStartingGrid()
 {
     // Limpiar posiciones previas por si acaso
     startingPositions.clear();
-    //startingRotations.clear();
 
     // Definir las 4 posiciones de la parrilla de salida
-    // Ajusta estos valores según tu circuito
     // Formato: 2 filas de 2 coches cada una
 
     // Fila 1 (pole position)
@@ -98,12 +97,6 @@ void Level1::InitializeStartingGrid()
     // Fila 2
     startingPositions.emplace_back(Vector2D(1220.0f, 2110.0f));  // Posición 3 (izquierda)
     startingPositions.emplace_back(Vector2D(1350.0f, 2110.0f));  // Posición 4 (derecha)
-
-    // Rotaciones iniciales (todas mirando hacia arriba = 0 grados)
-    // Si tu pista va en otra dirección, ajusta estos valores
-    //for (int i = 0; i < 4; i++) {
-    //    startingRotations.push_back(0.0f);  // 0° = mirando hacia arriba
-    //}
 
     LOG("Starting grid initialized with %d positions", startingPositions.size());
 }
@@ -159,4 +152,64 @@ void Level1 :: LoadAllChains(const char* filePath)
             std::cerr << "No se pudieron leer coordenadas en la línea: " << line << std::endl;
         }
     }
+}
+
+void Level1::LoadCheckpoints(const char* filePath)
+{
+    std::ifstream file(filePath);
+    if (!file.is_open()) {
+        std::cerr << "Error al abrir el archivo: " << filePath << std::endl;
+        return;
+    }
+    std::vector<int> pts;
+    int x, y;
+
+    std::string line;
+    int currentId = 0; // Para asignar un ID único a cada checkpoint
+
+    while (std::getline(file, line)) {
+
+        // Eliminar espacios/tabs al inicio y final
+        line.erase(0, line.find_first_not_of(" \t"));
+        line.erase(line.find_last_not_of(" \t") + 1);
+
+        if (line == "END")
+        {
+            // Crear el collider con pts
+            physics->CreatePolygon(0, 0, pts.data(), pts.size(), b2_staticBody, PhysicCategory::WALLS, PhysicCategory::CARS, 0);
+            pts.clear();
+            continue;
+        }
+
+        std::stringstream ss(line);
+        if (ss >> x >> y) {
+
+            pts.emplace_back(x);
+            pts.emplace_back(y);
+
+            Module* _listener = listener;
+            EntityType type = EntityType::CHECKPOINT;
+            Vector2D pos((float)x, (float)y);
+
+            Checkpoint* newCheckpoint = new Checkpoint(
+                _listener,
+                pos,
+                rotationDegrees,
+                type,
+                currentId,
+                PhysicCategory::SENSORS,
+                PhysicCategory::CARS | PhysicCategory::AI
+            );
+            currentId++;
+
+            checkpointsList.emplace_back(newCheckpoint);
+        }
+        else {
+            // Error al leer la línea (quizás está vacía o mal formateada)
+            std::cerr << "Advertencia: Línea mal formateada o vacía en el archivo de checkpoints: " << line << std::endl;
+        }
+    }
+
+    // El archivo se cierra automáticamente al salir del scope (RAII)
+    std::cout << "Cargados " << currentId << " checkpoints desde " << filePath << std::endl;
 }

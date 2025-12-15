@@ -30,7 +30,7 @@ public:
 	float GetSmoothSpeed() const { return smoothSpeed; }
 
 	// Updates camera ith player position
-	void FollowPlayer(Player* player);
+	void FollowPlayer(Entity* player);
 	void SetTarget(const Vector2D& targetPos);
 
 	void CenterOn(const Vector2D& pos);

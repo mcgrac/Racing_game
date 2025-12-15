@@ -289,6 +289,43 @@ PhysBody* ModulePhysics::CreateChain(int x, int y, const int* points, int size, 
 	return pbody;
 }
 
+PhysBody* ModulePhysics::CreateChainSensor(int x, int y, const int* points, int size, b2BodyType type, uint16 categoryBits, uint16 maskBits, int16 groupIndex)
+{
+	PhysBody* pbody = new PhysBody();
+
+	b2BodyDef bodyDef;
+	bodyDef.type = type;
+	bodyDef.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
+	bodyDef.userData.pointer = reinterpret_cast<uintptr_t>(pbody);
+
+	b2Body* b = world->CreateBody(&bodyDef);
+
+	b2ChainShape shape;
+	b2Vec2* p = new b2Vec2[size / 2];
+
+	for (int i = 0; i < size / 2; ++i) {
+		p[i].x = PIXEL_TO_METERS(points[i * 2 + 0]);
+		p[i].y = PIXEL_TO_METERS(points[i * 2 + 1]);
+	}
+
+	shape.CreateLoop(p, size / 2);
+
+	b2FixtureDef fixture;
+	fixture.shape = &shape;
+	fixture.isSensor = true;
+
+	fixture.filter.categoryBits = categoryBits;
+	fixture.filter.maskBits = maskBits;
+	fixture.filter.groupIndex = groupIndex;
+	b->CreateFixture(&fixture);
+
+	delete[] p;
+
+	pbody->body = b;
+	pbody->width = pbody->height = 0;
+	return pbody;
+}
+
 PhysBody* ModulePhysics::CreateRectangle(int x, int y, int width, int height, b2BodyType type, uint16 categoryBits, uint16 maskBits, int16 groupIndex)
 {
 	PhysBody* pbody = new PhysBody();
@@ -356,13 +393,14 @@ PhysBody* ModulePhysics::CreateRectangleSensor(int x, int y, int width, int heig
 	return pbody;
 }
 
-PhysBody* ModulePhysics::CreateRectangleSensor(int x, int y, int width, int height, b2BodyType type, uint16 categoryBits, uint16 maskBits, int16 groupIndex)
+PhysBody* ModulePhysics::CreateRectangleSensor(int x, int y, int width, int height, float rotation, b2BodyType type, uint16 categoryBits, uint16 maskBits, int16 groupIndex)
 {
 	PhysBody* pbody = new PhysBody();
 
 	b2BodyDef bodyDef;
 	bodyDef.type = type;
 	bodyDef.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
+	bodyDef.angle = rotation * DEGTORAD;
 	bodyDef.userData.pointer = reinterpret_cast<uintptr_t>(pbody);
 
 	b2Body* b = world->CreateBody(&bodyDef);
