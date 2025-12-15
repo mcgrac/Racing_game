@@ -76,9 +76,17 @@ void Meganium::SyncPositionFromPhysics()
     rotation = angle * RAD2DEG;
 }
 
+void Meganium::LoadPortraits() {
+    neutral_portrait = LoadTexture("Assets/Textures/UI/InGame/Portraits/MeganiumPortrait.png");
+    happy_portrait = LoadTexture("Assets/Textures/UI/InGame/Portraits/MeganiumVeryHappy.png");
+    stunned_portrait = LoadTexture("Assets/Textures/UI/InGame/Portraits/MeganiumStunned.png");
+    sad_portrait = LoadTexture("Assets/Textures/UI/InGame/Portraits/MeganiumVerySad.png");
+}
+
 // Load assets
 bool Meganium::Start()
 {
+    LoadPortraits();
     LOG("Loading player");
     return true;
 }

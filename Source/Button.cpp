@@ -1,8 +1,12 @@
 #include "Button.h"
 
 Button::Button(Texture2D buttonUp,
+
+    //textures
     Texture2D buttonDown,
     Texture2D buttonSelected,
+
+    //sounds
     Sound pressSound,
     Sound selectSound,
     Vector2 position,

@@ -2,6 +2,8 @@
 
 #include "raylib.h"
 #include <vector>
+#include "Scene.h"
+#include "Module.h"
 
 enum class GameSceneState {
 	MAIN_MENU,
@@ -11,9 +13,14 @@ enum class GameSceneState {
 };
 
 class SceneManager {
+public:
+	SceneManager();
+	~SceneManager();
+
 private:
 
-	//int currentScreenID();
+	int currentScreenID();
+	std::vector<Scene*> scenes;
 
 public:
 
@@ -22,10 +29,12 @@ public:
 
 	void Start();
 	void Update();
+	void render();
 
 	//void SwitchScreen(int screenID);
 	//void MoveSelector();
 
+	GameSceneState state;
 
 
 };

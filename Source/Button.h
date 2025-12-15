@@ -10,7 +10,7 @@ public:
         Texture2D buttonSelected,
         Sound pressSound, Sound selectSound,
         Vector2 position,
-        float pressDuration = 0.2f);
+        float pressDuration = 0.2f) {};
 
     ~Button() {}
 
@@ -39,4 +39,12 @@ private:
     bool isSelected = false;
     float pressTime = 0.0f;
     float pressDuration;       // How long the button stays down
+};
+
+class ChangeSceneButton : public Button {
+    void press();
+};
+
+class MenuButton : public Button {
+    void press();
 };

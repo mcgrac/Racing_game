@@ -71,7 +71,15 @@ protected:
 	};
 	Statistics stats;
 	//afegir tilset
-	//afegir icona
+	
+	Texture texture;
+	//Icones portraits
+	Texture2D neutral_portrait;
+	Texture2D happy_portrait;
+	Texture2D stunned_portrait;
+	Texture2D sad_portrait;
+
+	void LoadPortraits();
 
 	//void function
 	void usePower();

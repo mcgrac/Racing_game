@@ -75,9 +75,17 @@ void Pachirisu::SyncPositionFromPhysics()
     rotation = angle * RAD2DEG;
 }
 
+void Pachirisu::LoadPortraits() {
+    neutral_portrait = LoadTexture("Assets/Textures/UI/InGame/Portraits/PachirisuPortrait.png");
+    happy_portrait = LoadTexture("Assets/Textures/UI/InGame/Portraits/PachirisuVeryHappy.png");
+    stunned_portrait = LoadTexture("Assets/Textures/UI/InGame/Portraits/PachirisuStunned.png");
+    sad_portrait = LoadTexture("Assets/Textures/UI/InGame/Portraits/PachirisuVerySad.png");
+}
+
 // Load assets
 bool Pachirisu::Start()
 {
+    LoadPortraits();
     LOG("Loading player");
     return true;
 }

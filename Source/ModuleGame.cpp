@@ -28,7 +28,7 @@ ModuleGame::ModuleGame(Application* app, bool start_enabled) : Module(app, start
 
 ModuleGame::~ModuleGame()
 {
-
+	
 }
 
 // Load assets
@@ -38,6 +38,8 @@ bool ModuleGame::Start()
 	bool ret = true;
 
 	entityManager = new EntityManager();
+
+	sceneManager = new SceneManager();
 
 	//CREATION ENTITIES
 	//Player
@@ -101,7 +103,10 @@ update_status ModuleGame::PostUpdate()
 	//Raylib camera behaviour (start camera mode)
 	BeginMode2D(camera->GetRaylibCamera());
 	//render map background (floor)
-	if (currentMap) { currentMap->RenderBackground(); }
+	//add scene manager render
+
+	
+	//if (currentMap) { currentMap->RenderBackground(); } //comented code
 	//render entities
 	entityManager->Render();
 

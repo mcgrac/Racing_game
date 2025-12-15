@@ -11,10 +11,13 @@
 #include"Level1.h"
 #include "GameCamera.h"
 
+#include"SceneManager.h"
+
 class PhysBody;
 class PhysicEntity;
 class EntityManager;
-class Player;        
+class Player;  
+class SceneManager;
 
 class ModuleGame : public Module
 {
@@ -52,6 +55,8 @@ private:
 	GameCamera* camera = nullptr;
 
 	EntityManager* entityManager = nullptr;
+
+	SceneManager* sceneManager = nullptr;
 
 	//testing
 	Player* playerTesting = nullptr;
