@@ -34,6 +34,9 @@ In Game:
 * {Marc Vendrell} - {Programmer and Game Designer}
 * {Bernat Pazos} - {Main Artist and Main Game Designer} - Also responsable for documentation like this doc and the class presentation
 
+##Isues and problems
+The implementation of the menus and the scenes is limited due to a problem the team had while impelementing the gameover scene of the game. Due to this problem there have been two versions created, one with the interface that was planned beforehand and another one with a simple but functional UI.
+
 ## License
 
 This project is licensed under an unmodified MIT license, which is an OSI-certified license that allows static linking with closed source software. Check [LICENSE](LICENSE) for further details.
