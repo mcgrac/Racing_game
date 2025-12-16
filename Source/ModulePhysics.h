@@ -85,6 +85,7 @@ public:
 	PhysBody* CreateChain(int x, int y, const int* points, int size, b2BodyType type, uint16 categoryBits, uint16 maskBits, int16 groupIndex);
 	PhysBody* CreateChainSensor(int x, int y, const int* points, int size, b2BodyType type, uint16 categoryBits, uint16 maskBits, int16 groupIndex);
 	PhysBody* CreatePolygon(int x, int y, int* points, int count, b2BodyType type, uint16 categoryBits, uint16 maskBits, int16 groupIndex);
+	PhysBody* CreatePolygonSensor(int x, int y, int* points, int count, b2BodyType type, uint16 categoryBits, uint16 maskBits, int16 groupIndex);
 
 	void BeginContact(b2Contact* contact) override;
 	void EndContact(b2Contact* contact) override;

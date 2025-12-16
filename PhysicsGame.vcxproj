@@ -209,6 +209,7 @@
     <ClInclude Include="Source\Map.h" />
     <ClInclude Include="Source\Meganium.h" />
     <ClInclude Include="Source\ModuleGame.h" />
+    <ClInclude Include="Source\Off_road.h" />
     <ClInclude Include="Source\Pachirisu.h" />
     <ClInclude Include="Source\Player.h" />
     <ClInclude Include="Source\PositionTracker.h" />
@@ -248,6 +249,7 @@
     <ClCompile Include="Source\Map.cpp" />
     <ClCompile Include="Source\Meganium.cpp" />
     <ClCompile Include="Source\ModuleGame.cpp" />
+    <ClCompile Include="Source\Off_road.cpp" />
     <ClCompile Include="Source\Pachirisu.cpp" />
     <ClCompile Include="Source\Player.cpp" />
     <ClCompile Include="Source\PositionTracker.cpp" />

@@ -218,18 +218,59 @@ void ModuleGame::OnCollision(PhysBody* physA, PhysBody* physB) {
 		}
 		break;
 		}
+		{
+	case EntityType::OFF_ROAD:
+		std::cout << "Off road enter" << std::endl;
+		Characters* chara = dynamic_cast<Characters*>(player);
+		if (chara->GetCurrentState() != 2 && !chara->GetIsOffRoad()) { //if not stunned
+			std::cout << "Max speed before entering: " << chara->GetMaxSpeed() << std::endl;
+			chara->SetIsOffRoad(true);
+			chara->SetMaxSpeed(chara->GetMaxSpeed() / 2.0f);
+			std::cout << "Max speed after entering: " << chara->GetMaxSpeed() << std::endl;
+		}
+		break;
+		}
 	default:
 		break;
 	}
 }
 
 void ModuleGame::OnCollisionEnd(PhysBody* physA, PhysBody* physB) {
-	//Entity* entityA = reinterpret_cast<Entity*>(physA->body->GetUserData().pointer);
-	//Entity* entityB = reinterpret_cast<Entity*>(physB->body->GetUserData().pointer);
+	if (!physA->entity || !physB->entity) { return; }
 
-	//if (!entityA || !entityB) return;
+	Entity* player = nullptr;
+	Entity* other = nullptr;
 
-	//LOG("COLLISION END: %d vs %d", (int)entityA->GetType(), (int)entityB->GetType());
+	Entity* entityA = physA->entity;
+	Entity* entityB = physB->entity;
+
+	//if the entity is the player
+	if (entityA->type == EntityType::PLAYER || entityA->type == EntityType::AI) {
+		player = entityA;
+		other = entityB;
+	}
+	else if (entityB->type == EntityType::PLAYER || entityB->type == EntityType::AI) {
+		player = entityB;
+		other = entityA;
+	}
+
+	switch (other->type)
+	{
+		{
+	case EntityType::OFF_ROAD:
+		std::cout << "Off road exit" << std::endl;
+		Characters* chara = dynamic_cast<Characters*>(player);
+		if (chara->GetIsOffRoad()) {
+			std::cout << "Max speed before exiting: " << chara->GetMaxSpeed() << std::endl;
+			chara->SetIsOffRoad(false);
+			chara->SetMaxSpeed(chara->GetMaxSpeed() * 2.0f);
+			std::cout << "Max speed after exiting: " << chara->GetMaxSpeed() << std::endl;
+		}
+		break;
+		}
+	default:
+		break;
+	}
 }
 
 void ModuleGame::GetPokemonChoosenByPlayer()

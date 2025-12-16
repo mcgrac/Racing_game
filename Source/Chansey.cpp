@@ -157,6 +157,7 @@ bool Chansey::Update(float dt)
 
     UpdateAnims(dt); //update current animation depending on the state
 
+    std::cout << "max speed chansey: " << maxForwardSpeed << std::endl;
     if (currentState == State::PREPARING_ATTACK) {
         if (preparingAttack.GetCurrentFrame() == 2) {
 
@@ -468,7 +469,7 @@ void Chansey::Attack()
 
 void Chansey::Boost(float dt)
 {
-    if (!isBoosted) {
+    if (!isBoosted && !isOffRoad) {
         SetMaxSpeed(10.0f); //setVelocity with no boost
         return;
     }

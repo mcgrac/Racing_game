@@ -473,7 +473,7 @@ void Cleffa::ApplyCarPhysics(float dt) {
 
 void Cleffa::Boost(float dt)
 {
-    if (!isBoosted) {
+    if (!isBoosted && !isOffRoad) {
         SetMaxSpeed(10.0f); //setVelocity with no boost
         return;
     }

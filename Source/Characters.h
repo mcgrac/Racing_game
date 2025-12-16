@@ -49,9 +49,6 @@ public:
 	inline void SetIsBoosted(bool b) {
 		isBoosted = b;
 	}
-	inline void SetOffRoad(int road) {
-		stats.offRoad = road;
-	}
 	inline void SetTurboPower(float f) {
 		turboPower = f;
 	}
@@ -59,7 +56,8 @@ public:
 	inline void SetPositionInRace(int i) { positionInRace = i; }
 	inline void SetStunnedState() { currentState = State::STUNNED; }
 	inline void SetStateTimer(float f) { stateTimer = f; }
-	
+	inline void SetIsOffRoad(bool b) { isOffRoad = b; }
+
 	inline void AddOneLap() { laps++; }
 
 	inline int GetCheckId() { return checkpointArrived; }
@@ -67,6 +65,7 @@ public:
 	inline int GetPositionInRace() { return positionInRace; }
 	inline bool GetIsPlayer() { return isPlayer; }
 	inline int GetCurrentState() const { return (int)currentState; }
+	inline bool GetIsOffRoad() { return isOffRoad; }
 
 	float CalculateDistanceFromCheckpoint(Checkpoint* ch);
 
@@ -93,6 +92,7 @@ protected:
 	//variables
 	float speed;
 	bool textureLoaded;
+	bool isOffRoad;
 
 	//position in the race
 	int positionInRace;

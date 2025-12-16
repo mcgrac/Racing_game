@@ -24,7 +24,8 @@ Characters::Characters(Module* _listener, const Vector2D& startPos, EntityType _
 	isBoosted(false),
 	boostTimer(0.0f),
 	turboPower(0.0f),
-	checkpointArrived(0)
+	checkpointArrived(0),
+	isOffRoad(false)
 {
 	currentState = State::IDLE;
 	previousState = State::IDLE;

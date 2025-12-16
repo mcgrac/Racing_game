@@ -521,7 +521,7 @@ void Meganium::Attack()
 
 void Meganium::Boost(float dt)
 {
-    if (!isBoosted) {
+    if (!isBoosted && !isOffRoad) {
         SetMaxSpeed(10.0f); //setVelocity with no boost
         return;
     }

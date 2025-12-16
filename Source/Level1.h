@@ -22,9 +22,10 @@ private:
 
     void InitializeStartingGrid();
     void LoadColliders(const char* filePath);
-    void LoadBoosts();
+    void LoadBoosts(const char* filePath);
     void LoadAllChains(const char* filePath);
     void LoadCheckpoints(const char* filePath);
+    void LoadOffRoadSensors(const char* filePath);
 
     ModulePhysics* physics;
     Module* listener; // listener for everithing

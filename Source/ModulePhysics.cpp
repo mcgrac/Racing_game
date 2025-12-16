@@ -433,6 +433,46 @@ PhysBody* ModulePhysics::CreatePolygon(int x, int y, int* points, int count, b2B
 
 	return pbody;
 }
+PhysBody* ModulePhysics::CreatePolygonSensor(int x, int y, int* points, int count, b2BodyType type, uint16 categoryBits, uint16 maskBits, int16 groupIndex)
+{
+	// Crear body Box2D
+	b2BodyDef bodyDef;
+	bodyDef.type = type;
+	bodyDef.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
+
+	b2Body* body = world->CreateBody(&bodyDef);
+
+	// Convertir puntos (int[]) → b2Vec2[]
+	b2Vec2* vecs = new b2Vec2[count];
+	for (int i = 0; i < count; i += 2)
+	{
+		vecs[i / 2].Set(PIXEL_TO_METERS(points[i]), PIXEL_TO_METERS(points[i + 1]));
+	}
+
+	b2PolygonShape shape;
+	shape.Set(vecs, count / 2);
+
+	b2FixtureDef fix;
+	fix.shape = &shape;
+	fix.density = 2.0f;
+	fix.friction = 0.5f;
+	fix.restitution = 0.1f;
+
+	fix.filter.categoryBits = categoryBits;
+	fix.filter.maskBits = maskBits;
+	fix.filter.groupIndex = groupIndex;
+	fix.isSensor = true;
+	body->CreateFixture(&fix);
+
+	delete[] vecs;
+
+	// Conectar PhysBody
+	PhysBody* pbody = new PhysBody();
+	pbody->body = body;
+	body->GetUserData().pointer = reinterpret_cast<uintptr_t>(pbody);
+
+	return pbody;
+}
 #pragma endregion
 
 void ModulePhysics::DestroyPhysBody(PhysBody* pbody)

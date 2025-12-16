@@ -45,8 +45,9 @@ bool Level1::Load()
 
 	InitializeStartingGrid();
 	LoadColliders("Assets/Coordinates.txt");
-    LoadBoosts();
+    LoadBoosts("Assets/Boosts.txt");
     LoadCheckpoints("Assets/Sectors.txt");
+    LoadOffRoadSensors("Assets/Off_Road_zones.txt");
 
     PlaySound(inGameMusicBeggining); //play the intro of the level
 	return true;
@@ -107,14 +108,53 @@ void Level1::LoadColliders(const char* filePath)
     LoadAllChains(filePath);
 }
 
-void Level1::LoadBoosts()
+void Level1::LoadBoosts(const char* filePath)
 {
     //create boosts
-    Boost* b = new Boost(listener, Vector2D(1300.0f, 1700.0f), EntityType::TURBO_ON_ROAD, PhysicCategory::SENSORS, PhysicCategory::CARS);
-    boostsList.emplace_back(b);
-    entityManager->AddEntity(b);
+    //Boost* b = new Boost(listener, Vector2D(1300.0f, 1700.0f), EntityType::TURBO_ON_ROAD, PhysicCategory::SENSORS, PhysicCategory::CARS);
+    //boostsList.emplace_back(b);
+    //entityManager->AddEntity(b);
 
-    
+    std::ifstream file(filePath);
+    if (!file.is_open()) {
+        std::cerr << "Error al abrir el archivo: " << filePath << std::endl;
+        return;
+    }
+
+    int x, y;
+    float rotation;
+    std::string line;
+    int lineNumber = 0;
+    while (std::getline(file, line)) {
+
+        lineNumber++;
+        // Eliminar espacios/tabs al inicio y final
+        line.erase(0, line.find_first_not_of(" \t"));
+        line.erase(line.find_last_not_of(" \t") + 1);
+
+
+        if (line.empty())
+        {
+            continue;
+        }
+
+        if (line[0] == '#') {
+            continue;
+        }
+
+        // Leer coordenadas x y
+        std::stringstream ss(line);
+        if (ss >> x >> y >> rotation)
+        {
+            Boost* b = new Boost(listener, Vector2D(x, y), rotation, EntityType::TURBO_ON_ROAD, PhysicCategory::SENSORS, PhysicCategory::CARS);
+            boostsList.emplace_back(b);
+            entityManager->AddEntity(b);
+        }
+        else {
+            std::cerr << "No se pudieron leer coordenadas en la línea " << lineNumber << ": " << line << std::endl;
+        }
+
+    }
 }
 
 void Level1 :: LoadAllChains(const char* filePath)
@@ -212,3 +252,58 @@ void Level1::LoadCheckpoints(const char* filePath)
     // El archivo se cierra automáticamente al salir del scope (RAII)
     std::cout << "Cargados " << currentId << " checkpoints desde " << filePath << std::endl;
 }
+
+void Level1::LoadOffRoadSensors(const char* filePath)
+{
+    std::ifstream file(filePath);
+    if (!file.is_open()) {
+        std::cerr << "Error al abrir el archivo: " << filePath << std::endl;
+        return;
+    }
+    std::vector<int> pts;
+    int x, y;
+
+    std::string line;
+
+    while (std::getline(file, line)) {
+
+        // Eliminar espacios/tabs al inicio y final
+        line.erase(0, line.find_first_not_of(" \t"));
+        line.erase(line.find_last_not_of(" \t") + 1);
+
+        if (line.empty())
+        {
+            continue;
+        }
+
+        if (line[0] == '#') {
+            continue;
+        }
+
+        if (line == "END")
+        {
+            Off_road* o;
+            o = new Off_road(listener, Vector2D(0.0f, 0.0f), EntityType::OFF_ROAD, PhysicCategory::SENSORS, PhysicCategory::CARS, pts.data(), pts.size(), 0);
+            offRoadList.emplace_back(o);
+            pts.clear();
+            continue;
+        }
+
+        std::stringstream ss(line);
+        if (ss >> x >> y) {
+
+            pts.emplace_back(x);
+            pts.emplace_back(y);
+        }
+        else {
+            // Error al leer la línea (quizás está vacía o mal formateada)
+            std::cerr << "Advertencia: Línea mal formateada o vacía en el archivo de checkpoints: " << line << std::endl;
+        }
+    }
+
+    // El archivo se cierra automáticamente al salir del scope (RAII)
+    std::cout << "\nCarga de Off_road Completa." << std::endl;
+    std::cout << "-> Total de tramos en Off_road: " << offRoadList.size() << std::endl;
+
+}
+
