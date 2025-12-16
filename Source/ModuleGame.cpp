@@ -53,6 +53,8 @@ bool ModuleGame::Start()
 
 	loseRaceBadgeTriggered = false;
 	finishTypeBadgeTriggered = false;
+	playerHitRock = false;
+	winNoRockBadgeTriggered = false;
 
 	raceState = RaceState::COUNTDOWN;
 	countdownTimer = 3.0f;
@@ -103,6 +105,21 @@ update_status ModuleGame::Update()
 
 		
 		posTracker->UpdatePositions(racers);
+		if (!winNoRockBadgeTriggered && player)
+		{
+			Characters* playerCar = dynamic_cast<Characters*>(player);
+			if (playerCar)
+			{
+				bool playerFinished = (playerCar->GetLaps() >= lapsToFinish);
+				bool playerWon = (playerCar->GetPositionInRace() == 1);
+
+				if (playerFinished && playerWon && !playerHitRock)
+				{
+					winNoRockBadgeTriggered = true;
+					if (badgesScreen) badgesScreen->TriggerWinNoRockBadge();
+				}
+			}
+		}
 		if (!finishTypeBadgeTriggered && player)
 		{
 			Characters* playerCar = dynamic_cast<Characters*>(player);
@@ -296,6 +313,9 @@ void ModuleGame::OnCollision(PhysBody* physA, PhysBody* physB) {
 		}
 		{
 	case EntityType::ROCK:
+		if (player && player->type == EntityType::PLAYER)
+			playerHitRock = true;
+
 		Interactables* intera = dynamic_cast<Interactables*>(other);
 		PlaySound(intera->GetDestructionSound());
 		intera->SetIsDestroyed(true);

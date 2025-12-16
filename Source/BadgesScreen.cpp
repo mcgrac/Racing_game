@@ -11,17 +11,20 @@ bool BadgesScreen::Load()
     const char* q2Path = "Assets/Textures/UI/Badges/Quest2.png";
     const char* q3Path = "Assets/Textures/UI/Badges/Quest3.png";
     const char* q4Path = "Assets/Textures/UI/Badges/Quest4.png";
+    const char* q5Path = "Assets/Textures/UI/Badges/Quest5.png";
     const char* q8Path = "Assets/Textures/UI/Badges/Quest8.png";
-    const char* sfxPath = "Assets/Audio/GameOver.mp3";
+    const char* sfxPath = "Assets/Sound/Sfx/GameOver.mp3";
 
     if (quest2.id != 0) UnloadTexture(quest2);
     if (quest3.id != 0) UnloadTexture(quest3);
     if (quest4.id != 0) UnloadTexture(quest4);
+    if (quest5.id != 0) UnloadTexture(quest5);
     if (quest8.id != 0) UnloadTexture(quest8);
 
     quest2 = LoadTexture(q2Path);
     quest3 = LoadTexture(q3Path);
     quest4 = LoadTexture(q4Path);
+    quest5 = LoadTexture(q5Path);
     quest8 = LoadTexture(q8Path);
 
     if (IsAudioDeviceReady())
@@ -38,6 +41,7 @@ void BadgesScreen::Unload()
     if (quest2.id != 0) { UnloadTexture(quest2); quest2 = { 0 }; }
     if (quest3.id != 0) { UnloadTexture(quest3); quest3 = { 0 }; }
     if (quest4.id != 0) { UnloadTexture(quest4); quest4 = { 0 }; }
+    if (quest5.id != 0) { UnloadTexture(quest5); quest5 = { 0 }; }
     if (quest8.id != 0) { UnloadTexture(quest8); quest8 = { 0 }; }
 
     if (gameOverSfx.frameCount > 0) { UnloadSound(gameOverSfx); gameOverSfx = { 0 }; }
@@ -81,6 +85,11 @@ void BadgesScreen::TriggerTurboFinishBadge()
 void BadgesScreen::TriggerOffRoadFinishBadge()
 {
     ShowBadge(&quest4, false);
+}
+
+void BadgesScreen::TriggerWinNoRockBadge()
+{
+    ShowBadge(&quest5, false); 
 }
 
 void BadgesScreen::Update(float dt)

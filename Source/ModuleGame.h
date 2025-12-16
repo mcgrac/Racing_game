@@ -71,7 +71,8 @@ private:
 	SceneManager* sceneManager = nullptr;
 
 	BadgesScreen* badgesScreen = nullptr;
-	
+	bool playerHitRock = false;
+	bool winNoRockBadgeTriggered = false;
 	bool loseRaceBadgeTriggered = false;
 	bool finishTypeBadgeTriggered = false;
 	int lapsToFinish = 3; 

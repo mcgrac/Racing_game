@@ -20,6 +20,7 @@ public:
     void TriggerAccelerationFinishBadge(); 
     void TriggerTurboFinishBadge();        
     void TriggerOffRoadFinishBadge();      
+    void TriggerWinNoRockBadge();
 
     bool IsShowing() const { return showing; }
 
@@ -29,8 +30,10 @@ private:
 private:
     Texture2D quest2 = { 0 }; // Acceleration
     Texture2D quest3 = { 0 }; // Turbo
+    Texture2D quest5 = { 0 }; // Win without hitting rock
     Texture2D quest4 = { 0 }; // Off-road
     Texture2D quest8 = { 0 }; // Lose race
+
 
     Sound gameOverSfx = { 0 };
 
