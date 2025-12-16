@@ -51,6 +51,7 @@ void StartScreen::Start() {
 	buttons.push_back(b);
 
 	selButton = StartMenuSelectedButton::PLAY;
+	buttonId = 0;
 }
 
 void StartScreen::Draw() {
@@ -99,7 +100,21 @@ void StartScreen::UnloadAssets() {
 }
 
 void StartScreen::Update() {
-	IsKeyDown(KEY_RIGHT)
+	IsKeyDown(KEY_UP) {
+		if (ButtonId > 0) {
+			ButtonsId++;
+			playSound(buttonSelected);
+		}
+	}
+	IsKeyDown(KEY_DOWN) {
+		if (ButtonId < buttons.size() - 1) {//mes petit que 3
+			buttonsId--;
+			playSound(buttonSelected);
+		}
+	}
+	IsKeyEnter(ENTER) {
+		buttons[buttonsId]->pressed();
+	}
 }
 
 
