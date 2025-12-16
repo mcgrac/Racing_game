@@ -51,7 +51,8 @@ bool ModuleGame::Start()
 	badgesScreen = new BadgesScreen();
 	badgesScreen->Load();
 
-	raceFinished = false;
+	loseRaceBadgeTriggered = false;
+	finishTypeBadgeTriggered = false;
 
 	raceState = RaceState::COUNTDOWN;
 	countdownTimer = 3.0f;
@@ -102,7 +103,30 @@ update_status ModuleGame::Update()
 
 		
 		posTracker->UpdatePositions(racers);
-		if (!raceFinished && player)
+		if (!finishTypeBadgeTriggered && player)
+		{
+			Characters* playerCar = dynamic_cast<Characters*>(player);
+			if (playerCar && playerCar->GetLaps() >= lapsToFinish)
+			{
+				finishTypeBadgeTriggered = true;
+
+				if (badgesScreen)
+				{
+					// 1 Cleffa, 2 Chansey -> Acceleration
+					if (choosenPokemon == 1 || choosenPokemon == 2)
+						badgesScreen->TriggerAccelerationFinishBadge();
+
+					// 3 Pachirisu -> Turbo
+					else if (choosenPokemon == 3)
+						badgesScreen->TriggerTurboFinishBadge();
+
+					// 4 Meganium -> Off-road
+					else if (choosenPokemon == 4)
+						badgesScreen->TriggerOffRoadFinishBadge();
+				}
+			}
+		}
+		if (!loseRaceBadgeTriggered && player)
 		{
 			Characters* playerCar = dynamic_cast<Characters*>(player);
 			if (playerCar)
@@ -112,18 +136,13 @@ update_status ModuleGame::Update()
 				for (Entity* r : racers)
 				{
 					if (!r || r == player) continue;
-
 					Characters* other = dynamic_cast<Characters*>(r);
 					if (!other) continue;
 
-					
 					if (other->GetLaps() >= lapsToFinish && playerLaps < lapsToFinish)
 					{
-						raceFinished = true;
-
-						if (badgesScreen)
-							badgesScreen->TriggerLoseRaceBadge();
-
+						loseRaceBadgeTriggered = true;
+						if (badgesScreen) badgesScreen->TriggerLoseRaceBadge();
 						break;
 					}
 				}

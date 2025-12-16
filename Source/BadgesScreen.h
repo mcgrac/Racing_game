@@ -7,27 +7,38 @@ public:
     BadgesScreen() = default;
     ~BadgesScreen();
 
-    bool Load();    
+    bool Load();
     void Unload();
 
     void Update(float dt);
     void Draw() const;
 
-    // Achievement: Lose a race
-    void TriggerLoseRaceBadge();
+    
+    void TriggerLoseRaceBadge(); 
+
+    
+    void TriggerAccelerationFinishBadge(); 
+    void TriggerTurboFinishBadge();        
+    void TriggerOffRoadFinishBadge();      
+
     bool IsShowing() const { return showing; }
-    bool LoseRaceUnlocked() const { return loseRaceUnlocked; }
 
 private:
-    Texture2D quest8 = { 0 };
+    void ShowBadge(Texture2D* tex, bool playSound);
+
+private:
+    Texture2D quest2 = { 0 }; // Acceleration
+    Texture2D quest3 = { 0 }; // Turbo
+    Texture2D quest4 = { 0 }; // Off-road
+    Texture2D quest8 = { 0 }; // Lose race
+
     Sound gameOverSfx = { 0 };
 
-    bool assetsLoaded = false;
+    Texture2D* currentTex = nullptr;
 
-    bool loseRaceUnlocked = false;
     bool showing = false;
     bool playedSfx = false;
 
     float timer = 0.0f;
-    float showDuration = 3.5f; 
+    float showDuration = 3.5f;
 };

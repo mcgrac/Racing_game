@@ -71,8 +71,12 @@ private:
 	SceneManager* sceneManager = nullptr;
 
 	BadgesScreen* badgesScreen = nullptr;
-	bool raceFinished = false;
-	int lapsToFinish = 3;
+	
+	bool loseRaceBadgeTriggered = false;
+	bool finishTypeBadgeTriggered = false;
+	int lapsToFinish = 3; 
+
+
 
 	RaceState raceState;
 	float countdownTimer;
