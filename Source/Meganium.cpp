@@ -6,8 +6,12 @@ Meganium::Meganium(Module* _listener, const Vector2D& startPos, EntityType _type
     : Characters(_listener, startPos, _type, category, maskBits)
 {
     LoadAnimations();
-    //create physbody
     InitPhysics(category, maskBits, groupIndex);
+
+    maxForwardSpeed = 60.0f;
+    accelerationForce = 100.0f;
+    turnTorque = 30.0f;
+    brakeForce = 45.0f;
 }
 
 Meganium::~Meganium()
@@ -39,7 +43,7 @@ void Meganium::InitPhysics(uint16 category, uint16 maskBits, int16 groupIndex)
         //set fixture
         b2Fixture* fixture = physBody->body->GetFixtureList();
         if (fixture) {
-            fixture->SetDensity(1.2f); //density (mass)
+            fixture->SetDensity(1.1f); //density (mass)
             fixture->SetFriction(0.4f); //friction with the floor
             fixture->SetRestitution(0.2f); //doesn't bounce
         }
@@ -87,9 +91,21 @@ bool Meganium::Start()
 void Meganium::LoadAnimations()
 {
     //Idle animations
-    idleAnimation.AddTexture("Assets/Textures/Cars/CarChanseyIdle1.png");
-    idleAnimation.AddTexture("Assets/Textures/Cars/CarChanseyIdle2.png");
+    idleAnimation.AddTexture("Assets/Textures/Cars/MeganiumIdle1.png");
+    idleAnimation.AddTexture("Assets/textures/Cars/MeganiumCar.png");
+    idleAnimation.AddTexture("Assets/Textures/Cars/MeganiumIdle3.png");
+    idleAnimation.AddTexture("Assets/textures/Cars/MeganiumCar.png");
 
+    //prepare attack
+    preparingAttack.AddTexture("Assets/Textures/Cars/MeganiumAttack1.png");
+    preparingAttack.AddTexture("Assets/Textures/Cars/MeganiumAttack2.png");
+    preparingAttack.AddTexture("Assets/Textures/Cars/MeganiumAttack3.png");
+
+    //atacking
+    attackAnimation.AddTexture("Assets/Textures/Cars/MeganiumAttack3.png");
+
+    //stunned animations
+    stunnedAnimation.AddTexture("Assets/Textures/Cars/MeganiumHurt.png");
 
     // Obtain size textures
     if (idleAnimation.IsValid()) {
@@ -121,6 +137,9 @@ void Meganium::UpdateAnims(float dt)
     case Characters::State::STUNNED:
         stunnedAnimation.Update(dt);
         break;
+    case Characters::State::PREPARING_ATTACK:
+        preparingAttack.Update(dt);
+        break;
     default:
         break;
     }
@@ -139,9 +158,57 @@ bool Meganium::CleanUp()
 // Update: draw background
 bool Meganium::Update(float dt)
 {
-    //if (!active) { return; }
-    UpdateState(dt); //check if there is a temporal state, like stunned
+    if (IsKeyPressed(KEY_SPACE) && currentState == State::IDLE && isPlayer) {
+        Attack();
+    }
+
     UpdateAnims(dt); //update current animation depending on the state
+
+    if (currentState == State::PREPARING_ATTACK) {
+        if (preparingAttack.GetCurrentFrame() == 2) {
+
+            preparingAttack.Reset();
+
+            if (!attack)
+            {
+                attack = new SolarBeam(listener, position, EntityType::ATTACK, PhysicCategory::ATTACK, PhysicCategory::AI, rotation);
+            }
+
+            currentState = State::ATTACK;
+        }
+    }
+
+    if (currentState == State::ATTACK) {
+
+        stateTimer += dt;
+
+        Vector2D carCenter = GetCenter();
+        attack->SetPositionAndRotation(carCenter, rotation);
+
+        attack->Update(dt);
+
+        if (stateTimer >= 5.0f) {
+
+            delete attack;
+            attack = nullptr;
+
+            currentState = State::IDLE;
+            stateTimer = 0.0f;
+        }
+    }
+    
+
+    if (currentState == State::STUNNED) {
+        //be stunned for a while
+        if (stateTimer >= 2.0f) {
+            std::cout << "max Speed before stunned: " << GetMaxSpeed() << std::endl;
+            maxForwardSpeed = maxForwardSpeed / 2.0f;
+            std::cout << "max Speed after stunned" << GetMaxSpeed() << std::endl;
+        }
+        std::cout << "Stunned" << std::endl;
+        UpdateState(dt);
+
+    }
 
     if (isPlayer)
     {
@@ -363,7 +430,6 @@ bool Meganium::ShouldBrake(const Vector2D& targetPos)
 
 #pragma region NON AI CONTROL
 void Meganium::ApplyCarPhysics(float dt) {
-    std::cout << "Is boosted: " << isBoosted << std::endl;
 
     b2Body* body = physBody->body;
 
@@ -412,12 +478,12 @@ void Meganium::ApplyCarPhysics(float dt) {
     {
         float torqueAmount = 0.0f;
 
-        if (IsKeyDown(KEY_D))
+        if (IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT))
         {
             // Girar a la derecha (sentido horario, Box2D usa negativo)
             torqueAmount = +turnTorque;
         }
-        else if (IsKeyDown(KEY_A))
+        else if (IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT))
         {
             // Girar a la izquierda (sentido antihorario, Box2D usa positivo)
             torqueAmount = -turnTorque;
@@ -445,6 +511,12 @@ void Meganium::ApplyCarPhysics(float dt) {
     // Actualizar la variable de velocidad para el HUD/Game
     this->speed = speed + turboPower;
 }
+void Meganium::Attack()
+{
+    std::cout << "Pressed space key -> attack" << std::endl;
+    previousState = currentState;
+    currentState = State::PREPARING_ATTACK;
+}
 #pragma endregion
 
 void Meganium::Boost(float dt)
@@ -461,6 +533,10 @@ void Meganium::Boost(float dt)
 }
 
 bool Meganium::Render() {
+
+    if (attack != nullptr) {
+        attack->Render();
+    }
 
     // Obtener posición y rotación del cuerpo físico
     b2Vec2 pos = physBody->body->GetPosition();
@@ -480,6 +556,11 @@ bool Meganium::Render() {
 
     case State::ATTACK:
         currentTexture = attackAnimation.GetCurrentTexture();
+        break;
+    case Characters::State::PREPARING_ATTACK:
+        currentTexture = preparingAttack.GetCurrentTexture();
+        break;
+    default:
         break;
     }
 

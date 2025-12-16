@@ -46,7 +46,7 @@ void Animation::Update(float dt)
 void Animation::Reset()
 {
     currentFrame = 0;
-    frameTime = 0.0f;
+    //frameTime = 0.0f;
 }
 
 Texture2D Animation::GetCurrentTexture() const

@@ -8,8 +8,9 @@
 #include "raylib.h"
 #include <vector>
 
-#include"Level1.h"
+#include "Level1.h"
 #include "GameCamera.h"
+#include "PositionTracker.h"
 
 #include "Cleffa.h"
 #include "Meganium.h"
@@ -53,9 +54,9 @@ private:
 	//std::vector<Player*> racers;
 	std::vector<Entity*> racers;
 	Entity* player = nullptr;
-	int choosenPokemon = 2; //hardcode chansey selection
+	int choosenPokemon = 4; //hardcode chansey selection
 
 	GameCamera* camera = nullptr;
-
+	PositionTracker* posTracker = nullptr;
 	EntityManager* entityManager = nullptr;
 };
