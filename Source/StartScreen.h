@@ -19,10 +19,18 @@ private:
 	bool hasPressBadge = false;
 	bool hasPressQuit = false;
 
+	Texture2D backgroundMainMenu = { 0 };
+	Texture2D mainMenuTitle = { 0 };
+
 public:
 	StartScreen() {}
-	//void Update();
-	//void Draw();
+	~StartScreen();
+	
+	bool LoadBackgroundMainMenu();
+	void UnloadBackgroundMainMenu();
+
+	void Update();
+	void Draw();
 
 	bool GetHasPressStart() const { return hasPressStart; }
 	bool GetHasPressHelp() const { return hasPressHelp; }

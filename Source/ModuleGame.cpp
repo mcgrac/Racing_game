@@ -33,6 +33,14 @@ bool ModuleGame::Start()
 	CreatePlayers();
 	PositionPlayersOnGrid();
 
+	// Create and initialize start screen
+	startScreen = new StartScreen();
+	// render main menu background
+	if (!startScreen->LoadBackgroundMainMenu()) {
+		LOG("Warning: menu background not loaded. Check path and output directory.");
+	}
+	showStartMenu = true;
+
 
 	//canmera inicialization
 	camera = new GameCamera(SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -61,6 +69,52 @@ update_status ModuleGame::PreUpdate()
 update_status ModuleGame::Update()
 {
 	float dt = GetFrameTime();
+
+	// If start menu active -> load and no actulize 
+	if (startScreen && showStartMenu) {
+		startScreen->Update();
+		if (startScreen->GetHasPressStart()) {
+			startScreen->UnloadBackgroundMainMenu();
+			startScreen->Reset();
+			showStartMenu = false;
+		
+			// Asegurarnos de que el cuerpo físico del jugador esté despierto al reanudar
+			if (player && player->GetPhysBody() && player->GetPhysBody()->body) {
+					player->GetPhysBody()->body->SetAwake(true);
+			}
+
+			// Despertar y limpiar todos los cuerpos (player + AI)
+			for (Entity* r : racers) {
+				if (!r) continue;
+				PhysBody* pb = r->GetPhysBody();
+				if (!pb || !pb->body) continue;
+				b2Body* body = pb->body;
+
+				// Opcional: evita que Box2D ponga a dormir este cuerpo inmediatamente
+				body->SetSleepingAllowed(false);
+
+				// Forzar awake y limpiar velocidades residuales
+				body->SetAwake(true);
+				body->SetLinearVelocity(b2Vec2(0.0f, 0.0f));
+				body->SetAngularVelocity(0.0f);
+
+				// Aplicar un impulso mínimo proporcional a la masa para garantizar procesamiento inmediato
+				float mass = body->GetMass();
+				if (mass <= 0.0f) mass = 1.0f;
+				const b2Vec2 tinyImpulse = b2Vec2(0.02f * mass, 0.0f);
+				body->ApplyLinearImpulse(tinyImpulse, body->GetWorldCenter(), true);
+
+				LOG("Awakened body: type=%d awake=%d vel=(%.3f,%.3f) mass=%.3f",
+					body->GetType(), body->IsAwake(),
+					body->GetLinearVelocity().x, body->GetLinearVelocity().y, mass);
+			}
+		}
+		else {
+			// return with game paused
+			return UPDATE_CONTINUE;
+		}
+	
+	}
 
 	if (entityManager) { entityManager->Update(dt); }
 	else { std::cout<<"Entity manager update error Module Game\n"; }
@@ -103,6 +157,12 @@ update_status ModuleGame::PostUpdate()
 	EndMode2D();
 	//--------------------------------------
 	//---------UI debug render--------------
+	
+	// Draw start menu if active 
+	if (startScreen && showStartMenu) {
+		startScreen->Draw();
+	}
+
 	//Show position of the player
 	if (player) {
 
@@ -152,6 +212,11 @@ bool ModuleGame::CleanUp()
 	if (camera) {
 		delete camera;
 		camera = nullptr;
+	}
+
+	if (startScreen) {
+		delete startScreen;
+		startScreen = nullptr;
 	}
 
 	LOG("Unloading Intro scene");
@@ -431,6 +496,13 @@ void ModuleGame::PositionPlayersOnGrid()
 			);
 			body->SetLinearVelocity(b2Vec2(0.0f, 0.0f));  // Velocidad inicial = 0
 			body->SetAngularVelocity(0.0f);
+			body->SetAwake(true);
+
+			// Pequeño impulso para evitar que Box2D vuelva a dormir inmediatamente
+			float mass = body->GetMass();
+			if (mass <= 0.0f) mass = 1.0f;
+			const b2Vec2 tinyImpulse = b2Vec2(0.02f * mass, 0.0f);
+			body->ApplyLinearImpulse(tinyImpulse, body->GetWorldCenter(), true);
 		}
 
 		LOG("Racer %d positioned at (%.1f, %.1f)",

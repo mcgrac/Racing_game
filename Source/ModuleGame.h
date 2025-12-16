@@ -17,6 +17,8 @@
 #include "Chansey.h"
 #include "Pachirisu.h"
 
+#include "StartScreen.h"
+
 class PhysBody;
 class PhysicEntity;
 class EntityManager;
@@ -59,4 +61,8 @@ private:
 	GameCamera* camera = nullptr;
 	PositionTracker* posTracker = nullptr;
 	EntityManager* entityManager = nullptr;
+
+	// Start menu
+	StartScreen* startScreen = nullptr;
+	bool showStartMenu = true;
 };
