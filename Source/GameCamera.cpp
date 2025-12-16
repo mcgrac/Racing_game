@@ -80,7 +80,7 @@ void GameCamera::SetViewportSize(float width, float height) {
     viewportHeight = height;
 }
 
-void GameCamera::FollowPlayer(Player* player) {
+void GameCamera::FollowPlayer(Entity* player) {
     if (!player) return;
 
     LOG("Establishing center");
@@ -109,6 +109,14 @@ Camera2D GameCamera::GetRaylibCamera() const {
     cam.rotation = 0.0f;
     cam.zoom = 1.0f;
     return cam;
+}
+
+Vector2 GameCamera::GetMousePositionPixelsWorld()
+{
+    Vector2 mousePosScreen = GetMousePosition();
+    Vector2 mousePosWorldPixels = GetScreenToWorld2D(mousePosScreen, GetRaylibCamera());
+
+    return mousePosWorldPixels;
 }
 
 void GameCamera::SetPosition(Vector2D newPos)

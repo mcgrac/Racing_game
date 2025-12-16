@@ -8,15 +8,19 @@
 #include "raylib.h"
 #include <vector>
 
-#include"Map.h"
-#include"Level1.h"
+#include "Level1.h"
 #include "GameCamera.h"
+#include "PositionTracker.h"
 
-#include "EntityManager.h"
+#include "Cleffa.h"
+#include "Meganium.h"
+#include "Chansey.h"
+#include "Pachirisu.h"
 
 class PhysBody;
 class PhysicEntity;
-
+class EntityManager;
+class Player;        
 
 class ModuleGame : public Module
 {
@@ -25,17 +29,34 @@ public:
 	~ModuleGame();
 
 	bool Start();
+	update_status PreUpdate() override;
 	update_status Update();
 	update_status PostUpdate();
 	bool CleanUp();
 
 	GameCamera* GetCamera() const { return camera; }
-	Player* GetPlayer() const { return player; }
+	Entity* GetPlayer() const { return player; }
+
+	void OnCollision(PhysBody* physA, PhysBody* physB) override;
+	void OnCollisionEnd(PhysBody* physA, PhysBody* physB) override;
+
+	void GetPokemonChoosenByPlayer(); //in this void we will set the int choosenPokemon.
 
 private:
 
+	void LoadLevel(int levelNumber);
+	void CreatePlayers();
+	int GetRandomUnchosenPokemon(const std::vector<int>& chosenList);
+	void PositionPlayersOnGrid();
+
 	Map* currentMap = nullptr;
-	Player* player = nullptr;
+
+	//std::vector<Player*> racers;
+	std::vector<Entity*> racers;
+	Entity* player = nullptr;
+	int choosenPokemon = 4; //hardcode chansey selection
+
 	GameCamera* camera = nullptr;
+	PositionTracker* posTracker = nullptr;
 	EntityManager* entityManager = nullptr;
 };

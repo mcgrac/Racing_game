@@ -3,7 +3,10 @@
 #include "Module.h"
 #include"Entity.h"
 #include <list>
-class EntityManager : public Module {
+
+class Player;
+
+class EntityManager{
 
 public:
 
@@ -23,17 +26,19 @@ public:
 	// Called every frame
 	bool Update(float dt);
 
+	bool Render();
+
 	// Called before quitting
 	bool CleanUp();
 
 	// Additional methods
-	std::shared_ptr<Entity> CreateEntity(EntityType type);
+	Entity* CreateEntity(Module* listener, EntityType type, Vector2D position);
 	
-	void DestroyEntity(std::shared_ptr<Entity> entity);
-
-	void AddEntity(std::shared_ptr<Entity> entity);
+	void DestroyEntity(Entity* entity);
+	void AddEntity(Entity* entity);
 
 public:
 
-	std::list<std::shared_ptr<Entity>> entities;
+	std::list<Entity*> entities;
+	//std::list<std::shared_ptr<Entity>> entities;
 };

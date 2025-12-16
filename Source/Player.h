@@ -3,23 +3,22 @@
 #include "p2Point.h"
 #include "Application.h"
 #include "Entity.h"
-
+#include "Characters.h"
 #include"raylib.h"
 
-class Player : public Entity
+class Player : public Characters
 {
 public:
-	Player(Application* app, bool start_enabled = true);
-	Player();
-	Player(float startX, float startY, const char* texturePath);
-	Player(const Vector2D& startPos, const char* texturePath);
-	Player(const Vector2D& startPos);
+	//Player();
+	//Player(float startX, float startY, const char* texturePath);
+	//Player(const Vector2D& startPos, const char* texturePath);
+	Player(Module* _listener, const Vector2D& startPos, EntityType _type, uint16 category, uint16 maskBits, int16 groupIndex = 0);
 
 	virtual ~Player();
 
 	bool Start() override;
 	bool Update(float dt) override;
-	void Render();
+	bool Render() override;
 	bool CleanUp() override;
 
 #pragma region GETTERS
@@ -31,30 +30,48 @@ public:
 	float GetCenterX() const { return position.getX() + GetWidth() / 2.0f; }
 	float GetCenterY() const { return position.getY() + GetHeight() / 2.0f; }
 	//others
-	float GetRotation() const { return rotation; }
-	float GetVelocity() const { return velocity; }
+	float GetRotation() const;
+	float GetSpeed() const;
+	float GetSpeedKmh() const;
+
 	// texture getters
 	const Texture2D& GetTexture() const { return texture; }
 #pragma endregion
+#pragma region SETTERS
+	//void SetMaxSpeed(float speed) { maxForwardSpeed = speed; }
+	//void SetAcceleration(float accel) { accelerationForce = accel; }
+	//void SetTurnSpeed(float turn) { turnTorque = turn; }
+#pragma endregion
+
+	void InitPhysics(uint16 category, uint16 maskBits, int16 groupIndex);
 
 	bool IsTextureLoaded() const { return textureLoaded; }
+	void ApplyDrag();
+	void ApplyLateralFriction();
+	void ApplyCarPhysics(float dt);
+
+	void SyncPositionFromPhysics();
 
 	bool LoadTexture(const char* texturePath);
 	void UnloadTexture();
 
+
 private:
 
-	float speed;
-	Texture texture;
-	bool textureLoaded;
+	void LoadAnimations();
+	void UpdateAnims(float dt) override;
+	void Boost(float dt) override;
 
-	//Car physics variables
-	float rotation;          // Rotation angle in º
-	float velocity;          // Current velocity
-	float maxSpeed;          // maximum velocity
-	float acceleration;      // Acceleration
-	float deceleration;      // Natural desacceleration (friction)
-	float brakeForce;        // breakeForce
-	float turnSpeed;         // Turning velocity (º/second)
-	float minTurnSpeed;      // minimum velocity to be able to turn
+	Texture texture;
+
+	//AI controls
+	// Control IA
+	void ApplyAIControl(float dt);
+	float CalculateSteeringAngle(const Vector2D& targetPos);
+	bool ShouldAccelerate(const Vector2D& targetPos);
+	bool ShouldBrake(const Vector2D& targetPos);
+
+	// Helpers
+	b2Vec2 GetForwardVector() const;
+	b2Vec2 GetRightVector() const;
 };
