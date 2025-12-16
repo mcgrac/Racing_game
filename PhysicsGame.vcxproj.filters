@@ -109,6 +109,9 @@
     <ClCompile Include="Source\SolarBeam.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="Source\ChanseyAttack.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source/p2Point.h">
@@ -220,6 +223,9 @@
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="Source\SolarBeam.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ChanseyAttack.h">
       <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>

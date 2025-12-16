@@ -211,8 +211,11 @@ void ModuleGame::OnCollision(PhysBody* physA, PhysBody* physB) {
 		//collision AI with a attack of the player ->set AI stunned for a while
 		std::cout << "attackCollision" << std::endl;
 		Characters* chara = dynamic_cast<Characters*>(player);
-		chara->SetStunnedState();
-		chara->SetStateTimer(2.0f); //be stunned for 2 seconds
+		if(chara->GetCurrentState() != 2)
+		{
+			chara->SetStunnedState();
+			chara->SetStateTimer(2.0f); //be stunned for 2 seconds
+		}
 		break;
 		}
 	default:

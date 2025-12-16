@@ -192,6 +192,7 @@
     <ClInclude Include="Source\AttackPachirisu.h" />
     <ClInclude Include="Source\Boost.h" />
     <ClInclude Include="Source\Chansey.h" />
+    <ClInclude Include="Source\ChanseyAttack.h" />
     <ClInclude Include="Source\Characters.h" />
     <ClInclude Include="Source\Checkpoint.h" />
     <ClInclude Include="Source\Cleffa.h" />
@@ -233,6 +234,7 @@
     <ClCompile Include="Source\Chansey.cpp" />
     <ClCompile Include="Source\BadgesScreen.cpp" />
     <ClCompile Include="Source\Button.cpp" />
+    <ClCompile Include="Source\ChanseyAttack.cpp" />
     <ClCompile Include="Source\Characters.cpp" />
     <ClCompile Include="Source\CharacterSelectionScreen.cpp" />
     <ClCompile Include="Source\Checkpoint.cpp" />

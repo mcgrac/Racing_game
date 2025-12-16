@@ -538,22 +538,18 @@ bool Meganium::Render() {
         attack->Render();
     }
 
-    // Obtener posición y rotación del cuerpo físico
     b2Vec2 pos = physBody->body->GetPosition();
     float drawX = METERS_TO_PIXELS(pos.x);
     float drawY = METERS_TO_PIXELS(pos.y);
 
-    // Obtener la textura actual según el estado
     Texture2D currentTexture;
     switch (currentState) {
     case State::IDLE:
         currentTexture = idleAnimation.GetCurrentTexture();
         break;
-
     case State::STUNNED:
         currentTexture = stunnedAnimation.GetCurrentTexture();
         break;
-
     case State::ATTACK:
         currentTexture = attackAnimation.GetCurrentTexture();
         break;
@@ -564,14 +560,12 @@ bool Meganium::Render() {
         break;
     }
 
-    // Rectángulo de origen (toda la textura)
     Rectangle sourceRect = {
         0, 0,
         (float)currentTexture.width,
         -(float)currentTexture.height
     };
 
-    // Rectángulo de destino
     Rectangle destRect = {
         drawX,
         drawY,
@@ -579,7 +573,6 @@ bool Meganium::Render() {
         height
     };
 
-    // Origen para la rotación (centro)
     Vector2 origin = { width * 0.5f, height * 0.5f };
 
     if (textureLoaded) {
@@ -590,18 +583,6 @@ bool Meganium::Render() {
             origin,
             rotation,
             WHITE);
-
-        //DrawTexturePro(texture,
-        //    { 0,0,(float)texture.width, -(float)texture.height },
-        //    { position.getX(), position.getY(), (float)texture.width, (float)texture.height },
-        //    { texture.width / 2.0f, texture.height / 2.0f },
-        //    rotation,
-        //    WHITE);
-    }
-    else {
-        DrawRectangle((int)position.getX(),
-            (int)position.getY(),
-            32, 32, RED);
     }
 
 #pragma region DEBUG DRAWING

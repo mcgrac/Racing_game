@@ -7,7 +7,14 @@ class Characters :public Entity {
 
 public:
 	Characters(Module* _listener, const Vector2D& startPos, EntityType _type, uint16 category, uint16 maskBits, int16 groupIndex = 0);
+	~Characters();
 
+	enum class State {
+		IDLE,
+		ATTACK,
+		STUNNED,
+		PREPARING_ATTACK
+	};
 	//wayPoints IA
 	void SetWaypoints(const std::vector<Vector2D>& points);
 	const std::vector<Vector2D>& GetWaypoints() const { return waypoints; }
@@ -59,7 +66,10 @@ public:
 	inline int GetLaps() { return laps; }
 	inline int GetPositionInRace() { return positionInRace; }
 	inline bool GetIsPlayer() { return isPlayer; }
+	inline int GetCurrentState() const { return (int)currentState; }
+
 	float CalculateDistanceFromCheckpoint(Checkpoint* ch);
+
 
 protected:
 
@@ -76,12 +86,6 @@ protected:
 	};
 	Statistics stats;
 
-	enum class State {
-		IDLE,
-		ATTACK,
-		STUNNED,
-		PREPARING_ATTACK
-	};
 	State currentState;
 	State previousState;
 	float stateTimer;

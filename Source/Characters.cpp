@@ -31,6 +31,10 @@ Characters::Characters(Module* _listener, const Vector2D& startPos, EntityType _
 	stateTimer = 0.0f;
 }
 
+Characters::~Characters()
+{
+}
+
 void Characters::UpdateState(float dt)
 {
 	//if there is a tempoal state like stunned

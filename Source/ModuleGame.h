@@ -54,7 +54,7 @@ private:
 	//std::vector<Player*> racers;
 	std::vector<Entity*> racers;
 	Entity* player = nullptr;
-	int choosenPokemon = 4; //hardcode chansey selection
+	int choosenPokemon = 2; //hardcode chansey selection
 
 	GameCamera* camera = nullptr;
 	PositionTracker* posTracker = nullptr;
