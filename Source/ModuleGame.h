@@ -18,6 +18,8 @@
 #include "Chansey.h"
 #include "Pachirisu.h"
 
+#include "BadgesScreen.h"
+
 class PhysBody;
 class PhysicEntity;
 class EntityManager;
@@ -67,6 +69,10 @@ private:
 	PositionTracker* posTracker = nullptr;
 	EntityManager* entityManager = nullptr;
 	SceneManager* sceneManager = nullptr;
+
+	BadgesScreen* badgesScreen = nullptr;
+	bool raceFinished = false;
+	int lapsToFinish = 3;
 
 	RaceState raceState;
 	float countdownTimer;

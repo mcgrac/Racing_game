@@ -48,6 +48,11 @@ bool ModuleGame::Start()
 	//create scene managewr
 	sceneManager = new SceneManager();
 
+	badgesScreen = new BadgesScreen();
+	badgesScreen->Load();
+
+	raceFinished = false;
+
 	raceState = RaceState::COUNTDOWN;
 	countdownTimer = 3.0f;
 	return ret;
@@ -95,8 +100,35 @@ update_status ModuleGame::Update()
 		std::cout << "State running" << std::endl;
 		if (entityManager) { entityManager->Update(dt); }
 
-		//update position of all racers
+		
 		posTracker->UpdatePositions(racers);
+		if (!raceFinished && player)
+		{
+			Characters* playerCar = dynamic_cast<Characters*>(player);
+			if (playerCar)
+			{
+				int playerLaps = playerCar->GetLaps();
+
+				for (Entity* r : racers)
+				{
+					if (!r || r == player) continue;
+
+					Characters* other = dynamic_cast<Characters*>(r);
+					if (!other) continue;
+
+					
+					if (other->GetLaps() >= lapsToFinish && playerLaps < lapsToFinish)
+					{
+						raceFinished = true;
+
+						if (badgesScreen)
+							badgesScreen->TriggerLoseRaceBadge();
+
+						break;
+					}
+				}
+			}
+		}
 		break;
 	case ModuleGame::RaceState::FINISHED:
 		break;
@@ -112,6 +144,8 @@ update_status ModuleGame::Update()
 		camera->FollowPlayer(player);
 		camera->Update(dt);
 	}
+
+	if (badgesScreen) badgesScreen->Update(dt);
 
 	return UPDATE_CONTINUE;
 }
@@ -165,6 +199,7 @@ update_status ModuleGame::PostUpdate()
 			debugText.c_str(),
 			800, 10, 40, WHITE );
 	}
+	if (badgesScreen) badgesScreen->Draw();
 	//--------------------------------------
 	return UPDATE_CONTINUE;
 }
@@ -201,7 +236,10 @@ bool ModuleGame::CleanUp()
 		}
 		racers.clear();
 	}
-
+	if (badgesScreen) {
+		delete badgesScreen;
+		badgesScreen = nullptr;
+	}
 	LOG("Unloading Intro scene");
 
 	return true;
