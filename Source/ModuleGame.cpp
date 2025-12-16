@@ -189,9 +189,12 @@ void ModuleGame::OnCollision(PhysBody* physA, PhysBody* physB) {
 		c->SetMaxSpeed(15.0f);
 		break;
 		}
+		{
 	case EntityType::ROCK:
-
+		Interactables* intera = dynamic_cast<Interactables*>(other);
+		intera->SetIsDestroyed(true);
 		break;
+		}
 		{
 	case EntityType::CHECKPOINT:
 		//std::cout << "Collision Checkpoint" << std::endl;

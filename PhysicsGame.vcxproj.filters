@@ -115,6 +115,9 @@
     <ClCompile Include="Source\Off_road.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Rock.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source/p2Point.h">
@@ -232,6 +235,9 @@
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="Source\Off_road.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Rock.h">
       <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>

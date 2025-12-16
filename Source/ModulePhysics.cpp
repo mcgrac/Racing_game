@@ -139,7 +139,7 @@ bool ModulePhysics::CleanUp()
 }
 
 #pragma region CREATION PHYSBODIES
-PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius, b2BodyType type)
+PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius, b2BodyType type, uint16 category, uint16 maskBits, int16 groupIndex)
 {
 	if (world == nullptr)
 		return nullptr;
@@ -165,6 +165,11 @@ PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius, b2BodyType type)
 	fixture.density = 1.0f;
 	fixture.friction = 0.3f;
 	fixture.restitution = 0.4f; // mid rebote
+
+
+	fixture.filter.categoryBits = category;
+	fixture.filter.maskBits = maskBits;
+	fixture.filter.groupIndex = groupIndex;
 
 	body->CreateFixture(&fixture);
 

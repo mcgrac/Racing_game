@@ -6,6 +6,7 @@
 #include "Boost.h"
 #include "Checkpoint.h"
 #include "Off_road.h"
+#include "Rock.h"
 #include <fstream>      
 #include <sstream>      
 #include <string>       
@@ -59,6 +60,9 @@ protected:
 
     //grass or no_road zones
     std::vector<Off_road*> offRoadList;
+
+    //rocks list
+    std::vector<Rock*> rocksList;
 
 private:
 

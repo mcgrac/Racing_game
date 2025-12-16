@@ -48,6 +48,7 @@ bool Level1::Load()
     LoadBoosts("Assets/Boosts.txt");
     LoadCheckpoints("Assets/Sectors.txt");
     LoadOffRoadSensors("Assets/Off_Road_zones.txt");
+    LoadRocks("Assets/RocksPositions.txt");
 
     PlaySound(inGameMusicBeggining); //play the intro of the level
 	return true;
@@ -110,10 +111,6 @@ void Level1::LoadColliders(const char* filePath)
 
 void Level1::LoadBoosts(const char* filePath)
 {
-    //create boosts
-    //Boost* b = new Boost(listener, Vector2D(1300.0f, 1700.0f), EntityType::TURBO_ON_ROAD, PhysicCategory::SENSORS, PhysicCategory::CARS);
-    //boostsList.emplace_back(b);
-    //entityManager->AddEntity(b);
 
     std::ifstream file(filePath);
     if (!file.is_open()) {
@@ -305,5 +302,49 @@ void Level1::LoadOffRoadSensors(const char* filePath)
     std::cout << "\nCarga de Off_road Completa." << std::endl;
     std::cout << "-> Total de tramos en Off_road: " << offRoadList.size() << std::endl;
 
+}
+
+void Level1::LoadRocks(const char* filePath)
+{
+
+    std::ifstream file(filePath);
+    if (!file.is_open()) {
+        std::cerr << "Error al abrir el archivo: " << filePath << std::endl;
+        return;
+    }
+
+    int x, y;
+    std::string line;
+    int lineNumber = 0;
+    while (std::getline(file, line)) {
+
+        lineNumber++;
+        // Eliminar espacios/tabs al inicio y final
+        line.erase(0, line.find_first_not_of(" \t"));
+        line.erase(line.find_last_not_of(" \t") + 1);
+
+
+        if (line.empty())
+        {
+            continue;
+        }
+
+        if (line[0] == '#') {
+            continue;
+        }
+
+        // Leer coordenadas x y
+        std::stringstream ss(line);
+        if (ss >> x >> y)
+        {
+            Rock* r = new Rock(listener, Vector2D(x, y), EntityType::ROCK, PhysicCategory::DESTRUCTIBLE, PhysicCategory::CARS);
+            rocksList.emplace_back(r);
+            entityManager->AddEntity(r);
+        }
+        else {
+            std::cerr << "No se pudieron leer coordenadas en la línea " << lineNumber << ": " << line << std::endl;
+        }
+
+    }
 }
 

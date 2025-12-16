@@ -213,6 +213,7 @@
     <ClInclude Include="Source\Pachirisu.h" />
     <ClInclude Include="Source\Player.h" />
     <ClInclude Include="Source\PositionTracker.h" />
+    <ClInclude Include="Source\Rock.h" />
     <ClInclude Include="Source\Scene.h" />
     <ClInclude Include="Source\SceneManager.h" />
     <ClInclude Include="Source\SolarBeam.h" />
@@ -253,6 +254,7 @@
     <ClCompile Include="Source\Pachirisu.cpp" />
     <ClCompile Include="Source\Player.cpp" />
     <ClCompile Include="Source\PositionTracker.cpp" />
+    <ClCompile Include="Source\Rock.cpp" />
     <ClCompile Include="Source\Scene.cpp" />
     <ClCompile Include="Source\SceneManager.cpp" />
     <ClCompile Include="Source\SolarBeam.cpp" />
