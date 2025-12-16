@@ -49,18 +49,19 @@ bool ModuleGame::Start()
 	
 	
 	//load level
-	LoadLevel(1);
-	CreatePlayers();
-	PositionPlayersOnGrid();
+	//LoadLevel(1);
+	//CreatePlayers();
+	//PositionPlayersOnGrid();
 
 
 	//canmera inicialization
 	camera = new GameCamera(SCREEN_WIDTH, SCREEN_HEIGHT);
 	camera->SetSmoothSpeed(.15f);
-	camera->CenterOn(player->GetCenter());
+	camera->CenterOn(737, 460);
 
 	//call start entity manager -> call start of all entities
-	entityManager->Start();
+	sceneManager->Start();
+	//entityManager->Start();
 
 	//playerTesting = new Player(this, Vector2D(1000.0f, 1000.0f), EntityType::PLAYER, CARS, CARS);
 	//entityManager->AddEntity(playerTesting);
@@ -84,9 +85,22 @@ update_status ModuleGame::Update()
 	if (entityManager) { entityManager->Update(dt); }
 	else { std::cout<<"Entity manager update error Module Game\n"; }
 
+	sceneManager->Update();
+	
 	//loop music level
-	currentMap->UpdateMusic();
+	if (sceneManager->state == GameSceneState::PLAYING) {
+		currentMap->UpdateMusic();
+	}
 
+
+	if (sceneManager->startedPlaying == true) {
+		entityManager->Start();
+		LoadLevel(1);
+		CreatePlayers();
+		PositionPlayersOnGrid();
+		camera->CenterOn(player->GetCenter());
+		//sceneManager->startedPlaying = false;
+	}
 
 	if (camera && player)
 	{
@@ -101,11 +115,14 @@ update_status ModuleGame::PostUpdate()
 {
 	//--------------RENDER-----------------
 	//Raylib camera behaviour (start camera mode)
+	sceneManager->render();
 	BeginMode2D(camera->GetRaylibCamera());
 	//render map background (floor)
 	//add scene manager render
-	sceneManager->render();
-	
+	//sceneManager->render();
+	if (sceneManager->state == GameSceneState::PLAYING) {
+		std::cout << "playing mode" << std::endl;
+	}
 	if (currentMap && sceneManager->state == GameSceneState::PLAYING) { currentMap->RenderBackground(); } //comented code
 	//render entities
 	entityManager->Render();

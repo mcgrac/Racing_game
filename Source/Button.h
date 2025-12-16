@@ -1,13 +1,11 @@
 #pragma once
 #include "raylib.h"
 #include<functional>
-#include "Scene.h";
-#include "SceneManager.h"
 
 class Button {
 
 public:
-    Button(Texture2D buttonUp,
+    Button(int targetScene, Texture2D buttonUp,
         Texture2D buttonDown,
         Texture2D buttonSelected,
         Sound pressSound, Sound selectSound,
@@ -20,12 +18,12 @@ public:
     void Draw();
 
     void Select();
-    void press();              // Call this from Scene
+    int press();              // Call this from Scene
     void Release();
     bool IsPressed() const { return isPressed; }
     bool IsSelected() const { return isSelected; }
 
-    Scene* myScene = nullptr;
+    int TargetScene;
 
 
 
@@ -46,29 +44,5 @@ protected:
 
 };
 
-class ChangeSceneButton : public Button {
-public:
-    ChangeSceneButton(GameSceneState nextScene, Texture2D buttonUp,
-        Texture2D buttonDown,
-        Texture2D buttonSelected,
-        Sound pressSound, Sound selectSound,
-        Vector2 position,
-        float pressDuration = 0.2f);
-    GameSceneState targetScene;
-    void press();
-};
-
-/*
- class CharacterButton : public Button {
-
-};
-*/
 
 
-class MenuButton : public Button {
-    void press();
-};
-
-class CloseGameButton : Button {
-    void press();
-};

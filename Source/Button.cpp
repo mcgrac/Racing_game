@@ -1,6 +1,6 @@
 #include "Button.h"
 
-Button::Button(Texture2D buttonUp,
+Button::Button(int targetScene, Texture2D buttonUp,
 
     //textures
     Texture2D buttonDown,
@@ -19,6 +19,7 @@ Button::Button(Texture2D buttonUp,
     position(position),
     pressDuration(pressDuration)
 {
+    TargetScene = targetScene;
 }
 
 void Button::Select()
@@ -30,7 +31,7 @@ void Button::Select()
     }
 }
 
-void Button::press()
+int Button::press()
 {
     if (!isPressed)
     {
@@ -38,7 +39,7 @@ void Button::press()
         pressTime = 0.0f;
         PlaySound(pressSound);
         //ADD HERE THE BUTTON FUNCTIONALLITY
-
+        return TargetScene;
     }
 }
 
@@ -73,21 +74,6 @@ void Button::Draw()
         DrawTexture(buttonUpSprite, (int)position.x, (int)position.y, WHITE);
 }
 
-ChangeSceneButton::ChangeSceneButton(GameSceneState nextScene, Texture2D buttonUp,
-    Texture2D buttonDown,
-    Texture2D buttonSelected,
-    Sound pressSound, Sound selectSound,
-    Vector2 position,
-    float pressDuration = 0.2f) : Button(buttonUp,
-        buttonDown,
-        buttonSelected,
-        pressSound, selectSound,
-        position,
-        pressDuration = 0.2f) {
-    targetScene = nextScene;
-}
 
-void ChangeSceneButton::press() {
-    //sends the info about the target
-    myScene->ChangeScene(targetScene);
-}
+
+

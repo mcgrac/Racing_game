@@ -2,11 +2,13 @@
 
 #include "raylib.h"
 #include <vector>
-#include "Scene.h"
 #include "GameScreen.h"
-#include "Button.h"
-#include "ModuleGame.cpp"
+
 //#include "raylib.h"
+
+GameScreen::GameScreen() {
+
+}
 
 void GameScreen::LoadTextures() {
 	/*backg = LoadTexture("Assets/Textures/Map/Background.png");

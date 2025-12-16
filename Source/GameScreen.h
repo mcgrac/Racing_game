@@ -3,7 +3,7 @@
 #include "raylib.h"
 #include <vector>
 #include "Button.h"
-#include "Scene.h"
+#include "scene.h"
 
 class GameScreen :public Scene {
 protected:

@@ -3,33 +3,30 @@
 #include "raylib.h"
 #include <vector>
 #include "Button.h"
-#include "SceneManager.h"
 
 class Scene {
 
-private:
-	Scene(int Id);
 protected:
 	//textures
-	void LoadTextures();
+	virtual void LoadTextures();
 
 	//sounds
-	void LoadSounds();
+	virtual void LoadSounds();
 
 public:
 
-	void Start();
-	void Update();
+	Scene();
 
-	void startTrasition();
-	void UnloadAssets();
+	int targetScene = -1;
 
-	void Draw();
+	virtual void Start();
+	virtual void Update();
 
-	void ChangeScene(GameSceneState nextScene);
+	int GetTargetScene();
+	virtual void UnloadAssets();
+
+	virtual void Draw();
 
 	std::vector<Button*> buttons;
-
-	SceneManager* manager;
 
 };

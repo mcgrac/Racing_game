@@ -1,8 +1,9 @@
 #include "raylib.h"
 #include <vector>
-#include "Scene.h"
 #include "CharacterSelectionScreen.h"
-#include "Button.h"
+//#include "Button.h"
+
+CharacterSelectionScreen::CharacterSelectionScreen(){}
 
 void CharacterSelectionScreen::LoadTextures() {
 	SelectedChansey = LoadTexture("Assets/Textures/UI/CharacterSelect/CharacterSelectedChansey.png");

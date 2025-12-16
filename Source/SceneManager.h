@@ -5,11 +5,16 @@
 #include "Scene.h"
 #include "Module.h"
 
-#include "SceneManager.h"
 #include "StartScreen.h"
 #include "CharacterSelectionScreen.h"
 #include "GameScreen.h"
 #include "GameOverScreen.h"
+
+/*#include "StartScreen.h"
+#include "CharacterSelectionScreen.h"
+#include "GameScreen.h"
+#include "GameOverScreen.h"
+*/
 
 
 enum class GameSceneState {
@@ -26,16 +31,12 @@ public:
 
 private:
 
-	int currentScreenID();
+	//int currentScreenID();
 	std::vector<Scene*> scenes;
 	int indexScene;
 
 public:
 
-	SceneManager();
-	~SceneManager();
-
-	void sceneChange(GameSceneState newState);
 
 	void Start();
 	void Update();
@@ -45,6 +46,8 @@ public:
 	//void MoveSelector();
 
 	GameSceneState state;
+
+	bool startedPlaying = false;
 
 	//int targetScene = 0;
 

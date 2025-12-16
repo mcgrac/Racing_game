@@ -1,9 +1,5 @@
 #include "SceneManager.h"
-#include "Scene.h"
-#include "StartScreen.h"
-#include "CharacterSelectionScreen.h"
-#include "GameScreen.h"
-#include "GameOverScreen.h"
+
 
 SceneManager::SceneManager()
 {
@@ -17,27 +13,24 @@ SceneManager::~SceneManager()
 void SceneManager::Start()
 {
 	//create a start screen and add it to the list 
-	Scene* s = new StartScreen();
-	scenes.push_back(s);
-	scenes[0]->manager = this;
+	Scene* s0 = new StartScreen();
+	scenes.push_back(s0);
 
 	//create a character selection scene and add it
-	s = new CharacterSelectionScreen();
-	scenes.push_back(s);
-	scenes[1]->manager = this;
+	Scene* s1 = new CharacterSelectionScreen();
+	scenes.push_back(s1);
 
 	//create an ingame scene and add it to the list
-	s = new GameScreen();
-	scenes.push_back(s);
-	scenes[2]->manager = this;
+	Scene* s2 = new GameScreen();
+	scenes.push_back(s2);
 
 	//create and end screen
-	s = new GameOverScreen();
-	scenes.push_back(s);
-	scenes[3]->manager = this;
+	Scene* s3 = new GameOverScreen();
+	scenes.push_back(s3);
 
 	state = GameSceneState::MAIN_MENU;
 	indexScene = 0;
+	scenes[indexScene]->Start();
 
 }
 
@@ -50,45 +43,52 @@ void SceneManager::Update()
 	//call update of the actual scene
 	scenes[indexScene]->Update();
 	render();
+	int aux = indexScene;
+	if (scenes[indexScene]->GetTargetScene() != -1) {
+		indexScene = scenes[indexScene]->GetTargetScene();
+		scenes[aux]->targetScene = -1;
+		//change state based on the new index
+		switch (indexScene) {
+		case 0:
+			state = GameSceneState::MAIN_MENU;
+			break;
+		case 1:
+			state = GameSceneState::CHARACTER_SELECTION;
+			break;
+		case 2:
+			startedPlaying = true;
+			GameSceneState::PLAYING;
+			break;
+		case 3:
+			GameSceneState::FINISH_RACE;
+			break;
+		case 4:
+			//close game = true;
+			break;
+		}
+		if (indexScene <= 3) {
+			scenes[indexScene]->Start();
+		}
+	}
+
+	
 }
 
 void SceneManager::render() {
 	//DRAW!!
 	switch (state) {
 	case GameSceneState::MAIN_MENU:
-		indexScene = 0;
 		scenes[0]->Draw();
 		break;
 	case GameSceneState::CHARACTER_SELECTION:
-		indexScene = 1;
 		scenes[1]->Draw();
 		break;
 	case GameSceneState::PLAYING:
-		indexScene = 2;
 		scenes[2]->Draw();
 		break;
 	case GameSceneState::FINISH_RACE:
-		indexScene = 3;
 		scenes[3]->Draw();
 		break;
 	}
 }
 
-void SceneManager::sceneChange(GameSceneState newState) {
-	scenes[indexScene]->UnloadAssets();
-	state = newState;
-	switch (newState) {
-	case GameSceneState::MAIN_MENU:
-		indexScene = 0;
-		break;
-	case GameSceneState::CHARACTER_SELECTION:
-		indexScene = 1;
-		break;
-	case GameSceneState::PLAYING:
-		indexScene = 2;
-		break;
-	case GameSceneState::FINISH_RACE:
-		indexScene = 3;
-		break;
-	}
-}

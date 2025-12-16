@@ -2,10 +2,13 @@
 
 #include "raylib.h"
 #include <vector>
-#include "Scene.h"
 #include "StartScreen.h"
-#include "SceneManager.h"
 #include "Button.h"
+
+
+StartScreen::StartScreen() {
+
+}
 
 void StartScreen::LoadTextures() {
 	backg = LoadTexture("Assets/Textures/UI/Start/Background.png");
@@ -33,27 +36,26 @@ void StartScreen::Start() {
 	//create buttons
 	//play button
 	Vector2 vec = { 628, 336 };
-	Button* b = new ChangeSceneButton(GameSceneState::PLAYING, unpressed_play, pressed_play, unpressed_play, buttonPressed, buttonSelected, vec);
-	buttons.push_back(b);
-	buttons[0]->myScene = this;
+	Button* b1 = new Button(1, unpressed_play, pressed_play, unpressed_play, buttonPressed, buttonSelected, vec);
+	buttons.push_back(b1);
 
 	//help button
 	vec = { 628, 448 };
-	Button* b = new Button(unpressed_help, pressed_help, unpressed_help, buttonPressed, buttonSelected, vec);
-	buttons.push_back(b);
-	buttons[1]->myScene = this;
+	Button* b2 = new Button(0, unpressed_help, pressed_help, unpressed_help, buttonPressed, buttonSelected, vec);
+	buttons.push_back(b2);
+	
 
 	//badges button
 	vec = { 628, 560 };
-	Button* b = new Button(unpressed_badges, pressed_badges, unpressed_badges, buttonPressed, buttonSelected, vec);
-	buttons.push_back(b);
-	buttons[2]->myScene = this;
+	Button* b3 = new Button(0, unpressed_badges, pressed_badges, unpressed_badges, buttonPressed, buttonSelected, vec);
+	buttons.push_back(b3);
+	
 
 	//badges button
 	vec = { 628, 672 };
-	Button* b = new Button(unpressed_quit, pressed_quit, unpressed_quit, buttonPressed, buttonSelected, vec);
-	buttons.push_back(b);
-	buttons[3]->myScene = this;
+	Button* b4 = new Button(4, unpressed_quit, pressed_quit, unpressed_quit, buttonPressed, buttonSelected, vec);
+	buttons.push_back(b4);
+	
 
 	selButton = StartMenuSelectedButton::PLAY;
 	buttonId = 0;
@@ -109,19 +111,20 @@ void StartScreen::Update() {
 	//call selected funtion of the selected button?
 	if(IsKeyPressed(KEY_UP)) {
 		if (buttonId > 0) {
-			buttonId++;
-			buttons[buttonId]->IsSelected();
-		}
-	}
-	if(IsKeyPressed(KEY_DOWN)) {
-		if (buttonId < buttons.size() - 1) {//mes petit que 3
 			buttonId--;
 			PlaySound(buttonSelected);
 			buttons[buttonId]->IsSelected();
 		}
 	}
+	if(IsKeyPressed(KEY_DOWN)) {
+		if (buttonId < buttons.size() - 1) {//mes petit que 3
+			buttonId++;
+			PlaySound(buttonSelected);
+			buttons[buttonId]->IsSelected();
+		}
+	}
 	if(IsKeyPressed(KEY_ENTER)) {//selecciona una opció
-		buttons[buttonId]->press();
+		targetScene = buttons[buttonId]->press();
 	}
 
 	//atatch a state to every buttonId value (0-3)

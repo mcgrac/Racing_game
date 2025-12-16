@@ -3,7 +3,8 @@
 #include "raylib.h"
 #include <vector>
 #include "Button.h"
-#include "Scene.h"
+#include "scene.h"
+
 
 enum class StartMenuSelectedButton {
 	PLAY,
