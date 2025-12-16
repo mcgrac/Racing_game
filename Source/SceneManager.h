@@ -5,6 +5,13 @@
 #include "Scene.h"
 #include "Module.h"
 
+#include "SceneManager.h"
+#include "StartScreen.h"
+#include "CharacterSelectionScreen.h"
+#include "GameScreen.h"
+#include "GameOverScreen.h"
+
+
 enum class GameSceneState {
 	MAIN_MENU,
 	PLAYING,
@@ -39,7 +46,7 @@ public:
 
 	GameSceneState state;
 
-	int targetScene = 0;
+	//int targetScene = 0;
 
 
 };

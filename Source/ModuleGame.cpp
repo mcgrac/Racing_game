@@ -106,12 +106,12 @@ update_status ModuleGame::PostUpdate()
 	//add scene manager render
 	sceneManager->render();
 	
-	//if (currentMap) { currentMap->RenderBackground(); } //comented code
+	if (currentMap && sceneManager->state == GameSceneState::PLAYING) { currentMap->RenderBackground(); } //comented code
 	//render entities
 	entityManager->Render();
 
 	//render top elements
-	if (currentMap) { currentMap->RenderTop(); }
+	if (currentMap && sceneManager->state == GameSceneState::PLAYING) { currentMap->RenderTop(); }
 
 	//draw debug physicBodies
 	App->physics->DrawDebug();

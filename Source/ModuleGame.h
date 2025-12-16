@@ -39,6 +39,8 @@ public:
 
 	void GetPokemonChoosenByPlayer(); //in this void we will set the int choosenPokemon.
 
+	Map* currentMap = nullptr;
+
 private:
 
 	void LoadLevel(int levelNumber);
@@ -46,7 +48,7 @@ private:
 	int GetRandomUnchosenPokemon(const std::vector<int>& chosenList);
 	void PositionPlayersOnGrid();
 
-	Map* currentMap = nullptr;
+	//Map* currentMap = nullptr;
 
 	std::vector<Player*> racers;
 	Player* player = nullptr;

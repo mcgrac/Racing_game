@@ -48,9 +48,8 @@ void SceneManager::Update()
 	//here check the enum game state scene to cange scene
 	//Ex: if main menu render game menu scene, if character selectio render character selection
 	//call update of the actual scene
-	if (targetScene != indexScene) {//target scene has been changed
-
-	}
+	scenes[indexScene]->Update();
+	render();
 }
 
 void SceneManager::render() {
@@ -78,4 +77,18 @@ void SceneManager::render() {
 void SceneManager::sceneChange(GameSceneState newState) {
 	scenes[indexScene]->UnloadAssets();
 	state = newState;
+	switch (newState) {
+	case GameSceneState::MAIN_MENU:
+		indexScene = 0;
+		break;
+	case GameSceneState::CHARACTER_SELECTION:
+		indexScene = 1;
+		break;
+	case GameSceneState::PLAYING:
+		indexScene = 2;
+		break;
+	case GameSceneState::FINISH_RACE:
+		indexScene = 3;
+		break;
+	}
 }

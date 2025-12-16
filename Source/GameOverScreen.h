@@ -2,6 +2,7 @@
 #include "raylib.h"
 #include <vector>
 #include "Button.h"
+#include "Scene.h"
 
 class GameOverScreen : public Scene {
 public:
@@ -9,5 +10,5 @@ public:
 	void Start();
 	void Draw();
 	int Id;
-	std::vector<Button> buttons;
+	std::vector<Button*> buttons;
 };
