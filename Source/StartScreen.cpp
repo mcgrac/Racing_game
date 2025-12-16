@@ -4,6 +4,7 @@
 #include <vector>
 #include "Scene.h"
 #include "StartScreen.h"
+#include "SceneManager.h"
 #include "Button.h"
 
 void StartScreen::LoadTextures() {
@@ -32,23 +33,27 @@ void StartScreen::Start() {
 	//create buttons
 	//play button
 	Vector2 vec = { 628, 336 };
-	Button* b = new Button(unpressed_play, pressed_play, unpressed_play, buttonPressed, buttonSelected, vec);
+	Button* b = new ChangeSceneButton(GameSceneState::PLAYING, unpressed_play, pressed_play, unpressed_play, buttonPressed, buttonSelected, vec);
 	buttons.push_back(b);
+	buttons[0]->myScene = this;
 
 	//help button
-	Vector2 vec = { 628, 448 };
+	vec = { 628, 448 };
 	Button* b = new Button(unpressed_help, pressed_help, unpressed_help, buttonPressed, buttonSelected, vec);
 	buttons.push_back(b);
+	buttons[1]->myScene = this;
 
 	//badges button
-	Vector2 vec = { 628, 560 };
+	vec = { 628, 560 };
 	Button* b = new Button(unpressed_badges, pressed_badges, unpressed_badges, buttonPressed, buttonSelected, vec);
 	buttons.push_back(b);
+	buttons[2]->myScene = this;
 
 	//badges button
-	Vector2 vec = { 628, 672 };
-	Button* b = new Button(unpressed_badges, pressed_badges, unpressed_badges, buttonPressed, buttonSelected, vec);
+	vec = { 628, 672 };
+	Button* b = new Button(unpressed_quit, pressed_quit, unpressed_quit, buttonPressed, buttonSelected, vec);
 	buttons.push_back(b);
+	buttons[3]->myScene = this;
 
 	selButton = StartMenuSelectedButton::PLAY;
 	buttonId = 0;
@@ -102,20 +107,37 @@ void StartScreen::UnloadAssets() {
 void StartScreen::Update() {
 	//update state
 	//call selected funtion of the selected button?
-	IsKeyDown(KEY_UP) {
-		if (ButtonId > 0) {
-			ButtonsId++;
-			playSound(buttonSelected);
+	if(IsKeyPressed(KEY_UP)) {
+		if (buttonId > 0) {
+			buttonId++;
+			buttons[buttonId]->IsSelected();
 		}
 	}
-	IsKeyDown(KEY_DOWN) {
-		if (ButtonId < buttons.size() - 1) {//mes petit que 3
-			buttonsId--;
-			playSound(buttonSelected);
+	if(IsKeyPressed(KEY_DOWN)) {
+		if (buttonId < buttons.size() - 1) {//mes petit que 3
+			buttonId--;
+			PlaySound(buttonSelected);
+			buttons[buttonId]->IsSelected();
 		}
 	}
-	IsKeyEnter(ENTER) {
-		buttons[buttonsId]->pressed();
+	if(IsKeyPressed(KEY_ENTER)) {//selecciona una opció
+		buttons[buttonId]->press();
+	}
+
+	//atatch a state to every buttonId value (0-3)
+	switch (buttonId) {
+	case 0:
+		selButton = StartMenuSelectedButton::PLAY;
+		break;
+	case 1:
+		selButton = StartMenuSelectedButton::HELP;
+		break;
+	case 2:
+		selButton = StartMenuSelectedButton::BADGES;
+		break;
+	case 3:
+		selButton = StartMenuSelectedButton::QUIT;
+		break;
 	}
 }
 

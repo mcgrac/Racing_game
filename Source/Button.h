@@ -1,6 +1,8 @@
 #pragma once
 #include "raylib.h"
 #include<functional>
+#include "Scene.h";
+#include "SceneManager.h"
 
 class Button {
 
@@ -23,9 +25,11 @@ public:
     bool IsPressed() const { return isPressed; }
     bool IsSelected() const { return isSelected; }
 
+    Scene* myScene = nullptr;
 
 
-private:
+
+protected:
     Texture2D buttonUpSprite;
     Texture2D buttonDownSprite;
     Texture2D buttonSelectedSprite;
@@ -44,12 +48,18 @@ private:
 
 class ChangeSceneButton : public Button {
 public:
-    ChangeSceneButton();
+    ChangeSceneButton(GameSceneState nextScene, Texture2D buttonUp,
+        Texture2D buttonDown,
+        Texture2D buttonSelected,
+        Sound pressSound, Sound selectSound,
+        Vector2 position,
+        float pressDuration = 0.2f);
+    GameSceneState targetScene;
     void press();
 };
 
 /*
-* class CharacterButton : public Button {
+ class CharacterButton : public Button {
 
 };
 */

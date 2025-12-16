@@ -18,11 +18,11 @@ void CharacterSelectionScreen::LoadSounds() {
 	buttonSelected = LoadSound("Assets/Sound/Sfx/SelectButtonUI.mp3");
 }
 
-void CharacterSelectionScreen::LoadSounds() {
+void CharacterSelectionScreen::Start() {
 	LoadTextures();
 	LoadSounds();
 
-	//create the buttons
+	charSelected = characterSelection::CHANSEY;
 }
 
 void CharacterSelectionScreen::Draw() {
@@ -41,21 +41,7 @@ void CharacterSelectionScreen::Draw() {
 		DrawTexture(SelectedMeganium, 0, 0, WHITE);
 		break;
 	}
-	//draw cursor
-	switch (charSelected) {
-	case characterSelection::CHANSEY:
-		DrawTexture(Cursor, 100, 50, WHITE);
-		break;
-	case characterSelection::CLEFFA:
-		DrawTexture(Cursor, 100, 150, WHITE);
-		break;
-	case characterSelection::PACHIRISU:
-		DrawTexture(Cursor, 100, 150, WHITE);
-		break;
-	case characterSelection::MEGANIUM:
-		DrawTexture(Cursor, 100, 150, WHITE);
-		break;
-	}
+	
 }
 
 void CharacterSelectionScreen::UnloadAssets() {
@@ -64,6 +50,7 @@ void CharacterSelectionScreen::UnloadAssets() {
 	UnloadTexture(SelectedCleffa);
 	UnloadTexture(SelectedPachirisu);
 	UnloadTexture(SelectedMeganium);
+	UnloadTexture(Cursor);
 	//unload sounds
 	UnloadSound(buttonPressed);
 	UnloadSound(buttonSelected);
@@ -71,6 +58,61 @@ void CharacterSelectionScreen::UnloadAssets() {
 
 void CharacterSelectionScreen::Update() {
 	//check if arrows are pressed
-	//move the cursor acordingly
+	switch (charSelected) {
+	case characterSelection::CHANSEY:
+		if (IsKeyPressed(KEY_RIGHT)) {
+			charSelected = characterSelection::MEGANIUM;
+			PlaySound(buttonSelected);
+		}
+		else if (IsKeyPressed(KEY_DOWN)) {
+			charSelected = characterSelection::PACHIRISU;
+			PlaySound(buttonSelected);
+		}
+		break;
+	case characterSelection::CLEFFA:
+		if (IsKeyPressed(KEY_UP)) {
+			charSelected = characterSelection::PACHIRISU;
+			PlaySound(buttonSelected);
+		}
+		break;
+	case characterSelection::PACHIRISU:
+		if (IsKeyPressed(KEY_UP)) {
+			charSelected = characterSelection::CHANSEY;
+			PlaySound(buttonSelected);
+		}
+		else if (IsKeyPressed(KEY_DOWN)) {
+			charSelected = characterSelection::CLEFFA;
+			PlaySound(buttonSelected);
+		}
+		break;
+	case characterSelection::MEGANIUM:
+		if (IsKeyPressed(KEY_LEFT)) {
+			charSelected = characterSelection::CHANSEY;
+			PlaySound(buttonSelected);
+		}
+		else if (IsKeyPressed(KEY_DOWN)) {
+			charSelected = characterSelection::PACHIRISU;
+			PlaySound(buttonSelected);
+		}
+		break;
+	}
+	
 	//ckeck if enter is pressed, to select the charcter
+	if (IsKeyPressed(KEY_ENTER)) {
+		PlaySound(buttonPressed);
+		switch (charSelected) {
+		case characterSelection::CHANSEY:
+			//return 2 and change scene
+			break;
+		case characterSelection::CLEFFA:
+			//return 1 and change scene
+			break;
+		case characterSelection::PACHIRISU:
+			//return 3 and change scene
+			break;
+		case characterSelection::MEGANIUM:
+			//return 4 and change scene
+			break;
+		}
+	}
 }

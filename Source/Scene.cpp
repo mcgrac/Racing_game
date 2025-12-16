@@ -1,19 +1,8 @@
-#pragma once
-
 #include "raylib.h"
 #include <vector>
+#include "Scene.h"
 
-class Scene {
-/*private:
+void Scene::ChangeScene(GameSceneState nextScene) {
+	manager->sceneChange(nextScene);
+}
 
-
-
-public:
-
-	void Start();
-	void Update();
-
-	void startTrasition();
-	void Draw();*/
-
-};

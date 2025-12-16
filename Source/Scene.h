@@ -26,8 +26,10 @@ public:
 
 	void Draw();
 
+	void ChangeScene(GameSceneState nextScene);
+
 	std::vector<Button*> buttons;
 
-	SceneManager manager;
+	SceneManager* manager;
 
 };

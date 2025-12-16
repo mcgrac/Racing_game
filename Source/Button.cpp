@@ -73,6 +73,21 @@ void Button::Draw()
         DrawTexture(buttonUpSprite, (int)position.x, (int)position.y, WHITE);
 }
 
+ChangeSceneButton::ChangeSceneButton(GameSceneState nextScene, Texture2D buttonUp,
+    Texture2D buttonDown,
+    Texture2D buttonSelected,
+    Sound pressSound, Sound selectSound,
+    Vector2 position,
+    float pressDuration = 0.2f) : Button(buttonUp,
+        buttonDown,
+        buttonSelected,
+        pressSound, selectSound,
+        position,
+        pressDuration = 0.2f) {
+    targetScene = nextScene;
+}
+
 void ChangeSceneButton::press() {
-    //sends the info about the target 
+    //sends the info about the target
+    myScene->ChangeScene(targetScene);
 }

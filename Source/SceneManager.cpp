@@ -19,22 +19,22 @@ void SceneManager::Start()
 	//create a start screen and add it to the list 
 	Scene* s = new StartScreen();
 	scenes.push_back(s);
-	scenes[0]->manager = *this;
+	scenes[0]->manager = this;
 
 	//create a character selection scene and add it
 	s = new CharacterSelectionScreen();
 	scenes.push_back(s);
-	scenes[1]->manager = *this;
+	scenes[1]->manager = this;
 
 	//create an ingame scene and add it to the list
 	s = new GameScreen();
 	scenes.push_back(s);
-	scenes[2]->manager = *this;
+	scenes[2]->manager = this;
 
 	//create and end screen
 	s = new GameOverScreen();
 	scenes.push_back(s);
-	scenes[3]->manager = *this;
+	scenes[3]->manager = this;
 
 	state = GameSceneState::MAIN_MENU;
 	indexScene = 0;
@@ -48,6 +48,9 @@ void SceneManager::Update()
 	//here check the enum game state scene to cange scene
 	//Ex: if main menu render game menu scene, if character selectio render character selection
 	//call update of the actual scene
+	if (targetScene != indexScene) {//target scene has been changed
+
+	}
 }
 
 void SceneManager::render() {

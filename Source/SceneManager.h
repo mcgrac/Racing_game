@@ -39,5 +39,7 @@ public:
 
 	GameSceneState state;
 
+	int targetScene = 0;
+
 
 };
