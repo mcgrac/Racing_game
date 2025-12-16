@@ -6,15 +6,18 @@ Chansey::Chansey(Module* _listener, const Vector2D& startPos, EntityType _type, 
     : Characters(_listener, startPos, _type, category, maskBits)
 {
     LoadAnimations();
-    //create physbody
     InitPhysics(category, maskBits, groupIndex);
 
     waypointReachRadius = 50.0f;
+    accelerationForce = 65.0f;
+    //attack
+    attackSound = LoadSound("Assets/Sound/Sfx/Chansey.wav");
+    SetSoundVolume(attackSound, 0.4f);
 }
 
 Chansey::~Chansey()
 {
-
+    
 }
 
 void Chansey::InitPhysics(uint16 category, uint16 maskBits, int16 groupIndex)
@@ -157,7 +160,6 @@ bool Chansey::Update(float dt)
 
     UpdateAnims(dt); //update current animation depending on the state
 
-    std::cout << "max speed chansey: " << maxForwardSpeed << std::endl;
     if (currentState == State::PREPARING_ATTACK) {
         if (preparingAttack.GetCurrentFrame() == 2) {
 
@@ -166,6 +168,7 @@ bool Chansey::Update(float dt)
             if (!attack)
             {
                 attack = new ChanseyAttack(listener, GetCenter(), rotation, EntityType::ATTACK, PhysicCategory::ATTACK, PhysicCategory::AI);
+                PlaySound(attackSound);
             }
 
             currentState = State::ATTACK;
@@ -188,23 +191,12 @@ bool Chansey::Update(float dt)
                 stateTimer = 0.0f;
             }
         }
-
-        //if (stateTimer >= 5.0f) {
-
-        //    delete attack;
-        //    attack = nullptr;
-
-        //    currentState = State::IDLE;
-        //    stateTimer = 0.0f;
-        //}
     }
 
     if (currentState == State::STUNNED) {
         //be stunned for a while
         if (stateTimer >= 2.0f) {
-            std::cout << "max Speed before stunned: " << GetMaxSpeed() << std::endl;
             maxForwardSpeed = maxForwardSpeed / 2.0f;
-            std::cout << "max Speed after stunned" << GetMaxSpeed() << std::endl;
         }
         std::cout << "Stunned" << std::endl;
         UpdateState(dt);
@@ -414,6 +406,10 @@ void Chansey::ApplyCarPhysics(float dt) {
             b2Vec2 force = accelerationForce * forwardVector;
             body->ApplyForceToCenter(force, true);
 
+            if (!IsSoundPlaying(accelerate)) {
+                PlaySound(accelerate);
+            }
+
         }
     }
     else if (IsKeyDown(KEY_S))
@@ -427,6 +423,12 @@ void Chansey::ApplyCarPhysics(float dt) {
         {
             b2Vec2 reverseForce = -accelerationForce * .95f * forwardVector; 
             body->ApplyForceToCenter(reverseForce, true);
+        }
+    }
+
+    if (IsKeyReleased(KEY_W)) {
+        if (IsSoundPlaying(accelerate)) {
+            StopSound(accelerate);
         }
     }
     //-------------------------------------------------------------

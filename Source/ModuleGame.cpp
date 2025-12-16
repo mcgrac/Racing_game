@@ -45,6 +45,8 @@ bool ModuleGame::Start()
 	//create position tracking and send al checkpoints
 	posTracker = new PositionTracker(currentMap->GetCheckpointsList());
 
+	raceState = RaceState::COUNTDOWN;
+	countdownTimer = 5.0f;
 	return ret;
 }
 
@@ -62,21 +64,50 @@ update_status ModuleGame::Update()
 {
 	float dt = GetFrameTime();
 
-	if (entityManager) { entityManager->Update(dt); }
-	else { std::cout<<"Entity manager update error Module Game\n"; }
+	static float startTime = GetTime(); // GetTime() devuelve segundos desde el inicio del juego
+
+	std::cout << "dt: " << dt << " countdownTimer: " << countdownTimer << std::endl;
+	
+	switch (raceState)
+	{
+		{
+	case ModuleGame::RaceState::COUNTDOWN:
+		std::cout << "State countodwns" << std::endl;
+		//countdownTimer -= dt;
+
+		static float startTime = GetTime(); // GetTime() devuelve segundos desde el inicio del juego
+		float elapsed = GetTime() - startTime;
+		float countdownDuration = 5.0f;
+
+		if (elapsed >= countdownDuration) {
+			raceState = RaceState::RUNNING;
+		}
+		else {
+			std::cout << "Countdown: " << countdownDuration - elapsed << "s remaining\n";
+		}
+		break;
+		}
+	case ModuleGame::RaceState::RUNNING:
+		std::cout << "State running" << std::endl;
+		if (entityManager) { entityManager->Update(dt); }
+
+		//update position of all racers
+		posTracker->UpdatePositions(racers);
+		break;
+	case ModuleGame::RaceState::FINISHED:
+		break;
+	default:
+		break;
+	}
 
 	//loop music level
 	currentMap->UpdateMusic();
-
 
 	if (camera && player)
 	{
 		camera->FollowPlayer(player);
 		camera->Update(dt);
 	}
-
-	//update position of all racers
-	posTracker->UpdatePositions(racers);
 
 	return UPDATE_CONTINUE;
 }
@@ -130,7 +161,6 @@ update_status ModuleGame::PostUpdate()
 			debugText.c_str(),
 			800, 10, 40, WHITE );
 	}
-
 	//--------------------------------------
 	return UPDATE_CONTINUE;
 }
@@ -142,6 +172,7 @@ bool ModuleGame::CleanUp()
 	{
 		currentMap->CleanUp();
 		delete currentMap;
+		currentMap = nullptr;
 	}
 
 	if (player) {
@@ -152,6 +183,19 @@ bool ModuleGame::CleanUp()
 	if (camera) {
 		delete camera;
 		camera = nullptr;
+	}
+
+	if (posTracker) {
+		delete posTracker;
+		posTracker = nullptr;
+	}
+
+	if (!racers.empty()) {
+		for (Entity* e : racers) {
+			e->pendingToDelete = true;
+			e->active = false;
+		}
+		racers.clear();
 	}
 
 	LOG("Unloading Intro scene");
@@ -192,6 +236,7 @@ void ModuleGame::OnCollision(PhysBody* physA, PhysBody* physB) {
 		{
 	case EntityType::ROCK:
 		Interactables* intera = dynamic_cast<Interactables*>(other);
+		PlaySound(intera->GetDestructionSound());
 		intera->SetIsDestroyed(true);
 		break;
 		}
@@ -234,7 +279,9 @@ void ModuleGame::OnCollision(PhysBody* physA, PhysBody* physB) {
 		break;
 		}
 	default:
+
 		break;
+		
 	}
 }
 
@@ -316,7 +363,7 @@ void ModuleGame::CreatePlayers()
 
 	// Crear los 4 coches (por ahora en posición temporal)
 	// Posición temporal porque luego se setearán en PositionPlayersOnGrid()
-	for (int i = 0; i < 2; i++) {
+	for (int i = 0; i < 4; i++) {
 
 	    Entity* racer = nullptr;
 		if (i == 0) {

@@ -30,10 +30,18 @@ Characters::Characters(Module* _listener, const Vector2D& startPos, EntityType _
 	currentState = State::IDLE;
 	previousState = State::IDLE;
 	stateTimer = 0.0f;
+
+	//load sound
+	accelerate = LoadSound("Assets/Sound/Sfx/CarAccelerating.wav");
+	SetSoundVolume(accelerate, 1.5f);
+
+	wallBump = LoadSound("Assets/Sound/Sfx/wallBump.wav");
 }
 
 Characters::~Characters()
 {
+	UnloadSound(accelerate);
+	UnloadSound(attackSound);
 }
 
 void Characters::UpdateState(float dt)

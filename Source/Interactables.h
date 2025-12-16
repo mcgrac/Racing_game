@@ -8,6 +8,7 @@ public:
 	~Interactables();
 
 	inline void SetIsDestroyed(bool b) { isDestroyed = b; }
+	inline Sound GetDestructionSound() { return destruction; }
 
 protected:
 
@@ -18,4 +19,6 @@ protected:
 	float height;
 
 	bool isDestroyed;
+
+	Sound destruction;
 };

@@ -4,6 +4,9 @@
 Pachirisu::Pachirisu(Module* _listener, const Vector2D& startPos, EntityType _type, uint16 category, uint16 maskBits, int16 groupIndex)
     : Characters(_listener, startPos, _type, category, maskBits)
 {
+    //load sound
+    attackSound = LoadSound("Assets/Sound/Sfx/pachirisu.wav");
+
     LoadAnimations();
     InitPhysics(category, maskBits, groupIndex);
 }
@@ -163,6 +166,7 @@ bool Pachirisu::Update(float dt)
             if(!attack)
             {
                 attack = new AttackPachirisu(listener, position, EntityType::ATTACK, PhysicCategory::ATTACK, PhysicCategory::AI);
+                PlaySound(attackSound);
             }
 
             currentState = State::ATTACK;
@@ -418,6 +422,9 @@ void Pachirisu::ApplyCarPhysics(float dt) {
         {
             b2Vec2 force = accelerationForce * forwardVector;
             body->ApplyForceToCenter(force, true);
+            if (!IsSoundPlaying(accelerate)) {
+                PlaySound(accelerate);
+            }
 
         }
     }
@@ -433,6 +440,11 @@ void Pachirisu::ApplyCarPhysics(float dt) {
         {
             b2Vec2 reverseForce = -accelerationForce * .95f * forwardVector;
             body->ApplyForceToCenter(reverseForce, true);
+        }
+    }
+    if (IsKeyReleased(KEY_W)) {
+        if (IsSoundPlaying(accelerate)) {
+            StopSound(accelerate);
         }
     }
     //-------------------------------------------------------------

@@ -42,6 +42,12 @@ public:
 
 	void GetPokemonChoosenByPlayer(); //in this void we will set the int choosenPokemon.
 
+	enum class RaceState {
+		COUNTDOWN,
+		RUNNING,
+		FINISHED
+	};
+
 private:
 
 	void LoadLevel(int levelNumber);
@@ -54,9 +60,12 @@ private:
 	//std::vector<Player*> racers;
 	std::vector<Entity*> racers;
 	Entity* player = nullptr;
-	int choosenPokemon = 2; //hardcode chansey selection
+	int choosenPokemon = 4; //hardcode chansey selection
 
 	GameCamera* camera = nullptr;
 	PositionTracker* posTracker = nullptr;
 	EntityManager* entityManager = nullptr;
+
+	RaceState raceState;
+	float countdownTimer;
 };

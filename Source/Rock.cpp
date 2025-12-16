@@ -7,6 +7,8 @@ Rock::Rock(Module* _listener, const Vector2D& pos, EntityType _type, uint16 cate
 	InitPhysics(category, maskBits, groupIndex);
 
     idle = LoadTexture("Assets/Textures/Map/BreakableRock.png");
+
+    destruction = LoadSound("Assets/Sound/Sfx/RockDestruction.wav");
 }
 
 Rock::~Rock()
@@ -19,6 +21,7 @@ bool Rock::Update(float dt)
     if (isDestroyed) {
         anim.Update(dt);
         if (anim.GetCurrentFrame() == 4) {
+
             Destroy();
         }
     }
@@ -76,6 +79,9 @@ bool Rock::Destroy()
 bool Rock::CleanUp()
 {
     UnloadTexture(idle);
+
+    UnloadSound(destruction);
+
     listener->App->physics->DestroyPhysBody(physBody);
     return true;
 }

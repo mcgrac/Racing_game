@@ -66,9 +66,9 @@ public:
 	inline bool GetIsPlayer() { return isPlayer; }
 	inline int GetCurrentState() const { return (int)currentState; }
 	inline bool GetIsOffRoad() { return isOffRoad; }
+	inline Sound GetWallBumpSound() { return wallBump; }
 
 	float CalculateDistanceFromCheckpoint(Checkpoint* ch);
-
 
 protected:
 
@@ -133,6 +133,11 @@ protected:
 	void UpdateState(float dt);
 	virtual void UpdateAnims(float dt) = 0;
 	virtual void Boost(float dt) = 0;
+
+	//sounds
+	Sound accelerate;
+	Sound attackSound;
+	Sound wallBump;
 
 	//Helpers
 	b2Vec2 GetForwardVector() const;

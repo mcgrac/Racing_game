@@ -7,6 +7,9 @@ Cleffa::Cleffa(Module* _listener, const Vector2D& startPos, EntityType _type, ui
     LoadAnimations();
     InitPhysics(category, maskBits, groupIndex);
 
+    //sounds
+    attackSound = LoadSound("Assets/Sound/Sfx/Cleffa.wav");
+
     //personalized properties
     maxForwardSpeed = 7.0f;
     accelerationForce = 30.0f;
@@ -190,6 +193,8 @@ bool Cleffa::Update(float dt)
                 fixture->SetFilterData(newFilter);
             }
 
+            PlaySound(attackSound);
+
             currentState = State::ATTACK;
         }
     }
@@ -204,7 +209,7 @@ bool Cleffa::Update(float dt)
             if (fixture) {
                 b2Filter newFilter = fixture->GetFilterData();
 
-                newFilter.maskBits = PhysicCategory::CHECKPOINTS | SENSORS | WALLS;
+                newFilter.maskBits = PhysicCategory::CHECKPOINTS | SENSORS | WALLS | DESTRUCTIBLE | ATTACK;
 
                 fixture->SetFilterData(newFilter);
             }
@@ -424,7 +429,9 @@ void Cleffa::ApplyCarPhysics(float dt) {
             // F = m * a
             b2Vec2 force = accelerationForce * forwardVector;
             body->ApplyForceToCenter(force, true);
-
+            if (!IsSoundPlaying(accelerate)) {
+                PlaySound(accelerate);
+            }
         }
     }
     else if (IsKeyDown(KEY_S))
@@ -438,6 +445,11 @@ void Cleffa::ApplyCarPhysics(float dt) {
         {
             b2Vec2 reverseForce = -accelerationForce * .95f * forwardVector; 
             body->ApplyForceToCenter(reverseForce, true);
+        }
+    }
+    if (IsKeyReleased(KEY_W)) {
+        if (IsSoundPlaying(accelerate)) {
+            StopSound(accelerate);
         }
     }
     //-------------------------------------------------------------

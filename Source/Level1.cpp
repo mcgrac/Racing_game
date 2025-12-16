@@ -40,6 +40,9 @@ bool Level1::Load()
     inGameMusic = LoadSound("Assets/Sound/Music/InGameMusicEncore.wav");
     inGameMusicBeggining = LoadSound("Assets/Sound/Music/InGameMusicBeggining.wav");
 
+    SetSoundVolume(inGameMusic, 0.7f);
+    SetSoundVolume(inGameMusicBeggining, 0.7f);
+
     //clear choosen pokemon list
     GetPokemonsTakenList().clear();
 
