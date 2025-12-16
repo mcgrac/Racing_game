@@ -100,6 +100,8 @@ void StartScreen::UnloadAssets() {
 }
 
 void StartScreen::Update() {
+	//update state
+	//call selected funtion of the selected button?
 	IsKeyDown(KEY_UP) {
 		if (ButtonId > 0) {
 			ButtonsId++;
