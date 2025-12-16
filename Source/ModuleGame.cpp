@@ -64,33 +64,40 @@ update_status ModuleGame::PreUpdate()
 	return UPDATE_CONTINUE;
 }
 
-
 // Update: draw background
 update_status ModuleGame::Update()
 {
 	float dt = GetFrameTime();
-
-	// If start menu active -> load and no actulize 
+	
+	// If start menu active -> load and no update
 	if (startScreen && showStartMenu) {
 		startScreen->Update();
+
+		if (startScreen->GetHasPressQuit()) {
+			LOG("Start menu: Quit requested");
+			startScreen->UnloadBackgroundMainMenu();
+			startScreen->Reset();
+
+			return UPDATE_STOP;
+		}
+
 		if (startScreen->GetHasPressStart()) {
 			startScreen->UnloadBackgroundMainMenu();
 			startScreen->Reset();
 			showStartMenu = false;
 		
-			// Asegurarnos de que el cuerpo físico del jugador esté despierto al reanudar
+			// assure that player is awake
 			if (player && player->GetPhysBody() && player->GetPhysBody()->body) {
 					player->GetPhysBody()->body->SetAwake(true);
 			}
 
-			// Despertar y limpiar todos los cuerpos (player + AI)
+			// awake and clean entity bodies
 			for (Entity* r : racers) {
 				if (!r) continue;
 				PhysBody* pb = r->GetPhysBody();
 				if (!pb || !pb->body) continue;
 				b2Body* body = pb->body;
 
-				// Opcional: evita que Box2D ponga a dormir este cuerpo inmediatamente
 				body->SetSleepingAllowed(false);
 
 				// Forzar awake y limpiar velocidades residuales

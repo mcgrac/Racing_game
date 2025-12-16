@@ -22,6 +22,25 @@ private:
 	Texture2D backgroundMainMenu = { 0 };
 	Texture2D mainMenuTitle = { 0 };
 
+	Texture2D buttonPlay = { 0 };
+	Texture2D buttonPlayPressed = { 0 };
+	Texture2D buttonHelp = { 0 };
+	Texture2D buttonHelpPressed = { 0 };
+	Texture2D buttonBadges = { 0 };
+	Texture2D buttonBadgesPressed = { 0 };
+	Texture2D buttonQuit = { 0 };
+	Texture2D buttonQuitPressed = { 0 };
+
+	Texture2D buttonArrow = { 0 };
+
+	Sound arrowMove = { 0 };
+	Sound buttonSelect = { 0 };
+	std::vector<Button*> buttons;
+	bool buttonsLoaded = false;
+
+	bool LoadButtons();
+	void UnloadButtons();
+
 public:
 	StartScreen() {}
 	~StartScreen();

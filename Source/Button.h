@@ -24,7 +24,6 @@ public:
     bool IsSelected() const { return isSelected; }
 
 
-
 private:
     Texture2D buttonUpSprite;
     Texture2D buttonDownSprite;
