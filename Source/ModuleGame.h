@@ -41,12 +41,17 @@ public:
 	void OnCollision(PhysBody* physA, PhysBody* physB) override;
 	void OnCollisionEnd(PhysBody* physA, PhysBody* physB) override;
 
-	void GetPokemonChoosenByPlayer(); //in this void we will set the int choosenPokemon.
-
 	enum class RaceState {
 		COUNTDOWN,
 		RUNNING,
 		FINISHED
+	};
+
+	enum class GameState {
+		MAIN_MENU,
+		CHARACTER_SELECTION,
+		IN_GAME,
+		FINISH
 	};
 
 private:
@@ -61,7 +66,7 @@ private:
 	//std::vector<Player*> racers;
 	std::vector<Entity*> racers;
 	Entity* player = nullptr;
-	int choosenPokemon = 2; //hardcode chansey selection
+	int choosenPokemon; //hardcode chansey selection
 
 	GameCamera* camera = nullptr;
 	PositionTracker* posTracker = nullptr;
@@ -70,6 +75,18 @@ private:
 
 	RaceState raceState;
 	float countdownTimer;
+	GameState gameState;
 
 	int sceneState;
+	int playerPosition;
+
+	//scores
+	float currentScore;
+	float highestScore;
+	float scoreWhenFinishingRace;
+
+	//textures scenes
+	Texture2D mainMenuScreen;
+	Texture2D characterSelection;
+	Texture2D finishRaceScreen;
 };

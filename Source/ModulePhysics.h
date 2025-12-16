@@ -96,6 +96,7 @@ public:
 	void DrawDebug();
 	void UseMouseJoint(Camera2D camera);
 
+	inline bool GetDebug() { return debug; }
 private:
 
 	b2World* world = nullptr;

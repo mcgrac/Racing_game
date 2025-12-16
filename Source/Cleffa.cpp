@@ -163,7 +163,7 @@ void Cleffa::Attack()
 bool Cleffa::CleanUp()
 {
     LOG("Unloading player");
-
+    listener->App->physics->DestroyPhysBody(physBody);
     return true;
 }
 
@@ -550,44 +550,8 @@ bool Cleffa::Render() {
     }
 
 #pragma region DEBUG DRAWING
-    // ********** DEBUG: DIBUJAR FORWARD VECTOR *****
-// 1. Obtener la posición central y el vector
-    b2Vec2 forwardVector = GetForwardVector();
-    b2Vec2 positioning = { position.getX() + (width / 2), position.getY() + (height / 2) };
-
-    // 2. Definir la longitud de la línea del vector (e.g., 50 píxeles)
-    float vectorLength = 50.0f;
-    // 3. Calcular la posición final de la línea
-    Vector2 endPosFor;
-    endPosFor.x = positioning.x + forwardVector.x * vectorLength;
-    endPosFor.y = positioning.y + forwardVector.y * vectorLength;
-
-    // 4. Dibujar la línea (desde el centro hasta el punto final)
-    // Usamos un color distintivo (e.g., GREEN) para verlo claramente.
-    DrawLine(
-        (int)positioning.x,
-        (int)positioning.y,
-        (int)endPosFor.x,
-        (int)endPosFor.y,
-        GREEN
-    );
-    //2.VECTOR RIGHT
-    b2Vec2 rightvector = GetRightVector();
-    Vector2 endPos;
-    endPos.x = positioning.x + rightvector.x * vectorLength;
-    endPos.y = positioning.y + rightvector.y * vectorLength;
-
-    DrawLine(
-        (int)positioning.x,
-        (int)positioning.y,
-        (int)endPos.x,
-        (int)endPos.y,
-        YELLOW
-    );
-
-
     // Dibujar waypoints si es IA
-    if (!isPlayer && !waypoints.empty())
+    if (!isPlayer && !waypoints.empty() && listener->App->physics->GetDebug())
     {
         // Dibujar todos los waypoints
         for (size_t i = 0; i < waypoints.size(); i++)

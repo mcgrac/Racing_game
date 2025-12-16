@@ -11,22 +11,8 @@ Level1::Level1(ModulePhysics* _physics, Module* _listener, EntityManager* _entit
 
 Level1::~Level1()
 {
+    
 }
-
-//void Level1::Start()
-//{
-//	floor = LoadTexture("Assets/Textures/Map/Background.png");
-//	overMap = LoadTexture("Assets/Textures/Map/TopElementsMap.png");
-//
-//	//positions parrilla
-//	
-//	//entityManager->CreateEntity(EntityType::PLAYER, Vector2D(200,200));
-//}
-
-//void Level1::Update()
-//{
-//
-//}
 
 bool Level1::Load()
 {
@@ -77,6 +63,34 @@ void Level1::CleanUp()
     UnloadSound(inGameMusicBeggining);
 
     startingPositions.clear();
+
+    for (Rock* r : rocksList) {
+        delete r;
+        r = nullptr;
+    }
+
+    rocksList.clear();
+
+    for (Checkpoint* c : checkpointsList) {
+        delete c;
+        c = nullptr;
+    }
+
+    checkpointsList.clear();
+
+    for (Boost* b : boostsList) {
+        delete b;
+        b = nullptr;
+    }
+
+    boostsList.clear();
+
+    for (Off_road* o : offRoadList) {
+        delete o;
+        o = nullptr;
+    }
+
+    offRoadList.clear();
 }
 
 void Level1::UpdateMusic()
@@ -108,7 +122,6 @@ void Level1::InitializeStartingGrid()
 
 void Level1::LoadColliders(const char* filePath)
 {
-    //Ap->physics->CreateChain(.....) (crear colliders del circuito)
     LoadAllChains(filePath);
 }
 
