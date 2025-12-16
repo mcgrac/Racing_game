@@ -5,6 +5,8 @@
 #include "EntityManager.h"
 #include "Boost.h"
 #include "Checkpoint.h"
+#include "Off_road.h"
+#include "Rock.h"
 #include <fstream>      
 #include <sstream>      
 #include <string>       
@@ -55,6 +57,13 @@ protected:
 
     //bosts
     std::vector<Boost*> boostsList;
+
+    //grass or no_road zones
+    std::vector<Off_road*> offRoadList;
+
+    //rocks list
+    std::vector<Rock*> rocksList;
+
 private:
 
     //list of the types of pokemons already created/choosed by the player

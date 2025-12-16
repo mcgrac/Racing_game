@@ -11,6 +11,7 @@
 #include "Level1.h"
 #include "GameCamera.h"
 #include "PositionTracker.h"
+#include "SceneManager.h"
 
 #include "Cleffa.h"
 #include "Meganium.h"
@@ -20,7 +21,7 @@
 class PhysBody;
 class PhysicEntity;
 class EntityManager;
-class Player;        
+class SceneManager;
 
 class ModuleGame : public Module
 {
@@ -42,6 +43,12 @@ public:
 
 	void GetPokemonChoosenByPlayer(); //in this void we will set the int choosenPokemon.
 
+	enum class RaceState {
+		COUNTDOWN,
+		RUNNING,
+		FINISHED
+	};
+
 private:
 
 	void LoadLevel(int levelNumber);
@@ -54,9 +61,15 @@ private:
 	//std::vector<Player*> racers;
 	std::vector<Entity*> racers;
 	Entity* player = nullptr;
-	int choosenPokemon = 4; //hardcode chansey selection
+	int choosenPokemon = 2; //hardcode chansey selection
 
 	GameCamera* camera = nullptr;
 	PositionTracker* posTracker = nullptr;
 	EntityManager* entityManager = nullptr;
+	SceneManager* sceneManager = nullptr;
+
+	RaceState raceState;
+	float countdownTimer;
+
+	int sceneState;
 };

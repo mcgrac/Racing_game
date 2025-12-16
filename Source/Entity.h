@@ -21,6 +21,7 @@ enum class EntityType
 	ROCK,
 	CHECKPOINT,
 	ATTACK,
+	OFF_ROAD
 };
 
 class PhysBody;

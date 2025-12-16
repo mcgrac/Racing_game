@@ -11,10 +11,6 @@ enum class GameSceneState {
 };
 
 class SceneManager {
-private:
-
-	//int currentScreenID();
-
 public:
 
 	SceneManager();
@@ -26,6 +22,11 @@ public:
 	//void SwitchScreen(int screenID);
 	//void MoveSelector();
 
+	inline GameSceneState GetCurrentScene() { return currentScene; }
+
+private:
+
+	GameSceneState currentScene;
 
 
 };

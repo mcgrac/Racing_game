@@ -7,7 +7,14 @@ class Characters :public Entity {
 
 public:
 	Characters(Module* _listener, const Vector2D& startPos, EntityType _type, uint16 category, uint16 maskBits, int16 groupIndex = 0);
+	~Characters();
 
+	enum class State {
+		IDLE,
+		ATTACK,
+		STUNNED,
+		PREPARING_ATTACK
+	};
 	//wayPoints IA
 	void SetWaypoints(const std::vector<Vector2D>& points);
 	const std::vector<Vector2D>& GetWaypoints() const { return waypoints; }
@@ -42,9 +49,6 @@ public:
 	inline void SetIsBoosted(bool b) {
 		isBoosted = b;
 	}
-	inline void SetOffRoad(int road) {
-		stats.offRoad = road;
-	}
 	inline void SetTurboPower(float f) {
 		turboPower = f;
 	}
@@ -52,13 +56,18 @@ public:
 	inline void SetPositionInRace(int i) { positionInRace = i; }
 	inline void SetStunnedState() { currentState = State::STUNNED; }
 	inline void SetStateTimer(float f) { stateTimer = f; }
-	
+	inline void SetIsOffRoad(bool b) { isOffRoad = b; }
+
 	inline void AddOneLap() { laps++; }
 
 	inline int GetCheckId() { return checkpointArrived; }
 	inline int GetLaps() { return laps; }
 	inline int GetPositionInRace() { return positionInRace; }
 	inline bool GetIsPlayer() { return isPlayer; }
+	inline int GetCurrentState() const { return (int)currentState; }
+	inline bool GetIsOffRoad() { return isOffRoad; }
+	inline Sound GetWallBumpSound() { return wallBump; }
+
 	float CalculateDistanceFromCheckpoint(Checkpoint* ch);
 
 protected:
@@ -76,12 +85,6 @@ protected:
 	};
 	Statistics stats;
 
-	enum class State {
-		IDLE,
-		ATTACK,
-		STUNNED,
-		PREPARING_ATTACK
-	};
 	State currentState;
 	State previousState;
 	float stateTimer;
@@ -89,6 +92,7 @@ protected:
 	//variables
 	float speed;
 	bool textureLoaded;
+	bool isOffRoad;
 
 	//position in the race
 	int positionInRace;
@@ -129,6 +133,11 @@ protected:
 	void UpdateState(float dt);
 	virtual void UpdateAnims(float dt) = 0;
 	virtual void Boost(float dt) = 0;
+
+	//sounds
+	Sound accelerate;
+	Sound attackSound;
+	Sound wallBump;
 
 	//Helpers
 	b2Vec2 GetForwardVector() const;

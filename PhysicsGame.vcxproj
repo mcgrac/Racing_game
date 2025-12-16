@@ -192,6 +192,7 @@
     <ClInclude Include="Source\AttackPachirisu.h" />
     <ClInclude Include="Source\Boost.h" />
     <ClInclude Include="Source\Chansey.h" />
+    <ClInclude Include="Source\ChanseyAttack.h" />
     <ClInclude Include="Source\Characters.h" />
     <ClInclude Include="Source\Checkpoint.h" />
     <ClInclude Include="Source\Cleffa.h" />
@@ -208,9 +209,11 @@
     <ClInclude Include="Source\Map.h" />
     <ClInclude Include="Source\Meganium.h" />
     <ClInclude Include="Source\ModuleGame.h" />
+    <ClInclude Include="Source\Off_road.h" />
     <ClInclude Include="Source\Pachirisu.h" />
     <ClInclude Include="Source\Player.h" />
     <ClInclude Include="Source\PositionTracker.h" />
+    <ClInclude Include="Source\Rock.h" />
     <ClInclude Include="Source\Scene.h" />
     <ClInclude Include="Source\SceneManager.h" />
     <ClInclude Include="Source\SolarBeam.h" />
@@ -233,6 +236,7 @@
     <ClCompile Include="Source\Chansey.cpp" />
     <ClCompile Include="Source\BadgesScreen.cpp" />
     <ClCompile Include="Source\Button.cpp" />
+    <ClCompile Include="Source\ChanseyAttack.cpp" />
     <ClCompile Include="Source\Characters.cpp" />
     <ClCompile Include="Source\CharacterSelectionScreen.cpp" />
     <ClCompile Include="Source\Checkpoint.cpp" />
@@ -246,9 +250,11 @@
     <ClCompile Include="Source\Map.cpp" />
     <ClCompile Include="Source\Meganium.cpp" />
     <ClCompile Include="Source\ModuleGame.cpp" />
+    <ClCompile Include="Source\Off_road.cpp" />
     <ClCompile Include="Source\Pachirisu.cpp" />
     <ClCompile Include="Source\Player.cpp" />
     <ClCompile Include="Source\PositionTracker.cpp" />
+    <ClCompile Include="Source\Rock.cpp" />
     <ClCompile Include="Source\Scene.cpp" />
     <ClCompile Include="Source\SceneManager.cpp" />
     <ClCompile Include="Source\SolarBeam.cpp" />

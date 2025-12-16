@@ -1,9 +1,10 @@
 #include "Boost.h"
 
-Boost::Boost(Module* _listener, const Vector2D& pos, EntityType _type, uint16 category, uint16 maskBits, int16 groupIndex) :
-	Interactables(_listener, pos, _type, category, maskBits)
+Boost::Boost(Module* _listener, const Vector2D& pos, float _rotation, EntityType _type, uint16 category, uint16 maskBits, int16 groupIndex) :
+	Interactables(_listener, pos, _type, category, maskBits), rotation(_rotation * DEG2RAD)
 
 {
+    
     LoadAnimations();
 	InitPhysics(category, maskBits, groupIndex);
 }
@@ -45,11 +46,13 @@ bool Boost::Render()
 
     Vector2 origin = { width * 0.5f, height * 0.5f };
 
+    float rotationDeg = rotation * RAD2DEG;
+
     DrawTexturePro(currentTexture,
         sourceRect,
         destRect,
         origin,
-        0.0f,
+        rotationDeg,
         WHITE);
 
     //render
@@ -75,18 +78,13 @@ void Boost::InitPhysics(uint16 category, uint16 maskBits, int16 groupIndex)
         groupIndex);
 
     if (physBody && physBody->body) {
-        //set fixture
-        b2Fixture* fixture = physBody->body->GetFixtureList();
-        if (fixture) {
-            fixture->SetDensity(1.0f); //density (mass)
-        }
-        physBody->body->ResetMassData();
-        // OnCollision I will be able to do->
-        // Entity* entity = reinterpret_cast<Entity*>(body->GetUserData().pointer);
+
+        physBody->body->SetTransform(
+            physBody->body->GetPosition(),
+            rotation //in radians
+        );
 
         physBody->listener = listener;
-
-        //save reference in the phys body
         physBody->entity = this;
     }
 }

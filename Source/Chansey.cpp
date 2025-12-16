@@ -6,15 +6,18 @@ Chansey::Chansey(Module* _listener, const Vector2D& startPos, EntityType _type, 
     : Characters(_listener, startPos, _type, category, maskBits)
 {
     LoadAnimations();
-    //create physbody
     InitPhysics(category, maskBits, groupIndex);
 
     waypointReachRadius = 50.0f;
+    accelerationForce = 65.0f;
+    //attack
+    attackSound = LoadSound("Assets/Sound/Sfx/Chansey.wav");
+    SetSoundVolume(attackSound, 0.4f);
 }
 
 Chansey::~Chansey()
 {
-
+    
 }
 
 void Chansey::InitPhysics(uint16 category, uint16 maskBits, int16 groupIndex)
@@ -41,7 +44,7 @@ void Chansey::InitPhysics(uint16 category, uint16 maskBits, int16 groupIndex)
         //set fixture
         b2Fixture* fixture = physBody->body->GetFixtureList();
         if (fixture) {
-            fixture->SetDensity(1.2f); //density (mass)
+            fixture->SetDensity(1.0f); //density (mass)
             fixture->SetFriction(0.4f); //friction with the floor
             fixture->SetRestitution(0.2f); //doesn't bounce
         }
@@ -92,6 +95,13 @@ void Chansey::LoadAnimations()
     idleAnimation.AddTexture("Assets/Textures/Cars/CarChanseyIdle1.png");
     idleAnimation.AddTexture("Assets/Textures/Cars/CarChanseyIdle2.png");
 
+    //stunned
+    stunnedAnimation.AddTexture("Assets/Textures/Cars/StunnedChansey.png");
+
+    //preparing attack
+    preparingAttack.AddTexture("Assets/Textures/Cars/AttackChansey1.png");
+    preparingAttack.AddTexture("Assets/Textures/Cars/AttackChansey2.png");
+    preparingAttack.AddTexture("Assets/Textures/Cars/AttackChansey3.png");
 
     // Obtain size textures
     if (idleAnimation.IsValid()) {
@@ -118,10 +128,13 @@ void Chansey::UpdateAnims(float dt)
         idleAnimation.Update(dt);
         break;
     case Characters::State::ATTACK:
-        attackAnimation.Update(dt);
+        idleAnimation.Update(dt);
         break;
     case Characters::State::STUNNED:
         stunnedAnimation.Update(dt);
+        break;
+    case Characters::State::PREPARING_ATTACK:
+        preparingAttack.Update(dt);
         break;
     default:
         break;
@@ -141,16 +154,49 @@ bool Chansey::CleanUp()
 // Update: draw background
 bool Chansey::Update(float dt)
 {
-    //if (!active) { return; }
-    //UpdateState(dt); //check if there is a temporal state, like stunned
+    if (IsKeyPressed(KEY_SPACE) && currentState == State::IDLE && isPlayer) {
+        Attack();
+    }
+
     UpdateAnims(dt); //update current animation depending on the state
+
+    if (currentState == State::PREPARING_ATTACK) {
+        if (preparingAttack.GetCurrentFrame() == 2) {
+
+            preparingAttack.Reset();
+
+            if (!attack)
+            {
+                attack = new ChanseyAttack(listener, GetCenter(), rotation, EntityType::ATTACK, PhysicCategory::ATTACK, PhysicCategory::AI);
+                PlaySound(attackSound);
+            }
+
+            currentState = State::ATTACK;
+        }
+    }
+
+    if (currentState == State::ATTACK) {
+
+        stateTimer += dt;
+
+        if(attack)
+        {
+            attack->Update(dt);
+
+            // Verificar si el huevo debe ser eliminado
+            if (attack->ShouldBeDeleted()) {
+                delete attack;
+                attack = nullptr;
+                currentState = State::IDLE;
+                stateTimer = 0.0f;
+            }
+        }
+    }
 
     if (currentState == State::STUNNED) {
         //be stunned for a while
         if (stateTimer >= 2.0f) {
-            std::cout << "max Speed before stunned: " << GetMaxSpeed() << std::endl;
             maxForwardSpeed = maxForwardSpeed / 2.0f;
-            std::cout << "max Speed after stunned" << GetMaxSpeed() << std::endl;
         }
         std::cout << "Stunned" << std::endl;
         UpdateState(dt);
@@ -176,20 +222,15 @@ void Chansey::ApplyDrag()
 
     b2Vec2 currentVelocity = body->GetLinearVelocity();
 
-    // Aplicamos una fuerza de arrastre proporcional a la velocidad
-    // (Fuerza opuesta a la dirección del movimiento).
-    // Usamos dragCoefficient para controlar la intensidad.
     // F_drag = -dragCoefficient * currentVelocity
     b2Vec2 dragForce = -dragCoefficient * currentVelocity;
 
-    // Para evitar la trepidación a velocidad 0, solo aplicamos la fuerza si hay movimiento
     if (currentVelocity.LengthSquared() > 0.1f)
     {
         body->ApplyForceToCenter(dragForce, true);
     }
     else
     {
-        // Si la velocidad es insignificante, la forzamos a 0 para detenerlo por completo
         body->SetLinearVelocity(b2Vec2(0, 0));
     }
 }
@@ -199,19 +240,13 @@ void Chansey::ApplyLateralFriction()
 
     b2Vec2 currentVelocity = body->GetLinearVelocity();
 
-    // Obtener la dirección perpendicular (lateral)
     b2Vec2 rightVector = GetRightVector();
-    // Si GetForwardVector es (x, y), GetRightVector es (-y, x) o (y, -x).
 
-    // Proyección de la velocidad en la dirección lateral (cuánto se está "derrapando")
     float lateralSpeed = b2Dot(currentVelocity, rightVector);
 
-    // 2. Impulso: Calculamos la fuerza necesaria para anular esa velocidad lateral.
-    // El impulso es proporcional a la masa y al coeficiente lateral.
     b2Vec2 lateralImpulse = lateralSpeed * rightVector;
     lateralImpulse *= body->GetMass() * lateralDrag;
 
-    // 3. Aplicar: Aplicamos el impulso negativo para cancelar el derrape.
     body->ApplyLinearImpulse(-lateralImpulse, body->GetWorldCenter(), true);
 }
 #pragma endregion
@@ -231,11 +266,9 @@ void Chansey::ApplyAIControl(float dt)
     float speed = b2Dot(currentVelocity, forwardVector);
     float absoluteSpeed = fabs(speed);
 
-    // 1. Obtener el waypoint objetivo
     Vector2D targetWaypoint = GetCurrentWaypoint();
     Vector2D currentPos = GetCenter();
 
-    // 2. Verificar si hemos alcanzado el waypoint
     float distanceToWaypoint = currentPos.distanceEuclidean(targetWaypoint);
 
     if (distanceToWaypoint < waypointReachRadius) {
@@ -243,14 +276,12 @@ void Chansey::ApplyAIControl(float dt)
         targetWaypoint = GetCurrentWaypoint();
     }
 
-    // 3. Calcular ángulo de steering (dirección hacia el objetivo)
     float steeringAngle = CalculateSteeringAngle(targetWaypoint);
 
-    // 4. Decidir aceleración/frenado
     bool shouldAccelerate = ShouldAccelerate(targetWaypoint);
     bool shouldBrake = ShouldBrake(targetWaypoint);
 
-    // -------- ACELERACIÓN --------
+    // -------- ACCELERATION --------
     if (shouldAccelerate && !shouldBrake)
     {
         if (speed < maxForwardSpeed)
@@ -260,28 +291,23 @@ void Chansey::ApplyAIControl(float dt)
         }
     }
 
-    // -------- FRENADO --------
-    if (shouldBrake && speed > 0.1f)
+    // -------- BRAKE --------
+    if (shouldBrake && speed > 2.0f)
     {
         b2Vec2 brakeForceVector = -brakeForce * forwardVector;
         body->ApplyForceToCenter(brakeForceVector, true);
     }
 
-    // -------- GIRO --------
+    // -------- TURN --------
     if (absoluteSpeed > minSpeedToTurn)
     {
-        // Umbral para considerar que necesitamos girar (en radianes)
-        float turnThreshold = 0.1f;  // ~5.7 grados
+        float turnThreshold = 0.1f;  // ~5.7º
 
         if (fabs(steeringAngle) > turnThreshold)
         {
-            // steeringAngle > 0 → girar a la derecha (sentido horario)
-            // steeringAngle < 0 → girar a la izquierda (antihorario)
 
-            // Limitar el torque según el ángulo
             float torqueAmount = steeringAngle * turnTorque;
 
-            // Clamp para evitar giros bruscos
             if (torqueAmount > turnTorque) torqueAmount = turnTorque;
             if (torqueAmount < -turnTorque) torqueAmount = -turnTorque;
 
@@ -289,7 +315,7 @@ void Chansey::ApplyAIControl(float dt)
         }
     }
 
-    // -------- FÍSICA (mismo que jugador) --------
+    // -------- PHYSICS --------
     ApplyDrag();
     ApplyLateralFriction();
 
@@ -298,29 +324,20 @@ void Chansey::ApplyAIControl(float dt)
 #pragma region AUXILIARS AI
 float Chansey::CalculateSteeringAngle(const Vector2D& targetPos)
 {
-    // 1. Obtener posición actual del coche (centro)
     Vector2D currentPos = GetCenter();
 
-    // 2. Calcular vector desde el coche hasta el objetivo
     Vector2D toTarget = targetPos - currentPos;
     toTarget.normalized();
 
-    // 3. Obtener el vector forward del coche
     b2Vec2 forward = GetForwardVector();
 
-    // 4. Calcular el ángulo entre forward y toTarget
     // dot product: cos(θ) = A·B / (|A||B|)
     float dot = forward.x * toTarget.getX() + forward.y * toTarget.getY();
 
-    // cross product (componente z): determina el signo del ángulo
     // cross_z = Ax*By - Ay*Bx
     float cross = forward.x * toTarget.getY() - forward.y * toTarget.getX();
 
-    // 5. Calcular el ángulo con atan2
     float angle = atan2f(cross, dot);
-
-    // angle > 0 → objetivo a la derecha
-    // angle < 0 → objetivo a la izquierda
 
     return angle;
 }
@@ -330,20 +347,16 @@ bool Chansey::ShouldAccelerate(const Vector2D& targetPos)
     Vector2D currentPos = GetCenter();
     float distanceToTarget = currentPos.distanceEuclidean(targetPos);
 
-    // Calcular el ángulo hacia el objetivo
     float steeringAngle = fabs(CalculateSteeringAngle(targetPos));
 
-    // No acelerar si estamos girando mucho (curva cerrada)
-    if (steeringAngle > PI / 4.0f) {  // > 45 grados
+    if (steeringAngle > PI / 4.0f) {  // > 45º
         return false;
     }
 
-    // Acelerar si estamos lejos del objetivo
     if (distanceToTarget > 100.0f) {
         return true;
     }
 
-    // Acelerar si vamos despacio
     if (GetSpeed() < maxForwardSpeed * 0.7f) {
         return true;
     }
@@ -356,15 +369,12 @@ bool Chansey::ShouldBrake(const Vector2D& targetPos)
     Vector2D currentPos = GetCenter();
     Vector2D nextWaypoint = GetNextWaypoint();
 
-    // Calcular el ángulo de la próxima curva
     float angleToNext = fabs(CalculateSteeringAngle(nextWaypoint));
 
-    // Frenar si la próxima curva es cerrada y vamos rápido
-    if (angleToNext > PI / 3.0f && GetSpeed() > maxForwardSpeed * 0.6f) {  // > 60 grados
+    if (angleToNext > PI / 3.0f && GetSpeed() > maxForwardSpeed * 0.6f) {  // > 60º
         return true;
     }
 
-    // Frenar si estamos muy cerca del waypoint
     float distanceToTarget = currentPos.distanceEuclidean(targetPos);
     if (distanceToTarget < waypointReachRadius * 1.5f) {
         return true;
@@ -384,40 +394,41 @@ void Chansey::ApplyCarPhysics(float dt) {
     b2Vec2 currentVelocity = body->GetLinearVelocity();
     b2Vec2 forwardVector = GetForwardVector();
 
-    // Proyección de la velocidad en la dirección hacia adelante
     float speed = b2Dot(currentVelocity, forwardVector);
-    float absoluteSpeed = fabs(speed); // Velocidad sin dirección (magnitud)
+    float absoluteSpeed = fabs(speed); 
 
     //-------------------------MOVING FORWARD/BACK--------------------------
-    // 2. Aplicar la aceleración si se pulsa 'W'
     if (IsKeyDown(KEY_W))
     {
-        // Solo aplica fuerza si no hemos alcanzado la velocidad máxima hacia adelante
         if (speed < maxForwardSpeed)
         {
             // F = m * a
-            // Aplicamos una fuerza proporcional a 'accelerationForce' en la dirección hacia adelante.
             b2Vec2 force = accelerationForce * forwardVector;
             body->ApplyForceToCenter(force, true);
 
+            if (!IsSoundPlaying(accelerate)) {
+                PlaySound(accelerate);
+            }
+
         }
     }
-    // Opcional: Implementar frenado o marcha atrás aquí (e.g., con KEY_S)
     else if (IsKeyDown(KEY_S))
     {
-        // Caso 1: Frenado (si vamos hacia adelante)
         if (speed > 0.1f)
         {
-            // Aplicamos una fuerza grande (brakeForce) en la dirección opuesta al avance.
             b2Vec2 brakeForceVector = -brakeForce * forwardVector;
             body->ApplyForceToCenter(brakeForceVector, true);
         }
-        // Caso 2: Marcha Atrás (si estamos parados o ya vamos hacia atrás)
         else if (speed > -maxBackwardSpeed)
         {
-            // Aplicamos la fuerza de aceleración (reducida) en la dirección opuesta.
-            b2Vec2 reverseForce = -accelerationForce * .95f * forwardVector; // 0.5f para que sea más lenta
+            b2Vec2 reverseForce = -accelerationForce * .95f * forwardVector; 
             body->ApplyForceToCenter(reverseForce, true);
+        }
+    }
+
+    if (IsKeyReleased(KEY_W)) {
+        if (IsSoundPlaying(accelerate)) {
+            StopSound(accelerate);
         }
     }
     //-------------------------------------------------------------
@@ -428,43 +439,39 @@ void Chansey::ApplyCarPhysics(float dt) {
 
         if (IsKeyDown(KEY_D))
         {
-            // Girar a la derecha (sentido horario, Box2D usa negativo)
             torqueAmount = +turnTorque;
         }
         else if (IsKeyDown(KEY_A))
         {
-            // Girar a la izquierda (sentido antihorario, Box2D usa positivo)
             torqueAmount = -turnTorque;
         }
 
-        // Aplicar el torque si se está girando
         if (torqueAmount != 0.0f)
         {
-            // Aplicar el torque al centro de masa del cuerpo
             body->ApplyTorque(torqueAmount, true);
         }
     }
     //------------------------------------------------------------
-    // 3. Aplicar arrastre/resistencia del aire (Drag)
-    // Esto es crucial para que el coche se ralentice cuando no se acelera
     ApplyDrag();
 
-    // 4. Aplicar fricción lateral
-    // Esto evita el derrape infinito y mantiene el coche alineado con su movimiento
     ApplyLateralFriction();
 
-    //check for the boost
     Boost(dt);
 
-    // Actualizar la variable de velocidad para el HUD/Game
     this->speed = speed + turboPower;
+}
+void Chansey::Attack()
+{
+    std::cout << "Pressed space key -> attack" << std::endl;
+    previousState = currentState;
+    currentState = State::PREPARING_ATTACK;
 }
 #pragma endregion
 
 
 void Chansey::Boost(float dt)
 {
-    if (!isBoosted) {
+    if (!isBoosted && !isOffRoad) {
         SetMaxSpeed(10.0f); //setVelocity with no boost
         return;
     }
@@ -478,36 +485,38 @@ void Chansey::Boost(float dt)
 
 bool Chansey::Render() {
 
-    // Obtener posición y rotación del cuerpo físico
+    if (attack != nullptr) {
+        attack->Render();
+    }
+
     b2Vec2 pos = physBody->body->GetPosition();
     float drawX = METERS_TO_PIXELS(pos.x);
     float drawY = METERS_TO_PIXELS(pos.y);
 
-    // Obtener la textura actual según el estado
     Texture2D currentTexture;
     switch (currentState) {
     case State::IDLE:
         currentTexture = idleAnimation.GetCurrentTexture();
         break;
-
     case State::STUNNED:
         currentTexture = stunnedAnimation.GetCurrentTexture();
         break;
     case State::ATTACK:
-        currentTexture = attackAnimation.GetCurrentTexture();
+        currentTexture = idleAnimation.GetCurrentTexture();
+        break;
+    case State::PREPARING_ATTACK:
+        currentTexture = preparingAttack.GetCurrentTexture();
         break;
     default:
         break;
     }
 
-    // Rectángulo de origen (toda la textura)
     Rectangle sourceRect = {
         0, 0,
         (float)currentTexture.width,
         -(float)currentTexture.height
     };
 
-    // Rectángulo de destino
     Rectangle destRect = {
         drawX,
         drawY,
@@ -515,7 +524,6 @@ bool Chansey::Render() {
         height
     };
 
-    // Origen para la rotación (centro)
     Vector2 origin = { width * 0.5f, height * 0.5f };
 
     if (textureLoaded) {
@@ -526,18 +534,6 @@ bool Chansey::Render() {
             origin,
             rotation,
             WHITE);
-
-        //DrawTexturePro(texture,
-        //    { 0,0,(float)texture.width, -(float)texture.height },
-        //    { position.getX(), position.getY(), (float)texture.width, (float)texture.height },
-        //    { texture.width / 2.0f, texture.height / 2.0f },
-        //    rotation,
-        //    WHITE);
-    }
-    else {
-        DrawRectangle((int)position.getX(),
-            (int)position.getY(),
-            32, 32, RED);
     }
 
 #pragma region DEBUG DRAWING
