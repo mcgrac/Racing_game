@@ -30,3 +30,7 @@ void GameScreen::UnloadAssets() {
 	//UnloadTexture(backg);
 	//UnloadTexture(Frontg);
 }
+
+void GameScreen::Update() {
+
+}

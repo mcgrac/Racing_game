@@ -29,4 +29,6 @@ public:
 
 	std::vector<Button*> buttons;
 
+	int selectedCharacter = 0;
+
 };

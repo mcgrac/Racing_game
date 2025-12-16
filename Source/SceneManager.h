@@ -37,6 +37,7 @@ private:
 
 public:
 
+	int selectedCharacter = 1;
 
 	void Start();
 	void Update();

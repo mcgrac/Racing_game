@@ -103,16 +103,19 @@ void CharacterSelectionScreen::Update() {
 		PlaySound(buttonPressed);
 		switch (charSelected) {
 		case characterSelection::CHANSEY:
-			//return 2 and change scene
+			selectedCharacter = 2;
 			break;
 		case characterSelection::CLEFFA:
 			//return 1 and change scene
+			selectedCharacter = 1;
 			break;
 		case characterSelection::PACHIRISU:
 			//return 3 and change scene
+			selectedCharacter = 3;
 			break;
 		case characterSelection::MEGANIUM:
 			//return 4 and change scene
+			selectedCharacter = 4;
 			break;
 		}
 		targetScene = 2;

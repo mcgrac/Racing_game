@@ -3,7 +3,7 @@
 
 SceneManager::SceneManager()
 {
-	currentScene = GameSceneState::MAIN_MENU;
+	//currentScene = GameSceneState::MAIN_MENU;
 }
 
 SceneManager::~SceneManager()
@@ -46,6 +46,7 @@ void SceneManager::Update()
 	render();
 	int aux = indexScene;
 	if (scenes[indexScene]->GetTargetScene() != -1) {
+		std::cout << "change scene to" << scenes[indexScene]->GetTargetScene() << std::endl;
 		indexScene = scenes[indexScene]->GetTargetScene();
 		scenes[aux]->targetScene = -1;
 		//change state based on the new index
@@ -58,6 +59,8 @@ void SceneManager::Update()
 			break;
 		case 2:
 			startedPlaying = true;
+			selectedCharacter = scenes[1]->selectedCharacter;
+			indexScene = 2;
 			GameSceneState::PLAYING;
 			break;
 		case 3:

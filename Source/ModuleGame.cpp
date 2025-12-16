@@ -53,10 +53,10 @@ bool ModuleGame::Start()
 	//entityManager->Start();
 
 	//create position tracking and send al checkpoints
-	posTracker = new PositionTracker(currentMap->GetCheckpointsList());
+	//posTracker = new PositionTracker(currentMap->GetCheckpointsList());
 
 	//create scene managewr
-	sceneManager = new SceneManager();
+	//sceneManager = new SceneManager();
 
 	raceState = RaceState::COUNTDOWN;
 	countdownTimer = 3.0f;
@@ -128,7 +128,17 @@ update_status ModuleGame::Update()
 		CreatePlayers();
 		PositionPlayersOnGrid();
 		camera->CenterOn(player->GetCenter());
-		//sceneManager->startedPlaying = false;
+		posTracker = new PositionTracker(currentMap->GetCheckpointsList());
+		sceneManager->startedPlaying = false;
+	}
+
+	if (currentMap) {
+		if (checkEnding()) {
+			//end it;
+			sceneManager->state = GameSceneState::FINISH_RACE;
+			race_ended = true;
+			
+		}
 	}
 
 	if (camera && player)
@@ -154,13 +164,21 @@ update_status ModuleGame::PostUpdate()
 	//add scene manager render
 	//sceneManager->render();
 	
-	if (currentMap && sceneManager->state == GameSceneState::PLAYING) { currentMap->RenderBackground(); } //comented code
+	
+	if (currentMap && !race_ended)
+	{ 
+		std::cout << race_ended << std::endl;
+		currentMap->RenderBackground(); 
+	} 
 	//render entities
-	entityManager->Render();
+	if (currentMap) {
+		entityManager->Render();
+	}
 
 	//render top elements
-	if (currentMap && sceneManager->state == GameSceneState::PLAYING) { currentMap->RenderTop(); }
-
+	if (currentMap ) {
+		if (currentMap) { currentMap->RenderTop(); }
+	}
 	//draw debug physicBodies
 	App->physics->DrawDebug();
 	EndMode2D();
@@ -399,7 +417,7 @@ void ModuleGame::CreatePlayers()
 
 	    Entity* racer = nullptr;
 		if (i == 0) {
-			switch (choosenPokemon){
+			switch (sceneManager->selectedCharacter){
 				case 1:
 					racer = new Cleffa(
 						this,
@@ -514,6 +532,19 @@ void ModuleGame::CreatePlayers()
 
 	LOG("Created %d racers", racers.size());
 }
+
+
+bool ModuleGame::checkEnding() {
+	bool ret = false;
+	for (Entity* ent: racers) {
+		Characters* c = dynamic_cast<Characters*>(ent);
+		if (c->GetLaps() >= 3) {
+			ret = true;
+		}
+	}
+	return ret;
+}
+
 int ModuleGame::GetRandomUnchosenPokemon(const std::vector<int>& chosenList)
 {
 

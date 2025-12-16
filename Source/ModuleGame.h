@@ -57,6 +57,9 @@ private:
 	void CreatePlayers();
 	int GetRandomUnchosenPokemon(const std::vector<int>& chosenList);
 	void PositionPlayersOnGrid();
+	bool checkEnding();
+
+	bool race_ended = false;
 
 	Map* currentMap = nullptr;
 
@@ -72,8 +75,6 @@ private:
 
 	RaceState raceState;
 	float countdownTimer;
-
-	SceneManager* sceneManager = nullptr;
 
 	int sceneState;
 };

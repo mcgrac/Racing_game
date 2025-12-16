@@ -21,6 +21,7 @@ public:
 	GameScreen();
 	void Start();
 	void Draw();
+	void Update();
 	void UnloadAssets();
 	int Id;
 	//std::vector<Button> buttons;
