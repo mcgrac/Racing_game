@@ -1,8 +1,12 @@
 #include "Button.h"
 
-Button::Button(Texture2D buttonUp,
+Button::Button(int targetScene, Texture2D buttonUp,
+
+    //textures
     Texture2D buttonDown,
     Texture2D buttonSelected,
+
+    //sounds
     Sound pressSound,
     Sound selectSound,
     Vector2 position,
@@ -15,6 +19,7 @@ Button::Button(Texture2D buttonUp,
     position(position),
     pressDuration(pressDuration)
 {
+    TargetScene = targetScene;
 }
 
 void Button::Select()
@@ -26,7 +31,7 @@ void Button::Select()
     }
 }
 
-void Button::Press()
+int Button::press()
 {
     if (!isPressed)
     {
@@ -34,7 +39,7 @@ void Button::Press()
         pressTime = 0.0f;
         PlaySound(pressSound);
         //ADD HERE THE BUTTON FUNCTIONALLITY
-
+        return TargetScene;
     }
 }
 
@@ -68,3 +73,7 @@ void Button::Draw()
     else
         DrawTexture(buttonUpSprite, (int)position.x, (int)position.y, WHITE);
 }
+
+
+
+

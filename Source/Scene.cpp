@@ -1,19 +1,38 @@
-#pragma once
-
 #include "raylib.h"
 #include <vector>
+#include "Scene.h"
 
-class Scene {
+Scene::Scene() {
 
-private:
+}
+
+void Scene::Start() {
+
+}
+
+void Scene::Update() {
+
+}
+
+void Scene::Draw() {
+
+}
+
+void Scene::LoadTextures() {
+
+}
+
+void Scene::LoadSounds() {
+
+}
+
+void Scene::UnloadAssets() {
+
+}
 
 
 
-public:
+int Scene::GetTargetScene() {
+	return targetScene;
+}
 
-	void Start();
-	void Update();
-
-	void startTrasition();
-
-};

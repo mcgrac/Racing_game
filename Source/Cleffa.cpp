@@ -82,9 +82,17 @@ void Cleffa::SyncPositionFromPhysics()
     rotation = angle * RAD2DEG;
 }
 
+void Cleffa::LoadPortraits() {
+    neutral_portrait = LoadTexture("Assets/Textures/UI/InGame/Portraits/CleffaPortrait.png");
+    happy_portrait = LoadTexture("Assets/Textures/UI/InGame/Portraits/CleffaVeryHappy.png");
+    stunned_portrait = LoadTexture("Assets/Textures/UI/InGame/Portraits/CleffaStunned.png");
+    sad_portrait = LoadTexture("Assets/Textures/UI/InGame/Portraits/CleffaVerySad.png");
+}
+
 // Load assets
 bool Cleffa::Start()
 {
+    LoadPortraits();
     LOG("Loading player");
     return true;
 }

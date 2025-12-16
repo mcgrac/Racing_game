@@ -17,7 +17,7 @@ ModuleGame::ModuleGame(Application* app, bool start_enabled) : Module(app, start
 
 ModuleGame::~ModuleGame()
 {
-
+	
 }
 
 // Load assets
@@ -28,19 +28,29 @@ bool ModuleGame::Start()
 
 	entityManager = new EntityManager();
 
+	sceneManager = new SceneManager();
+
+	//CREATION ENTITIES
+	//Player
+	//player = new Player(this, Vector2D(400.0f, 400.0f), EntityType::PLAYER, CARS, CARS | WALLS | DESTRUCTIBLE);
+	//entityManager->AddEntity(player);
+	//Ai
+	
+	
 	//load level
-	LoadLevel(1);
-	CreatePlayers();
-	PositionPlayersOnGrid();
+	//LoadLevel(1);
+	//CreatePlayers();
+	//PositionPlayersOnGrid();
 
 
 	//canmera inicialization
 	camera = new GameCamera(SCREEN_WIDTH, SCREEN_HEIGHT);
 	camera->SetSmoothSpeed(.15f);
-	camera->CenterOn(player->GetCenter());
+	camera->CenterOn(737, 460);
 
 	//call start entity manager -> call start of all entities
-	entityManager->Start();
+	sceneManager->Start();
+	//entityManager->Start();
 
 	//create position tracking and send al checkpoints
 	posTracker = new PositionTracker(currentMap->GetCheckpointsList());
@@ -104,8 +114,22 @@ update_status ModuleGame::Update()
 		break;
 	}
 
+	sceneManager->Update();
+	
 	//loop music level
-	currentMap->UpdateMusic();
+	if (sceneManager->state == GameSceneState::PLAYING) {
+		currentMap->UpdateMusic();
+	}
+
+
+	if (sceneManager->startedPlaying == true) {
+		entityManager->Start();
+		LoadLevel(1);
+		CreatePlayers();
+		PositionPlayersOnGrid();
+		camera->CenterOn(player->GetCenter());
+		//sceneManager->startedPlaying = false;
+	}
 
 	if (camera && player)
 	{
@@ -124,14 +148,18 @@ update_status ModuleGame::PostUpdate()
 
 	//--------------RENDER-----------------
 	//Raylib camera behaviour (start camera mode)
+	sceneManager->render();
 	BeginMode2D(camera->GetRaylibCamera());
 	//render map background (floor)
-	if (currentMap) { currentMap->RenderBackground(); }
+	//add scene manager render
+	//sceneManager->render();
+	
+	if (currentMap && sceneManager->state == GameSceneState::PLAYING) { currentMap->RenderBackground(); } //comented code
 	//render entities
 	entityManager->Render();
 
 	//render top elements
-	if (currentMap) { currentMap->RenderTop(); }
+	if (currentMap && sceneManager->state == GameSceneState::PLAYING) { currentMap->RenderTop(); }
 
 	//draw debug physicBodies
 	App->physics->DrawDebug();
@@ -148,15 +176,15 @@ update_status ModuleGame::PostUpdate()
 		int currentLap = playerCar->GetLaps() + 1; // Asumo que `laps` es vueltas completadas.
 
 		// 2. Construir el texto a mostrar
-		// Ejemplo: "POS: 1º / VUELTA: 2"
+		// Ejemplo: "POS: 1Âº / VUELTA: 2"
 		std::string debugText = "POS: ";
-		// Convertir la posición a cadena (con indicador ordinal si es necesario)
+		// Convertir la posiciÃ³n a cadena (con indicador ordinal si es necesario)
 		if (currentPosition > 0) {
-			// Se puede usar la lógica del PositionTracker para generar el ordinal (1º, 2º, 3º, etc.)
-			debugText += std::to_string(currentPosition) + (currentPosition == 1 ? "º" : " ");
+			// Se puede usar la lÃ³gica del PositionTracker para generar el ordinal (1Âº, 2Âº, 3Âº, etc.)
+			debugText += std::to_string(currentPosition) + (currentPosition == 1 ? "Âº" : " ");
 		}
 		else {
-			debugText += "? "; // Si aún no se ha calculado
+			debugText += "? "; // Si aÃºn no se ha calculado
 		}
 
 		debugText += " / VUELTA: " + std::to_string(currentLap);
@@ -365,8 +393,8 @@ void ModuleGame::CreatePlayers()
 	// Clean other cars
 	racers.clear();
 
-	// Crear los 4 coches (por ahora en posición temporal)
-	// Posición temporal porque luego se setearán en PositionPlayersOnGrid()
+	// Crear los 4 coches (por ahora en posiciÃ³n temporal)
+	// PosiciÃ³n temporal porque luego se setearÃ¡n en PositionPlayersOnGrid()
 	for (int i = 0; i < 4; i++) {
 
 	    Entity* racer = nullptr;
@@ -479,7 +507,7 @@ void ModuleGame::CreatePlayers()
 		entityManager->AddEntity(racer);
 	}
 
-	// Configurar la cámara para seguir al jugador
+	// Configurar la cÃ¡mara para seguir al jugador
 	if (camera) {
 		camera->SetTarget(player->GetCenter());
 	}
@@ -493,7 +521,7 @@ int ModuleGame::GetRandomUnchosenPokemon(const std::vector<int>& chosenList)
 	static std::random_device rd; // semilla real
 	static std::mt19937 gen(rd()); // Mersenne Twister
 
-	// Crear lista de números posibles que no estén escogidos
+	// Crear lista de nÃºmeros posibles que no estÃ©n escogidos
 	std::vector<int> availableNumbers;
 	for (int i = 1; i <= 4; ++i) {
 		if (std::find(chosenList.begin(), chosenList.end(), i) == chosenList.end()) {
@@ -502,9 +530,9 @@ int ModuleGame::GetRandomUnchosenPokemon(const std::vector<int>& chosenList)
 	}
 
 	if (availableNumbers.empty())
-		return -1; // todos los Pokémon ya están elegidos
+		return -1; // todos los PokÃ©mon ya estÃ¡n elegidos
 
-	// Elegir un índice aleatorio de los disponibles
+	// Elegir un Ã­ndice aleatorio de los disponibles
 	std::uniform_int_distribution<> dis(0, static_cast<int>(availableNumbers.size() - 1));
 	return availableNumbers[dis(gen)];
 }
@@ -512,20 +540,20 @@ void ModuleGame::PositionPlayersOnGrid()
 {
 	const std::vector<Vector2D>& gridPositions = currentMap->GetStartingGrid();
 
-	// Posicionar cada coche en su posición de la parrilla
+	// Posicionar cada coche en su posiciÃ³n de la parrilla
 	for (size_t i = 0; i < racers.size() && i < gridPositions.size(); i++) {
 		Entity* racer = racers[i];
 		const Vector2D& gridPos = gridPositions[i];
 
-		// Setear la posición del Player
+		// Setear la posiciÃ³n del Player
 		racer->SetPosition(gridPos);
 
-		// Si tiene PhysBody, actualizar también su posición física
+		// Si tiene PhysBody, actualizar tambiÃ©n su posiciÃ³n fÃ­sica
 		if (racer->GetPhysBody() && racer->GetPhysBody()->body) {
 			b2Body* body = racer->GetPhysBody()->body;
 			body->SetTransform(
 				b2Vec2(PIXEL_TO_METERS(gridPos.getX()), PIXEL_TO_METERS(gridPos.getY())),
-				0.0f  // Rotación inicial (ajusta si es necesario)
+				0.0f  // RotaciÃ³n inicial (ajusta si es necesario)
 			);
 			body->SetLinearVelocity(b2Vec2(0.0f, 0.0f));  // Velocidad inicial = 0
 			body->SetAngularVelocity(0.0f);

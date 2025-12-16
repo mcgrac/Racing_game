@@ -18,6 +18,8 @@
 #include "Chansey.h"
 #include "Pachirisu.h"
 
+#include"SceneManager.h"
+
 class PhysBody;
 class PhysicEntity;
 class EntityManager;
@@ -70,6 +72,8 @@ private:
 
 	RaceState raceState;
 	float countdownTimer;
+
+	SceneManager* sceneManager = nullptr;
 
 	int sceneState;
 };

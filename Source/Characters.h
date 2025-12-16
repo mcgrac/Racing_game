@@ -84,6 +84,17 @@ protected:
 		int offRoad;
 	};
 	Statistics stats;
+	//afegir tilset
+	
+	Texture texture;
+	//Icones portraits
+	Texture2D neutral_portrait;
+	Texture2D happy_portrait;
+	Texture2D stunned_portrait;
+	Texture2D sad_portrait;
+
+	void LoadPortraits();
+
 
 	State currentState;
 	State previousState;
@@ -108,14 +119,14 @@ protected:
 	float boostTimer;
 
 	//Car physics variables
-	float maxForwardSpeed;      // Velocidad máxima hacia adelante (m/s)
-	float maxBackwardSpeed;     // Velocidad máxima marcha atrás (m/s)
-	float accelerationForce;    // Fuerza de aceleración
+	float maxForwardSpeed;      // Velocidad mÃ¡xima hacia adelante (m/s)
+	float maxBackwardSpeed;     // Velocidad mÃ¡xima marcha atrÃ¡s (m/s)
+	float accelerationForce;    // Fuerza de aceleraciÃ³n
 	float brakeForce;           // Fuerza de frenado
 	float turnTorque;           // Torque de giro (rota el physBody)
 	float dragCoefficient;      // Resistencia del aire
-	float lateralDrag;          // Fricción lateral (anti-drift)
-	float minSpeedToTurn;       // Velocidad mínima para poder girar
+	float lateralDrag;          // FricciÃ³n lateral (anti-drift)
+	float minSpeedToTurn;       // Velocidad mÃ­nima para poder girar
 	float rotation;
 
 	//Animations

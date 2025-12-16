@@ -2,6 +2,20 @@
 
 #include "raylib.h"
 #include <vector>
+#include "Scene.h"
+#include "Module.h"
+
+#include "StartScreen.h"
+#include "CharacterSelectionScreen.h"
+#include "GameScreen.h"
+#include "GameOverScreen.h"
+
+/*#include "StartScreen.h"
+#include "CharacterSelectionScreen.h"
+#include "GameScreen.h"
+#include "GameOverScreen.h"
+*/
+
 
 enum class GameSceneState {
 	MAIN_MENU,
@@ -12,21 +26,30 @@ enum class GameSceneState {
 
 class SceneManager {
 public:
-
 	SceneManager();
 	~SceneManager();
 
+private:
+
+	//int currentScreenID();
+	std::vector<Scene*> scenes;
+	int indexScene;
+
+public:
+
+
 	void Start();
 	void Update();
+	void render();
 
 	//void SwitchScreen(int screenID);
 	//void MoveSelector();
 
-	inline GameSceneState GetCurrentScene() { return currentScene; }
+	GameSceneState state;
 
-private:
+	bool startedPlaying = false;
 
-	GameSceneState currentScene;
+	//int targetScene = 0;
 
 
 };

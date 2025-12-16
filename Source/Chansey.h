@@ -16,6 +16,9 @@ public:
 	bool Update(float dt) override;
 	bool Render() override;
 	bool CleanUp() override;
+
+protected:
+	void LoadPortraits();
 private:
 
 	void InitPhysics(uint16 category, uint16 maskBits, int16 groupIndex);
@@ -24,6 +27,7 @@ private:
 	void LoadAnimations();
 	void UpdateAnims(float dt) override;
 	bool IsTextureLoaded() const { return textureLoaded; }
+	
 
 	//PHYSICS
 	void ApplyDrag();

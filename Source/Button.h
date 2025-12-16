@@ -5,7 +5,7 @@
 class Button {
 
 public:
-    Button(Texture2D buttonUp,
+    Button(int targetScene, Texture2D buttonUp,
         Texture2D buttonDown,
         Texture2D buttonSelected,
         Sound pressSound, Sound selectSound,
@@ -18,14 +18,16 @@ public:
     void Draw();
 
     void Select();
-    void Press();              // Call this from Scene
+    int press();              // Call this from Scene
     void Release();
     bool IsPressed() const { return isPressed; }
     bool IsSelected() const { return isSelected; }
 
+    int TargetScene;
 
 
-private:
+
+protected:
     Texture2D buttonUpSprite;
     Texture2D buttonDownSprite;
     Texture2D buttonSelectedSprite;
@@ -39,4 +41,8 @@ private:
     bool isSelected = false;
     float pressTime = 0.0f;
     float pressDuration;       // How long the button stays down
+
 };
+
+
+

@@ -81,9 +81,17 @@ void Chansey::SyncPositionFromPhysics()
     rotation = angle * RAD2DEG;
 }
 
+void Chansey::LoadPortraits() {
+    neutral_portrait = LoadTexture("Assets/Textures/UI/InGame/Portraits/ChanseyPortrait.png");
+    happy_portrait = LoadTexture("Assets/Textures/UI/InGame/Portraits/ChanseyVeryHappy.png");
+    stunned_portrait = LoadTexture("Assets/Textures/UI/InGame/Portraits/ChanseyStunned.png");
+    sad_portrait = LoadTexture("Assets/Textures/UI/InGame/Portraits/ChanseyVerySad.png");
+}
+
 // Load assets
 bool Chansey::Start()
 {
+    LoadPortraits();
     LOG("Loading player");
     return true;
 }
