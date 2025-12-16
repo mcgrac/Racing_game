@@ -120,9 +120,7 @@ update_status ModuleGame::PostUpdate()
 	//render map background (floor)
 	//add scene manager render
 	//sceneManager->render();
-	if (sceneManager->state == GameSceneState::PLAYING) {
-		std::cout << "playing mode" << std::endl;
-	}
+	
 	if (currentMap && sceneManager->state == GameSceneState::PLAYING) { currentMap->RenderBackground(); } //comented code
 	//render entities
 	entityManager->Render();

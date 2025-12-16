@@ -6,11 +6,11 @@
 CharacterSelectionScreen::CharacterSelectionScreen(){}
 
 void CharacterSelectionScreen::LoadTextures() {
-	SelectedChansey = LoadTexture("Assets/Textures/UI/CharacterSelect/CharacterSelectedChansey.png");
-	SelectedCleffa = LoadTexture("Assets/Textures/UI/CharacterSelect/CharacterSelectedCleffa.png");
-	SelectedPachirisu = LoadTexture("Assets/Textures/UI/CharacterSelect/CharacterSelectedPachirisu.png");
-	SelectedMeganium = LoadTexture("Assets/Textures/UI/CharacterSelect/CharacterSelectedMeganium.png");
-	Cursor = LoadTexture("Assets/Textures/UI/CharacterSelect/CursorCharacterSelection.png");
+	SelectedChansey = LoadTexture("Assets/Textures/UI/CharacterSelect/CharacterSelectChansey.png");
+	SelectedCleffa = LoadTexture("Assets/Textures/UI/CharacterSelect/CharacterSelectCleffa.png");
+	SelectedPachirisu = LoadTexture("Assets/Textures/UI/CharacterSelect/CharacterSelectPachirisu.png");
+	SelectedMeganium = LoadTexture("Assets/Textures/UI/CharacterSelect/CharacterSelectMeganium.png");
+	//Cursor = LoadTexture("Assets/Textures/UI/CharacterSelect/CursorCharacterSelection.png");
 
 }
 
@@ -51,7 +51,7 @@ void CharacterSelectionScreen::UnloadAssets() {
 	UnloadTexture(SelectedCleffa);
 	UnloadTexture(SelectedPachirisu);
 	UnloadTexture(SelectedMeganium);
-	UnloadTexture(Cursor);
+	//UnloadTexture(Cursor);
 	//unload sounds
 	UnloadSound(buttonPressed);
 	UnloadSound(buttonSelected);
@@ -115,5 +115,6 @@ void CharacterSelectionScreen::Update() {
 			//return 4 and change scene
 			break;
 		}
+		targetScene = 2;
 	}
 }
