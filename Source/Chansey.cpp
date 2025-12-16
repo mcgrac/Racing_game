@@ -8,6 +8,8 @@ Chansey::Chansey(Module* _listener, const Vector2D& startPos, EntityType _type, 
     LoadAnimations();
     //create physbody
     InitPhysics(category, maskBits, groupIndex);
+
+    waypointReachRadius = 50.0f;
 }
 
 Chansey::~Chansey()
@@ -140,8 +142,20 @@ bool Chansey::CleanUp()
 bool Chansey::Update(float dt)
 {
     //if (!active) { return; }
-    UpdateState(dt); //check if there is a temporal state, like stunned
+    //UpdateState(dt); //check if there is a temporal state, like stunned
     UpdateAnims(dt); //update current animation depending on the state
+
+    if (currentState == State::STUNNED) {
+        //be stunned for a while
+        if (stateTimer >= 2.0f) {
+            std::cout << "max Speed before stunned: " << GetMaxSpeed() << std::endl;
+            maxForwardSpeed = maxForwardSpeed / 2.0f;
+            std::cout << "max Speed after stunned" << GetMaxSpeed() << std::endl;
+        }
+        std::cout << "Stunned" << std::endl;
+        UpdateState(dt);
+
+    }
 
     if (isPlayer)
     {
@@ -364,7 +378,6 @@ bool Chansey::ShouldBrake(const Vector2D& targetPos)
 
 #pragma region NON AI CONTROL
 void Chansey::ApplyCarPhysics(float dt) {
-    //std::cout << "Is boosted: " << isBoosted << std::endl;
 
     b2Body* body = physBody->body;
 
@@ -480,9 +493,10 @@ bool Chansey::Render() {
     case State::STUNNED:
         currentTexture = stunnedAnimation.GetCurrentTexture();
         break;
-
     case State::ATTACK:
         currentTexture = attackAnimation.GetCurrentTexture();
+        break;
+    default:
         break;
     }
 

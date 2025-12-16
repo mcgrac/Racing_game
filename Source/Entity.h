@@ -20,6 +20,7 @@ enum class EntityType
 	TURBO_ON_ROAD,
 	ROCK,
 	CHECKPOINT,
+	ATTACK,
 };
 
 class PhysBody;

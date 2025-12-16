@@ -40,12 +40,21 @@ public:
 
     //characetsr control
     inline void AddChosenCharacter(int i) { pokemonsTaken.emplace_back(i); }
+
     inline std::vector<int> GetPokemonsTakenList() { return pokemonsTaken; }
+    inline std::vector<Checkpoint*> GetCheckpointsList() { return checkpointsList; }
+    inline std::vector<Boost*> GetBoostList() { return boostsList; }
 
 protected:
     //virtual void CreateLevel();
     MapType mapType;
     std::vector<Vector2D> startingPositions;  // Posiciones de la parrilla
+
+    //checkpoints
+    std::vector<Checkpoint*> checkpointsList;
+
+    //bosts
+    std::vector<Boost*> boostsList;
 private:
 
     //list of the types of pokemons already created/choosed by the player

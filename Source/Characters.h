@@ -1,6 +1,7 @@
 #pragma once
 #include"Entity.h"
 
+class Checkpoint;
 
 class Characters :public Entity {
 
@@ -15,6 +16,7 @@ public:
 	Vector2D GetNextWaypoint() const;
 	void AdvanceToNextWaypoint();
 	void ResetWaypoints();
+
 	//read waypoints
 	void WaypointLoader(const char* path);
 
@@ -22,8 +24,8 @@ public:
 	inline int getAcceleration() {
 		return stats.acceleration;
 	}
-	inline int getMaxSpeed() {
-		return stats.maxSpeed;
+	inline float GetMaxSpeed() {
+		return maxForwardSpeed;
 	}
 	inline int getTurbo() {
 		return stats.turbo;
@@ -46,10 +48,23 @@ public:
 	inline void SetTurboPower(float f) {
 		turboPower = f;
 	}
+	inline void SetCheckpointArrived(int i) { checkpointArrived = i; }
+	inline void SetPositionInRace(int i) { positionInRace = i; }
+	inline void SetStunnedState() { currentState = State::STUNNED; }
+	inline void SetStateTimer(float f) { stateTimer = f; }
+	
+	inline void AddOneLap() { laps++; }
+
+	inline int GetCheckId() { return checkpointArrived; }
+	inline int GetLaps() { return laps; }
+	inline int GetPositionInRace() { return positionInRace; }
+	inline bool GetIsPlayer() { return isPlayer; }
+	float CalculateDistanceFromCheckpoint(Checkpoint* ch);
 
 protected:
 
-#pragma region GETTERS
+#pragma region GETTERS/SETTERS
+
 	inline float GetSpeed() const { return physBody->body->GetLinearVelocity().Length(); };
 #pragma endregion
 
@@ -60,13 +75,12 @@ protected:
 		int offRoad;
 	};
 	Statistics stats;
-	//afegir tilset
-	//afegir icona
 
 	enum class State {
 		IDLE,
 		ATTACK,
 		STUNNED,
+		PREPARING_ATTACK
 	};
 	State currentState;
 	State previousState;
@@ -104,6 +118,7 @@ protected:
 	Animation idleAnimation;
 	Animation stunnedAnimation;
 	Animation attackAnimation;
+	Animation preparingAttack;
 
 	//IA
 	std::vector<Vector2D> waypoints;
