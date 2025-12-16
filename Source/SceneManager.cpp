@@ -3,6 +3,7 @@
 
 SceneManager::SceneManager()
 {
+	currentScene = GameSceneState::MAIN_MENU;
 }
 
 SceneManager::~SceneManager()

@@ -4,6 +4,9 @@
 #include "ModulePhysics.h"
 #include "EntityManager.h"
 #include "Boost.h"
+#include "Checkpoint.h"
+#include "Off_road.h"
+#include "Rock.h"
 #include <fstream>      
 #include <sstream>      
 #include <string>       
@@ -39,12 +42,28 @@ public:
 
     //characetsr control
     inline void AddChosenCharacter(int i) { pokemonsTaken.emplace_back(i); }
+
     inline std::vector<int> GetPokemonsTakenList() { return pokemonsTaken; }
+    inline std::vector<Checkpoint*> GetCheckpointsList() { return checkpointsList; }
+    inline std::vector<Boost*> GetBoostList() { return boostsList; }
 
 protected:
     //virtual void CreateLevel();
     MapType mapType;
     std::vector<Vector2D> startingPositions;  // Posiciones de la parrilla
+
+    //checkpoints
+    std::vector<Checkpoint*> checkpointsList;
+
+    //bosts
+    std::vector<Boost*> boostsList;
+
+    //grass or no_road zones
+    std::vector<Off_road*> offRoadList;
+
+    //rocks list
+    std::vector<Rock*> rocksList;
+
 private:
 
     //list of the types of pokemons already created/choosed by the player

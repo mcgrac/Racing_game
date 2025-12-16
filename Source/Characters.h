@@ -1,14 +1,20 @@
 #pragma once
 #include"Entity.h"
 
+class Checkpoint;
 
 class Characters :public Entity {
 
 public:
 	Characters(Module* _listener, const Vector2D& startPos, EntityType _type, uint16 category, uint16 maskBits, int16 groupIndex = 0);
+	~Characters();
 
-	inline void SetIsPlayer(bool b) { isPlayer = b; }
-
+	enum class State {
+		IDLE,
+		ATTACK,
+		STUNNED,
+		PREPARING_ATTACK
+	};
 	//wayPoints IA
 	void SetWaypoints(const std::vector<Vector2D>& points);
 	const std::vector<Vector2D>& GetWaypoints() const { return waypoints; }
@@ -17,6 +23,7 @@ public:
 	Vector2D GetNextWaypoint() const;
 	void AdvanceToNextWaypoint();
 	void ResetWaypoints();
+
 	//read waypoints
 	void WaypointLoader(const char* path);
 
@@ -24,8 +31,8 @@ public:
 	inline int getAcceleration() {
 		return stats.acceleration;
 	}
-	inline int getMaxSpeed() {
-		return stats.maxSpeed;
+	inline float GetMaxSpeed() {
+		return maxForwardSpeed;
 	}
 	inline int getTurbo() {
 		return stats.turbo;
@@ -42,24 +49,31 @@ public:
 	inline void SetIsBoosted(bool b) {
 		isBoosted = b;
 	}
-	inline void SetOffRoad(int road) {
-		stats.offRoad = road;
-	}
 	inline void SetTurboPower(float f) {
 		turboPower = f;
 	}
+	inline void SetCheckpointArrived(int i) { checkpointArrived = i; }
+	inline void SetPositionInRace(int i) { positionInRace = i; }
+	inline void SetStunnedState() { currentState = State::STUNNED; }
+	inline void SetStateTimer(float f) { stateTimer = f; }
+	inline void SetIsOffRoad(bool b) { isOffRoad = b; }
+
+	inline void AddOneLap() { laps++; }
+
+	inline int GetCheckId() { return checkpointArrived; }
+	inline int GetLaps() { return laps; }
+	inline int GetPositionInRace() { return positionInRace; }
+	inline bool GetIsPlayer() { return isPlayer; }
+	inline int GetCurrentState() const { return (int)currentState; }
+	inline bool GetIsOffRoad() { return isOffRoad; }
+	inline Sound GetWallBumpSound() { return wallBump; }
+
+	float CalculateDistanceFromCheckpoint(Checkpoint* ch);
 
 protected:
 
-#pragma region GETTERS
-	// Getters for dimensions
-	float GetWidth() const { return width; }
-	float GetHeight() const { return height; }
-	// centerd position
-	Vector2D GetCenter() const;
-	float GetCenterX() const { return position.getX() + GetWidth() / 2.0f; }
-	float GetCenterY() const { return position.getY() + GetHeight() / 2.0f; }
-	//others
+#pragma region GETTERS/SETTERS
+
 	inline float GetSpeed() const { return physBody->body->GetLinearVelocity().Length(); };
 #pragma endregion
 
@@ -81,15 +95,7 @@ protected:
 
 	void LoadPortraits();
 
-	//void function
-	void usePower();
-	void iniciate();
 
-	enum class State {
-		IDLE,
-		ATTACK,
-		STUNNED,
-	};
 	State currentState;
 	State previousState;
 	float stateTimer;
@@ -97,34 +103,37 @@ protected:
 	//variables
 	float speed;
 	bool textureLoaded;
+	bool isOffRoad;
 
-	//control
-	bool isPlayer;
+	//position in the race
+	int positionInRace;
+	int checkpointArrived;
+	int laps;
+
+	//score
+	float timeRace;
 
 	//boost
 	bool isBoosted;
 	float turboPower;
 	float boostTimer;
 
-	// Car dimensions
-	float width;
-	float height;
-
 	//Car physics variables
-	float maxForwardSpeed;      // Velocidad máxima hacia adelante (m/s)
-	float maxBackwardSpeed;     // Velocidad máxima marcha atrás (m/s)
-	float accelerationForce;    // Fuerza de aceleración
+	float maxForwardSpeed;      // Velocidad mÃ¡xima hacia adelante (m/s)
+	float maxBackwardSpeed;     // Velocidad mÃ¡xima marcha atrÃ¡s (m/s)
+	float accelerationForce;    // Fuerza de aceleraciÃ³n
 	float brakeForce;           // Fuerza de frenado
 	float turnTorque;           // Torque de giro (rota el physBody)
 	float dragCoefficient;      // Resistencia del aire
-	float lateralDrag;          // Fricción lateral (anti-drift)
-	float minSpeedToTurn;       // Velocidad mínima para poder girar
+	float lateralDrag;          // FricciÃ³n lateral (anti-drift)
+	float minSpeedToTurn;       // Velocidad mÃ­nima para poder girar
 	float rotation;
 
 	//Animations
 	Animation idleAnimation;
 	Animation stunnedAnimation;
 	Animation attackAnimation;
+	Animation preparingAttack;
 
 	//IA
 	std::vector<Vector2D> waypoints;
@@ -135,6 +144,11 @@ protected:
 	void UpdateState(float dt);
 	virtual void UpdateAnims(float dt) = 0;
 	virtual void Boost(float dt) = 0;
+
+	//sounds
+	Sound accelerate;
+	Sound attackSound;
+	Sound wallBump;
 
 	//Helpers
 	b2Vec2 GetForwardVector() const;

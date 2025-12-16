@@ -1,5 +1,6 @@
 #pragma once
 #include "Characters.h"
+#include "SolarBeam.h"
 
 class Meganium : public Characters
 {
@@ -26,13 +27,17 @@ private:
 	void LoadAnimations();
 	void UpdateAnims(float dt) override;
 	bool IsTextureLoaded() const { return textureLoaded; }
-	Texture texture;
 
 	//PHYSICS
 	void ApplyDrag();
 	void ApplyLateralFriction();
 	void SyncPositionFromPhysics();
 	void Boost(float dt) override;
+
+	//player control
+	void ApplyCarPhysics(float dt);
+	void Attack();
+	SolarBeam* attack = nullptr;
 
 	//AI controls
 	//Control IA

@@ -26,13 +26,16 @@ private:
 	void LoadAnimations();
 	void UpdateAnims(float dt) override;
 	bool IsTextureLoaded() const { return textureLoaded; }
-	Texture texture;
+	void Attack();
 
 	//PHYSICS
 	void ApplyDrag();
 	void ApplyLateralFriction();
 	void SyncPositionFromPhysics();
 	void Boost(float dt) override;
+
+	//player control
+	void ApplyCarPhysics(float dt);
 
 	//AI controls
 	//Control IA

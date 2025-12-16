@@ -207,7 +207,7 @@ bool Player::Update(float dt)
         ApplyCarPhysics(dt);
     }
     else {
-        //ApplyAIControl(dt);
+        ApplyAIControl(dt);
     }
 
     SyncPositionFromPhysics();

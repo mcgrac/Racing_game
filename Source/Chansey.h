@@ -1,5 +1,6 @@
 #pragma once
 #include "Characters.h"
+#include "ChanseyAttack.h"
 
 class Chansey : public Characters
 {
@@ -33,6 +34,11 @@ private:
 	void ApplyLateralFriction();
 	void SyncPositionFromPhysics();
 	void Boost(float dt) override;
+
+	//player control
+	void ApplyCarPhysics(float dt);
+	void Attack();
+	ChanseyAttack* attack = nullptr;
 
 	//AI controls
 	//Control IA

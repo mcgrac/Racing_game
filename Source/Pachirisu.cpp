@@ -4,8 +4,10 @@
 Pachirisu::Pachirisu(Module* _listener, const Vector2D& startPos, EntityType _type, uint16 category, uint16 maskBits, int16 groupIndex)
     : Characters(_listener, startPos, _type, category, maskBits)
 {
+    //load sound
+    attackSound = LoadSound("Assets/Sound/Sfx/pachirisu.wav");
+
     LoadAnimations();
-    //create physbody
     InitPhysics(category, maskBits, groupIndex);
 }
 
@@ -38,7 +40,7 @@ void Pachirisu::InitPhysics(uint16 category, uint16 maskBits, int16 groupIndex)
         //set fixture
         b2Fixture* fixture = physBody->body->GetFixtureList();
         if (fixture) {
-            fixture->SetDensity(1.2f); //density (mass)
+            fixture->SetDensity(1.0f); //density (mass)
             fixture->SetFriction(0.4f); //friction with the floor
             fixture->SetRestitution(0.2f); //doesn't bounce
         }
@@ -94,9 +96,14 @@ bool Pachirisu::Start()
 void Pachirisu::LoadAnimations()
 {
     //Idle animations
-    idleAnimation.AddTexture("Assets/Textures/Cars/CarChanseyIdle1.png");
-    idleAnimation.AddTexture("Assets/Textures/Cars/CarChanseyIdle2.png");
+    idleAnimation.AddTexture("Assets/Textures/Cars/CarPachirisuIdle1.png");
+    idleAnimation.AddTexture("Assets/Textures/Cars/CarPachirisuIdle2.png");
 
+    preparingAttack.AddTexture("Assets/Textures/Cars/PachirisuAttack1.png");
+    preparingAttack.AddTexture("Assets/Textures/Cars/PachirisuAttack2.png");
+    preparingAttack.AddTexture("Assets/Textures/Cars/PachirisuAttack3.png");
+
+    attackAnimation.AddTexture("Assets/Textures/cars/CarPachirisuAttack1.png");
 
     // Obtain size textures
     if (idleAnimation.IsValid()) {
@@ -128,6 +135,9 @@ void Pachirisu::UpdateAnims(float dt)
     case Characters::State::STUNNED:
         stunnedAnimation.Update(dt);
         break;
+    case Characters::State::PREPARING_ATTACK:
+        preparingAttack.Update(dt);
+        break;
     default:
         break;
     }
@@ -146,11 +156,71 @@ bool Pachirisu::CleanUp()
 // Update: draw background
 bool Pachirisu::Update(float dt)
 {
-    //if (!active) { return; }
-    UpdateState(dt); //check if there is a temporal state, like stunned
+    //std::cout << "State: " << (int)currentState << std::endl;
+    if (IsKeyPressed(KEY_SPACE) && currentState == State::IDLE && isPlayer) {
+        Attack();
+    }
+
     UpdateAnims(dt); //update current animation depending on the state
 
-    ApplyAIControl(dt);
+
+    if (currentState == State::PREPARING_ATTACK) {
+        if (preparingAttack.GetCurrentFrame() == 2) {
+
+            //reset animation
+            preparingAttack.Reset();
+
+            //create discharge
+            if(!attack)
+            {
+                attack = new AttackPachirisu(listener, position, EntityType::ATTACK, PhysicCategory::ATTACK, PhysicCategory::AI);
+                PlaySound(attackSound);
+            }
+
+            currentState = State::ATTACK;
+        }
+    }
+    if (currentState == State::ATTACK) {
+        //std::cout << "attacking" << std::endl;
+        stateTimer += dt;
+
+        attack->SetPosition(position);
+        attack->GetPhysBody()->SetPos(
+            position.getX() + (width/2),
+            position.getY() + (height/2)
+        );
+
+        attack->Update(dt);
+
+        if (stateTimer >= 3.0f) {
+
+            delete attack;
+            attack = nullptr;
+
+            currentState = State::IDLE;
+            stateTimer = 0.0f;
+        }
+    }
+
+    if (currentState == State::STUNNED) {
+        //be stunned for a while
+        if (stateTimer >= 2.0f) {
+            std::cout << "max Speed before stunned: " << GetMaxSpeed() << std::endl;
+            maxForwardSpeed = maxForwardSpeed / 2.0f;
+            std::cout << "max Speed after stunned" << GetMaxSpeed() << std::endl;
+        }
+        std::cout << "Stunned" << std::endl;
+        UpdateState(dt);
+
+    }
+
+    if (isPlayer)
+    {
+        ApplyCarPhysics(dt);
+    }
+    else {
+        ApplyAIControl(dt);
+    }
     SyncPositionFromPhysics();
     return true;
 }
@@ -162,20 +232,15 @@ void Pachirisu::ApplyDrag()
 
     b2Vec2 currentVelocity = body->GetLinearVelocity();
 
-    // Aplicamos una fuerza de arrastre proporcional a la velocidad
-    // (Fuerza opuesta a la dirección del movimiento).
-    // Usamos dragCoefficient para controlar la intensidad.
     // F_drag = -dragCoefficient * currentVelocity
     b2Vec2 dragForce = -dragCoefficient * currentVelocity;
 
-    // Para evitar la trepidación a velocidad 0, solo aplicamos la fuerza si hay movimiento
     if (currentVelocity.LengthSquared() > 0.1f)
     {
         body->ApplyForceToCenter(dragForce, true);
     }
     else
     {
-        // Si la velocidad es insignificante, la forzamos a 0 para detenerlo por completo
         body->SetLinearVelocity(b2Vec2(0, 0));
     }
 }
@@ -185,19 +250,13 @@ void Pachirisu::ApplyLateralFriction()
 
     b2Vec2 currentVelocity = body->GetLinearVelocity();
 
-    // Obtener la dirección perpendicular (lateral)
     b2Vec2 rightVector = GetRightVector();
-    // Si GetForwardVector es (x, y), GetRightVector es (-y, x) o (y, -x).
 
-    // Proyección de la velocidad en la dirección lateral (cuánto se está "derrapando")
     float lateralSpeed = b2Dot(currentVelocity, rightVector);
 
-    // 2. Impulso: Calculamos la fuerza necesaria para anular esa velocidad lateral.
-    // El impulso es proporcional a la masa y al coeficiente lateral.
     b2Vec2 lateralImpulse = lateralSpeed * rightVector;
     lateralImpulse *= body->GetMass() * lateralDrag;
 
-    // 3. Aplicar: Aplicamos el impulso negativo para cancelar el derrape.
     body->ApplyLinearImpulse(-lateralImpulse, body->GetWorldCenter(), true);
 }
 #pragma endregion
@@ -217,11 +276,11 @@ void Pachirisu::ApplyAIControl(float dt)
     float speed = b2Dot(currentVelocity, forwardVector);
     float absoluteSpeed = fabs(speed);
 
-    // 1. Obtener el waypoint objetivo
+    // 1. Objective waypoint
     Vector2D targetWaypoint = GetCurrentWaypoint();
     Vector2D currentPos = GetCenter();
 
-    // 2. Verificar si hemos alcanzado el waypoint
+    // 2. Verify if we are in the waypoint
     float distanceToWaypoint = currentPos.distanceEuclidean(targetWaypoint);
 
     if (distanceToWaypoint < waypointReachRadius) {
@@ -229,14 +288,14 @@ void Pachirisu::ApplyAIControl(float dt)
         targetWaypoint = GetCurrentWaypoint();
     }
 
-    // 3. Calcular ángulo de steering (dirección hacia el objetivo)
+    // 3. Calculate direction towards objective
     float steeringAngle = CalculateSteeringAngle(targetWaypoint);
 
-    // 4. Decidir aceleración/frenado
+    // 4. Decide if accelerate or brake
     bool shouldAccelerate = ShouldAccelerate(targetWaypoint);
     bool shouldBrake = ShouldBrake(targetWaypoint);
 
-    // -------- ACELERACIÓN --------
+    // -------- ACCELERATE --------
     if (shouldAccelerate && !shouldBrake)
     {
         if (speed < maxForwardSpeed)
@@ -246,28 +305,26 @@ void Pachirisu::ApplyAIControl(float dt)
         }
     }
 
-    // -------- FRENADO --------
-    if (shouldBrake && speed > 0.1f)
+    // -------- BRAKE --------
+    if (shouldBrake && speed > 2.0f)
     {
         b2Vec2 brakeForceVector = -brakeForce * forwardVector;
         body->ApplyForceToCenter(brakeForceVector, true);
     }
 
-    // -------- GIRO --------
+    // -------- TURN --------
     if (absoluteSpeed > minSpeedToTurn)
     {
-        // Umbral para considerar que necesitamos girar (en radianes)
-        float turnThreshold = 0.1f;  // ~5.7 grados
+        float turnThreshold = 0.1f;  // ~5.7º
 
         if (fabs(steeringAngle) > turnThreshold)
         {
-            // steeringAngle > 0 → girar a la derecha (sentido horario)
-            // steeringAngle < 0 → girar a la izquierda (antihorario)
+            // steeringAngle > 0 → tuen right
+            // steeringAngle < 0 → turn left
 
-            // Limitar el torque según el ángulo
             float torqueAmount = steeringAngle * turnTorque;
 
-            // Clamp para evitar giros bruscos
+            // Clamp for very closed turns
             if (torqueAmount > turnTorque) torqueAmount = turnTorque;
             if (torqueAmount < -turnTorque) torqueAmount = -turnTorque;
 
@@ -275,7 +332,7 @@ void Pachirisu::ApplyAIControl(float dt)
         }
     }
 
-    // -------- FÍSICA (mismo que jugador) --------
+    // -------- DRAGS --------
     ApplyDrag();
     ApplyLateralFriction();
 
@@ -284,30 +341,22 @@ void Pachirisu::ApplyAIControl(float dt)
 #pragma region AUXILIARS AI
 float Pachirisu::CalculateSteeringAngle(const Vector2D& targetPos)
 {
-    // 1. Obtener posición actual del coche (centro)
     Vector2D currentPos = GetCenter();
 
-    // 2. Calcular vector desde el coche hasta el objetivo
     Vector2D toTarget = targetPos - currentPos;
     toTarget.normalized();
 
-    // 3. Obtener el vector forward del coche
     b2Vec2 forward = GetForwardVector();
 
-    // 4. Calcular el ángulo entre forward y toTarget
     // dot product: cos(θ) = A·B / (|A||B|)
     float dot = forward.x * toTarget.getX() + forward.y * toTarget.getY();
 
-    // cross product (componente z): determina el signo del ángulo
+    // determine sign of the turn
     // cross_z = Ax*By - Ay*Bx
     float cross = forward.x * toTarget.getY() - forward.y * toTarget.getX();
 
-    // 5. Calcular el ángulo con atan2
+    // 5. calcula angle with tangent
     float angle = atan2f(cross, dot);
-
-    // angle > 0 → objetivo a la derecha
-    // angle < 0 → objetivo a la izquierda
-
     return angle;
 }
 
@@ -325,7 +374,7 @@ bool Pachirisu::ShouldAccelerate(const Vector2D& targetPos)
     }
 
     // Acelerar si estamos lejos del objetivo
-    if (distanceToTarget > 100.0f) {
+    if (distanceToTarget > 30.0f) {
         return true;
     }
 
@@ -362,17 +411,95 @@ bool Pachirisu::ShouldBrake(const Vector2D& targetPos)
 
 #pragma endregion
 
+#pragma region NON AI CONTROL
+void Pachirisu::ApplyCarPhysics(float dt) {
 
+    b2Body* body = physBody->body;
+
+    b2Vec2 currentVelocity = body->GetLinearVelocity();
+    b2Vec2 forwardVector = GetForwardVector();
+
+    float speed = b2Dot(currentVelocity, forwardVector);
+    float absoluteSpeed = fabs(speed); 
+
+    //-------------------------MOVING FORWARD/BACK--------------------------
+    // Acceleration
+    if (IsKeyDown(KEY_W))
+    {
+        if (speed < maxForwardSpeed)
+        {
+            b2Vec2 force = accelerationForce * forwardVector;
+            body->ApplyForceToCenter(force, true);
+            if (!IsSoundPlaying(accelerate)) {
+                PlaySound(accelerate);
+            }
+
+        }
+    }
+    // Slow down
+    else if (IsKeyDown(KEY_S))
+    {
+        if (speed > 0.1f)
+        {
+            b2Vec2 brakeForceVector = -brakeForce * forwardVector;
+            body->ApplyForceToCenter(brakeForceVector, true);
+        }
+        else if (speed > -maxBackwardSpeed)
+        {
+            b2Vec2 reverseForce = -accelerationForce * .95f * forwardVector;
+            body->ApplyForceToCenter(reverseForce, true);
+        }
+    }
+    if (IsKeyReleased(KEY_W)) {
+        if (IsSoundPlaying(accelerate)) {
+            StopSound(accelerate);
+        }
+    }
+    //-------------------------------------------------------------
+    //--------------------TURNING RIGHT AND LEFT---------------------
+    if (absoluteSpeed > minSpeedToTurn)
+    {
+        float torqueAmount = 0.0f;
+
+        if (IsKeyDown(KEY_D))
+        {
+            torqueAmount = +turnTorque;
+        }
+        else if (IsKeyDown(KEY_A))
+        {
+            torqueAmount = -turnTorque;
+        }
+
+        if (torqueAmount != 0.0f)
+        {
+            body->ApplyTorque(torqueAmount, true);
+        }
+    }
+    //------------------------------------------------------------
+    ApplyDrag();
+    ApplyLateralFriction();
+    //check for the boost
+    Boost(dt);
+
+    this->speed = speed + turboPower;
+}
+void Pachirisu::Attack()
+{
+    std::cout << "Pressed space key -> attack" << std::endl;
+    previousState = currentState;
+    currentState = State::PREPARING_ATTACK;
+
+}
+#pragma endregion
 
 void Pachirisu::Boost(float dt)
 {
-    if (!isBoosted) {
+    if (!isBoosted && !isOffRoad) {
         SetMaxSpeed(10.0f); //setVelocity with no boost
         return;
     }
 
     turboPower -= dt;
-    std::cout << turboPower << std::endl;
     if (turboPower <= 0.0f) {
         isBoosted = false;
         turboPower = 0.0f;
@@ -381,35 +508,39 @@ void Pachirisu::Boost(float dt)
 
 bool Pachirisu::Render() {
 
-    // Obtener posición y rotación del cuerpo físico
+    if (attack != nullptr) {
+        attack->Render();
+    }
+
     b2Vec2 pos = physBody->body->GetPosition();
     float drawX = METERS_TO_PIXELS(pos.x);
     float drawY = METERS_TO_PIXELS(pos.y);
 
-    // Obtener la textura actual según el estado
     Texture2D currentTexture;
     switch (currentState) {
     case State::IDLE:
         currentTexture = idleAnimation.GetCurrentTexture();
         break;
-
     case State::STUNNED:
         currentTexture = stunnedAnimation.GetCurrentTexture();
         break;
-
     case State::ATTACK:
         currentTexture = attackAnimation.GetCurrentTexture();
         break;
+    case State::PREPARING_ATTACK:
+        currentTexture = preparingAttack.GetCurrentTexture();
+        break;
+    default:
+        break;
     }
+    
 
-    // Rectángulo de origen (toda la textura)
     Rectangle sourceRect = {
         0, 0,
         (float)currentTexture.width,
         -(float)currentTexture.height
     };
 
-    // Rectángulo de destino
     Rectangle destRect = {
         drawX,
         drawY,
@@ -417,7 +548,6 @@ bool Pachirisu::Render() {
         height
     };
 
-    // Origen para la rotación (centro)
     Vector2 origin = { width * 0.5f, height * 0.5f };
 
     if (textureLoaded) {
@@ -428,18 +558,6 @@ bool Pachirisu::Render() {
             origin,
             rotation,
             WHITE);
-
-        //DrawTexturePro(texture,
-        //    { 0,0,(float)texture.width, -(float)texture.height },
-        //    { position.getX(), position.getY(), (float)texture.width, (float)texture.height },
-        //    { texture.width / 2.0f, texture.height / 2.0f },
-        //    rotation,
-        //    WHITE);
-    }
-    else {
-        DrawRectangle((int)position.getX(),
-            (int)position.getY(),
-            32, 32, RED);
     }
 
 #pragma region DEBUG DRAWING

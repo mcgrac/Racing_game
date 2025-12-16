@@ -1,14 +1,14 @@
 #include "Characters.h"
+#include "Checkpoint.h"
 
 Characters::Characters(Module* _listener, const Vector2D& startPos, EntityType _type, uint16 category, uint16 maskBits, int16 groupIndex) :
 	Entity(_listener, startPos, _type),
 	idleAnimation(0.15f), //0.15 seconds per frame
 	attackAnimation(0.2f), //0.2 seconds per frame
 	stunnedAnimation(0.2f), //0.2 seconds per frame
+	preparingAttack (0.2f),
 	speed(200.0f),
 	textureLoaded(false),
-	width(0.0f),           // Ancho del rectángulo del coche
-	height(0.0f),         // Alto del rectángulo del coche
 	maxForwardSpeed(10.0f),        // 72 km/h
 	maxBackwardSpeed(25.0f),        // 28.8 km/h
 	accelerationForce(63.0f),      // Fuerza de aceleración
@@ -18,30 +18,48 @@ Characters::Characters(Module* _listener, const Vector2D& startPos, EntityType _
 	lateralDrag(1.5f),             // Fricción lateral
 	minSpeedToTurn(0.5f),           // Velocidad mínima para girar
 	rotation(0.0f),
-	isPlayer(false),
 	currentWaypointIndex(0),
-	waypointReachRadius(50.0f),  // 50 píxeles de radio
+	waypointReachRadius(100.0f),  // 50 píxeles de radio
 	loopWaypoints(true),
 	isBoosted(false),
 	boostTimer(0.0f),
-	turboPower(0.0f)
+	turboPower(0.0f),
+	checkpointArrived(0),
+	isOffRoad(false)
 {
 	currentState = State::IDLE;
 	previousState = State::IDLE;
 	stateTimer = 0.0f;
+
+	//load sound
+	accelerate = LoadSound("Assets/Sound/Sfx/CarAccelerating.wav");
+	SetSoundVolume(accelerate, 1.5f);
+
+	wallBump = LoadSound("Assets/Sound/Sfx/wallBump.wav");
+}
+
+Characters::~Characters()
+{
+	UnloadSound(accelerate);
+	UnloadSound(attackSound);
 }
 
 void Characters::UpdateState(float dt)
 {
 	//if there is a tempoal state like stunned
 	if (stateTimer > 0.0f) { 
-		
 		stateTimer -= dt; 
 		
 		if (stateTimer <= 0.0f) {
 
 			currentState = State::IDLE;
 			std::cout << "Player returned to idle" << std::endl;
+			stateTimer = 0.0f;
+
+			//reset forward speed
+			std::cout << "Previous max speed: " << maxForwardSpeed << std::endl;
+			maxForwardSpeed *= 2;
+			std::cout << "New max speed: "<<maxForwardSpeed << std::endl;
 		}
 	} 
 }
@@ -104,11 +122,13 @@ void Characters::WaypointLoader(const char* path)
 	std::cout << "========================" << std::endl;
 }
 
-#pragma region HELPERS
-Vector2D Characters::GetCenter() const {
-	return Vector2D(position.getX() + GetWidth() / 2.0f,
-		position.getY() + GetHeight() / 2.0f);
+float Characters::CalculateDistanceFromCheckpoint(Checkpoint* ch)
+{
+	Vector2D posCar = position;
+	return posCar.distanceEuclidean(ch->GetCenter());
 }
+
+#pragma region HELPERS
 b2Vec2 Characters::GetForwardVector() const {
 	float angle = physBody->body->GetAngle();
 	return b2Vec2(sinf(angle), -cosf(angle));

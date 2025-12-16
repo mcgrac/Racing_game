@@ -5,8 +5,17 @@ Cleffa::Cleffa(Module* _listener, const Vector2D& startPos, EntityType _type, ui
     : Characters(_listener, startPos, _type, category, maskBits)
 {
     LoadAnimations();
-    //create physbody
     InitPhysics(category, maskBits, groupIndex);
+
+    //sounds
+    attackSound = LoadSound("Assets/Sound/Sfx/Cleffa.wav");
+
+    //personalized properties
+    maxForwardSpeed = 7.0f;
+    accelerationForce = 30.0f;
+    brakeForce = 15.0f;
+    turnTorque = 2.0f;
+    waypointReachRadius = 40.0f;
 }
 
 Cleffa::~Cleffa()
@@ -38,8 +47,8 @@ void Cleffa::InitPhysics(uint16 category, uint16 maskBits, int16 groupIndex)
         //set fixture
         b2Fixture* fixture = physBody->body->GetFixtureList();
         if (fixture) {
-            fixture->SetDensity(1.2f); //density (mass)
-            fixture->SetFriction(0.4f); //friction with the floor
+            fixture->SetDensity(1.0f); //density (mass)
+            fixture->SetFriction(0.5f); //friction with the floor
             fixture->SetRestitution(0.2f); //doesn't bounce
         }
 
@@ -57,7 +66,6 @@ void Cleffa::InitPhysics(uint16 category, uint16 maskBits, int16 groupIndex)
     // already done in Entity, just for security
 
 }
-
 void Cleffa::SyncPositionFromPhysics()
 {
     //meters
@@ -68,7 +76,6 @@ void Cleffa::SyncPositionFromPhysics()
 
     float angle = physBody->body->GetAngle();
 
-    // Convertir metros → píxeles si usas escala
     position.setX(posPixels.x - (width / 2.0f));
     position.setY(posPixels.y - (height / 2.0f));
 
@@ -94,9 +101,24 @@ bool Cleffa::Start()
 void Cleffa::LoadAnimations()
 {
     //Idle animations
-    idleAnimation.AddTexture("Assets/Textures/Cars/CarChanseyIdle1.png");
-    idleAnimation.AddTexture("Assets/Textures/Cars/CarChanseyIdle2.png");
+    idleAnimation.AddTexture("Assets/Textures/Cars/CleffaIdle1.png");
+    idleAnimation.AddTexture("Assets/Textures/Cars/CleffaIdle2.png");
+    idleAnimation.AddTexture("Assets/Textures/Cars/CleffaIdle3.png");
+    idleAnimation.AddTexture("Assets/Textures/Cars/CleffaIdle4.png");
 
+    //preparing attack animations
+    preparingAttack.AddTexture("Assets/Textures/Cars/CleffaAttack1.png");
+    preparingAttack.AddTexture("Assets/Textures/Cars/CleffaAttack2.png");
+    preparingAttack.AddTexture("Assets/Textures/Cars/CleffaAttack3.png");
+    preparingAttack.AddTexture("Assets/Textures/Cars/CleffaAttack4.png");
+    preparingAttack.AddTexture("Assets/Textures/Cars/CleffaAttack5.png");
+    preparingAttack.AddTexture("Assets/Textures/Cars/CleffaAttack6.png");
+
+    //during attack animations
+    attackAnimation.AddTexture("Assets/Textures/Cars/CleffaAttack6.png");
+
+    //stunned
+    stunnedAnimation.AddTexture("Assets/Textures/Cars/CleffaHurt.png");
 
     // Obtain size textures
     if (idleAnimation.IsValid()) {
@@ -128,9 +150,19 @@ void Cleffa::UpdateAnims(float dt)
     case Characters::State::STUNNED:
         stunnedAnimation.Update(dt);
         break;
+    case Characters::State::PREPARING_ATTACK:
+        preparingAttack.Update(dt);
+        break;
     default:
         break;
     }
+}
+
+void Cleffa::Attack()
+{
+    std::cout << "Pressed space key -> attack" << std::endl;
+    previousState = currentState;
+    currentState = State::PREPARING_ATTACK;
 }
 
 #pragma endregion
@@ -146,11 +178,75 @@ bool Cleffa::CleanUp()
 // Update: draw background
 bool Cleffa::Update(float dt)
 {
-    //if (!active) { return; }
-    UpdateState(dt); //check if there is a temporal state, like stunned
+    if (IsKeyPressed(KEY_SPACE) && currentState == State::IDLE && isPlayer) {
+        Attack();
+    }
+
+    //UpdateState(dt); //check if there is a temporal state, like stunned
     UpdateAnims(dt); //update current animation depending on the state
 
-    ApplyAIControl(dt);
+    if (currentState == State::PREPARING_ATTACK) {
+        if (preparingAttack.GetCurrentFrame() == 5) {
+
+            //reset animation
+            preparingAttack.Reset();
+
+            //change bits for collisions
+            b2Fixture* fixture = physBody->body->GetFixtureList();
+            if (fixture) {
+                b2Filter newFilter = fixture->GetFilterData();
+
+                newFilter.maskBits = PhysicCategory::CHECKPOINTS | SENSORS;
+
+                fixture->SetFilterData(newFilter);
+            }
+
+            PlaySound(attackSound);
+
+            currentState = State::ATTACK;
+        }
+    }
+
+    if (currentState == State::ATTACK) {
+        //std::cout << "attacking" << std::endl;
+        stateTimer += dt;
+        if (stateTimer >= 3.0f) {
+
+            //change bits for collisions
+            b2Fixture* fixture = physBody->body->GetFixtureList();
+            if (fixture) {
+                b2Filter newFilter = fixture->GetFilterData();
+
+                newFilter.maskBits = PhysicCategory::CHECKPOINTS | SENSORS | WALLS | DESTRUCTIBLE | ATTACK;
+
+                fixture->SetFilterData(newFilter);
+            }
+
+
+            currentState = State::IDLE;
+            stateTimer = 0.0f;
+        }
+    }
+
+    if (currentState == State::STUNNED) {
+        //be stunned for a while
+        if (stateTimer >= 2.0f) {
+            std::cout << "max Speed before stunned: " << GetMaxSpeed() << std::endl;
+            maxForwardSpeed = maxForwardSpeed / 2.0f;
+            std::cout << "max Speed after stunned" << GetMaxSpeed() << std::endl;
+        }
+        std::cout << "Stunned" << std::endl;
+        UpdateState(dt);
+
+    }
+
+    if (isPlayer)
+    {
+        ApplyCarPhysics(dt);
+    }
+    else {
+        ApplyAIControl(dt);
+    }
     SyncPositionFromPhysics();
     return true;
 }
@@ -162,20 +258,15 @@ void Cleffa::ApplyDrag()
 
     b2Vec2 currentVelocity = body->GetLinearVelocity();
 
-    // Aplicamos una fuerza de arrastre proporcional a la velocidad
-    // (Fuerza opuesta a la dirección del movimiento).
-    // Usamos dragCoefficient para controlar la intensidad.
     // F_drag = -dragCoefficient * currentVelocity
     b2Vec2 dragForce = -dragCoefficient * currentVelocity;
 
-    // Para evitar la trepidación a velocidad 0, solo aplicamos la fuerza si hay movimiento
     if (currentVelocity.LengthSquared() > 0.1f)
     {
         body->ApplyForceToCenter(dragForce, true);
     }
     else
     {
-        // Si la velocidad es insignificante, la forzamos a 0 para detenerlo por completo
         body->SetLinearVelocity(b2Vec2(0, 0));
     }
 }
@@ -185,19 +276,13 @@ void Cleffa::ApplyLateralFriction()
 
     b2Vec2 currentVelocity = body->GetLinearVelocity();
 
-    // Obtener la dirección perpendicular (lateral)
     b2Vec2 rightVector = GetRightVector();
-    // Si GetForwardVector es (x, y), GetRightVector es (-y, x) o (y, -x).
 
-    // Proyección de la velocidad en la dirección lateral (cuánto se está "derrapando")
     float lateralSpeed = b2Dot(currentVelocity, rightVector);
 
-    // 2. Impulso: Calculamos la fuerza necesaria para anular esa velocidad lateral.
-    // El impulso es proporcional a la masa y al coeficiente lateral.
     b2Vec2 lateralImpulse = lateralSpeed * rightVector;
     lateralImpulse *= body->GetMass() * lateralDrag;
 
-    // 3. Aplicar: Aplicamos el impulso negativo para cancelar el derrape.
     body->ApplyLinearImpulse(-lateralImpulse, body->GetWorldCenter(), true);
 }
 #pragma endregion
@@ -217,11 +302,9 @@ void Cleffa::ApplyAIControl(float dt)
     float speed = b2Dot(currentVelocity, forwardVector);
     float absoluteSpeed = fabs(speed);
 
-    // 1. Obtener el waypoint objetivo
     Vector2D targetWaypoint = GetCurrentWaypoint();
     Vector2D currentPos = GetCenter();
 
-    // 2. Verificar si hemos alcanzado el waypoint
     float distanceToWaypoint = currentPos.distanceEuclidean(targetWaypoint);
 
     if (distanceToWaypoint < waypointReachRadius) {
@@ -229,10 +312,8 @@ void Cleffa::ApplyAIControl(float dt)
         targetWaypoint = GetCurrentWaypoint();
     }
 
-    // 3. Calcular ángulo de steering (dirección hacia el objetivo)
     float steeringAngle = CalculateSteeringAngle(targetWaypoint);
 
-    // 4. Decidir aceleración/frenado
     bool shouldAccelerate = ShouldAccelerate(targetWaypoint);
     bool shouldBrake = ShouldBrake(targetWaypoint);
 
@@ -241,13 +322,13 @@ void Cleffa::ApplyAIControl(float dt)
     {
         if (speed < maxForwardSpeed)
         {
-            b2Vec2 force = (accelerationForce * 0.9f) * forwardVector;
+            b2Vec2 force = accelerationForce * forwardVector;
             body->ApplyForceToCenter(force, true);
         }
     }
 
     // -------- FRENADO --------
-    if (shouldBrake && speed > 0.1f)
+    if (shouldBrake && speed > 2.0f)
     {
         b2Vec2 brakeForceVector = -brakeForce * forwardVector;
         body->ApplyForceToCenter(brakeForceVector, true);
@@ -256,18 +337,12 @@ void Cleffa::ApplyAIControl(float dt)
     // -------- GIRO --------
     if (absoluteSpeed > minSpeedToTurn)
     {
-        // Umbral para considerar que necesitamos girar (en radianes)
-        float turnThreshold = 0.1f;  // ~5.7 grados
+        float turnThreshold = 0.1f;  // ~5.7º
 
         if (fabs(steeringAngle) > turnThreshold)
         {
-            // steeringAngle > 0 → girar a la derecha (sentido horario)
-            // steeringAngle < 0 → girar a la izquierda (antihorario)
-
-            // Limitar el torque según el ángulo
             float torqueAmount = steeringAngle * turnTorque;
 
-            // Clamp para evitar giros bruscos
             if (torqueAmount > turnTorque) torqueAmount = turnTorque;
             if (torqueAmount < -turnTorque) torqueAmount = -turnTorque;
 
@@ -284,29 +359,17 @@ void Cleffa::ApplyAIControl(float dt)
 #pragma region AUXILIARS AI
 float Cleffa::CalculateSteeringAngle(const Vector2D& targetPos)
 {
-    // 1. Obtener posición actual del coche (centro)
     Vector2D currentPos = GetCenter();
 
-    // 2. Calcular vector desde el coche hasta el objetivo
     Vector2D toTarget = targetPos - currentPos;
     toTarget.normalized();
 
-    // 3. Obtener el vector forward del coche
     b2Vec2 forward = GetForwardVector();
 
-    // 4. Calcular el ángulo entre forward y toTarget
-    // dot product: cos(θ) = A·B / (|A||B|)
     float dot = forward.x * toTarget.getX() + forward.y * toTarget.getY();
-
-    // cross product (componente z): determina el signo del ángulo
-    // cross_z = Ax*By - Ay*Bx
     float cross = forward.x * toTarget.getY() - forward.y * toTarget.getX();
 
-    // 5. Calcular el ángulo con atan2
     float angle = atan2f(cross, dot);
-
-    // angle > 0 → objetivo a la derecha
-    // angle < 0 → objetivo a la izquierda
 
     return angle;
 }
@@ -316,21 +379,17 @@ bool Cleffa::ShouldAccelerate(const Vector2D& targetPos)
     Vector2D currentPos = GetCenter();
     float distanceToTarget = currentPos.distanceEuclidean(targetPos);
 
-    // Calcular el ángulo hacia el objetivo
     float steeringAngle = fabs(CalculateSteeringAngle(targetPos));
 
-    // No acelerar si estamos girando mucho (curva cerrada)
-    if (steeringAngle > PI / 4.0f) {  // > 45 grados
+    if (steeringAngle > PI / 3.0f) {  
         return false;
     }
 
-    // Acelerar si estamos lejos del objetivo
-    if (distanceToTarget > 100.0f) {
+    if (distanceToTarget > 50.0f) {
         return true;
     }
 
-    // Acelerar si vamos despacio
-    if (GetSpeed() < maxForwardSpeed * 0.7f) {
+    if (GetSpeed() < maxForwardSpeed * 0.5f) {
         return true;
     }
 
@@ -342,15 +401,12 @@ bool Cleffa::ShouldBrake(const Vector2D& targetPos)
     Vector2D currentPos = GetCenter();
     Vector2D nextWaypoint = GetNextWaypoint();
 
-    // Calcular el ángulo de la próxima curva
     float angleToNext = fabs(CalculateSteeringAngle(nextWaypoint));
 
-    // Frenar si la próxima curva es cerrada y vamos rápido
-    if (angleToNext > PI / 3.0f && GetSpeed() > maxForwardSpeed * 0.6f) {  // > 60 grados
+    if (angleToNext > PI / 3.0f && GetSpeed() > maxForwardSpeed * 0.6f) {  
         return true;
     }
 
-    // Frenar si estamos muy cerca del waypoint
     float distanceToTarget = currentPos.distanceEuclidean(targetPos);
     if (distanceToTarget < waypointReachRadius * 1.5f) {
         return true;
@@ -362,11 +418,82 @@ bool Cleffa::ShouldBrake(const Vector2D& targetPos)
 
 #pragma endregion
 
+#pragma region NON AI CONTROL
+void Cleffa::ApplyCarPhysics(float dt) {
 
+    b2Body* body = physBody->body;
+
+    b2Vec2 currentVelocity = body->GetLinearVelocity();
+    b2Vec2 forwardVector = GetForwardVector();
+
+    float speed = b2Dot(currentVelocity, forwardVector);
+    float absoluteSpeed = fabs(speed); 
+
+    //-------------------------MOVING FORWARD/BACK--------------------------
+    if (IsKeyDown(KEY_W))
+    {
+        if (speed < maxForwardSpeed)
+        {
+            // F = m * a
+            b2Vec2 force = accelerationForce * forwardVector;
+            body->ApplyForceToCenter(force, true);
+            if (!IsSoundPlaying(accelerate)) {
+                PlaySound(accelerate);
+            }
+        }
+    }
+    else if (IsKeyDown(KEY_S))
+    {
+        if (speed > 0.1f)
+        {
+            b2Vec2 brakeForceVector = -brakeForce * forwardVector;
+            body->ApplyForceToCenter(brakeForceVector, true);
+        }
+        else if (speed > -maxBackwardSpeed)
+        {
+            b2Vec2 reverseForce = -accelerationForce * .95f * forwardVector; 
+            body->ApplyForceToCenter(reverseForce, true);
+        }
+    }
+    if (IsKeyReleased(KEY_W)) {
+        if (IsSoundPlaying(accelerate)) {
+            StopSound(accelerate);
+        }
+    }
+    //-------------------------------------------------------------
+    //--------------------TURNING RIGHT AND LEFT---------------------
+    if (absoluteSpeed > minSpeedToTurn)
+    {
+        float torqueAmount = 0.0f;
+
+        if (IsKeyDown(KEY_D))
+        {
+            torqueAmount = +turnTorque;
+        }
+        else if (IsKeyDown(KEY_A))
+        {
+            torqueAmount = -turnTorque;
+        }
+
+        if (torqueAmount != 0.0f)
+        {
+            body->ApplyTorque(torqueAmount, true);
+        }
+    }
+    //------------------------------------------------------------
+
+    ApplyDrag();
+    ApplyLateralFriction();
+
+    Boost(dt);
+
+    this->speed = speed + turboPower;
+}
+#pragma endregion
 
 void Cleffa::Boost(float dt)
 {
-    if (!isBoosted) {
+    if (!isBoosted && !isOffRoad) {
         SetMaxSpeed(10.0f); //setVelocity with no boost
         return;
     }
@@ -381,12 +508,10 @@ void Cleffa::Boost(float dt)
 
 bool Cleffa::Render() {
 
-    // Obtener posición y rotación del cuerpo físico
     b2Vec2 pos = physBody->body->GetPosition();
     float drawX = METERS_TO_PIXELS(pos.x);
     float drawY = METERS_TO_PIXELS(pos.y);
 
-    // Obtener la textura actual según el estado
     Texture2D currentTexture;
     switch (currentState) {
     case State::IDLE:
@@ -400,16 +525,19 @@ bool Cleffa::Render() {
     case State::ATTACK:
         currentTexture = attackAnimation.GetCurrentTexture();
         break;
+    case State::PREPARING_ATTACK:
+        currentTexture = preparingAttack.GetCurrentTexture();
+        break;
+    default:
+        break;
     }
 
-    // Rectángulo de origen (toda la textura)
     Rectangle sourceRect = {
         0, 0,
         (float)currentTexture.width,
         -(float)currentTexture.height
     };
 
-    // Rectángulo de destino
     Rectangle destRect = {
         drawX,
         drawY,
@@ -417,7 +545,6 @@ bool Cleffa::Render() {
         height
     };
 
-    // Origen para la rotación (centro)
     Vector2 origin = { width * 0.5f, height * 0.5f };
 
     if (textureLoaded) {
@@ -428,18 +555,6 @@ bool Cleffa::Render() {
             origin,
             rotation,
             WHITE);
-
-        //DrawTexturePro(texture,
-        //    { 0,0,(float)texture.width, -(float)texture.height },
-        //    { position.getX(), position.getY(), (float)texture.width, (float)texture.height },
-        //    { texture.width / 2.0f, texture.height / 2.0f },
-        //    rotation,
-        //    WHITE);
-    }
-    else {
-        DrawRectangle((int)position.getX(),
-            (int)position.getY(),
-            32, 32, RED);
     }
 
 #pragma region DEBUG DRAWING

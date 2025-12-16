@@ -8,15 +8,21 @@
 #include "raylib.h"
 #include <vector>
 
-#include"Level1.h"
+#include "Level1.h"
 #include "GameCamera.h"
+#include "PositionTracker.h"
+#include "SceneManager.h"
+
+#include "Cleffa.h"
+#include "Meganium.h"
+#include "Chansey.h"
+#include "Pachirisu.h"
 
 #include"SceneManager.h"
 
 class PhysBody;
 class PhysicEntity;
 class EntityManager;
-class Player;  
 class SceneManager;
 
 class ModuleGame : public Module
@@ -32,12 +38,18 @@ public:
 	bool CleanUp();
 
 	GameCamera* GetCamera() const { return camera; }
-	Player* GetPlayer() const { return player; }
+	Entity* GetPlayer() const { return player; }
 
 	void OnCollision(PhysBody* physA, PhysBody* physB) override;
 	void OnCollisionEnd(PhysBody* physA, PhysBody* physB) override;
 
 	void GetPokemonChoosenByPlayer(); //in this void we will set the int choosenPokemon.
+
+	enum class RaceState {
+		COUNTDOWN,
+		RUNNING,
+		FINISHED
+	};
 
 private:
 
@@ -48,16 +60,20 @@ private:
 
 	Map* currentMap = nullptr;
 
-	std::vector<Player*> racers;
-	Player* player = nullptr;
-	int choosenPlayer;
+	//std::vector<Player*> racers;
+	std::vector<Entity*> racers;
+	Entity* player = nullptr;
+	int choosenPokemon = 2; //hardcode chansey selection
 
 	GameCamera* camera = nullptr;
-
+	PositionTracker* posTracker = nullptr;
 	EntityManager* entityManager = nullptr;
+	SceneManager* sceneManager = nullptr;
+
+	RaceState raceState;
+	float countdownTimer;
 
 	SceneManager* sceneManager = nullptr;
 
-	//testing
-	Player* playerTesting = nullptr;
+	int sceneState;
 };

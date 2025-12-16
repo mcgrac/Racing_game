@@ -18,13 +18,16 @@ enum class EntityType
 	PLAYER,
 	AI,
 	TURBO_ON_ROAD,
-	ROCK
+	ROCK,
+	CHECKPOINT,
+	ATTACK,
+	OFF_ROAD
 };
 
 class PhysBody;
 class ModuleGame;
 
-class Entity : public std::enable_shared_from_this<Entity>
+class Entity
 {
 public:
 
@@ -96,17 +99,35 @@ public:
 	inline const Vector2D& GetPosition() const { return position; }
 	inline float GetX() const { return position.getX(); }
 	inline float GetY() const { return position.getY(); }
+	inline PhysBody* GetPhysBody() { return physBody; }
 
 	// Setters
 	inline void SetPosition(const Vector2D& pos) { position = pos; }
 	inline void SetPosition(float x, float y) { position.setX(x); position.setY(y); }
-	inline PhysBody* GetPhysBody() { return physBody; }
+	inline void SetIsPlayer(bool b) { isPlayer = b; }
+
 protected:
 	Vector2D position;
 	PhysBody* physBody;
 	Module* listener;
 
+	//control
+	bool isPlayer;
+
+	//dimensions
+	float width;
+	float height;
+
+	// Getters for dimensions
+	inline float GetWidth() const { return width; }
+	inline float GetHeight() const { return height; }
+	inline float GetCenterX() const { return position.getX() + GetWidth() / 2.0f; }
+	inline float GetCenterY() const { return position.getY() + GetHeight() / 2.0f; }
+
 public:
+
+	// centerd position
+	Vector2D GetCenter() const;
 
 	EntityType type;
 	bool active = true;

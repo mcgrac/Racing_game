@@ -1,6 +1,8 @@
 #pragma once
 #include "Map.h"
 
+class Checkpoint;
+
 class Level1 : public Map {
 
 public:
@@ -20,16 +22,19 @@ private:
 
     void InitializeStartingGrid();
     void LoadColliders(const char* filePath);
-    void LoadBoosts();
+    void LoadBoosts(const char* filePath);
     void LoadAllChains(const char* filePath);
+    void LoadCheckpoints(const char* filePath);
+    void LoadOffRoadSensors(const char* filePath);
+    void LoadRocks(const char* filePath);
 
     ModulePhysics* physics;
     Module* listener; // listener for everithing
     EntityManager* entityManager; //creation entities
 
-    //bosts
-    std::vector<Boost*> boostsList;
     
+
+
     //textures
     Texture2D floor;
     Texture2D overMap;
