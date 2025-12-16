@@ -69,7 +69,7 @@ int PhysBody::RayCast(int x1, int y1, int x2, int y2, float& normal_x, float& no
 #pragma endregion
 ModulePhysics::ModulePhysics(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
-	debug = true;
+	debug = false;
 }
 
 // Destructor

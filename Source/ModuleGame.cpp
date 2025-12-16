@@ -26,37 +26,43 @@ bool ModuleGame::Start()
 	LOG("Loading Intro assets");
 	bool ret = true;
 
-	entityManager = new EntityManager();
+	//load textures scenes
+	mainMenuScreen = LoadTexture("Assets/Textures/UI/Start/ExampleStart.png");
+	characterSelection = LoadTexture("Assets/Textures/UI/CharacterSelect/Background.png");
+	finishRaceScreen = LoadTexture("Assets/Textures/UI/GameOver(Temporary)/GameOverTemp.png");
 
-	//load level
-	LoadLevel(1);
-	CreatePlayers();
-	PositionPlayersOnGrid();
+	gameState = GameState::MAIN_MENU;
+	choosenPokemon = -1;
+	scoreWhenFinishingRace = 0.0f;
+	//entityManager = new EntityManager();
+
+	////load level
+	//LoadLevel(1);
+	//CreatePlayers();
+	//PositionPlayersOnGrid();
 
 
 	//canmera inicialization
 	camera = new GameCamera(SCREEN_WIDTH, SCREEN_HEIGHT);
-	camera->SetSmoothSpeed(.15f);
-	camera->CenterOn(player->GetCenter());
+	//camera->SetSmoothSpeed(.15f);
+	//camera->CenterOn(player->GetCenter());
 
 	//call start entity manager -> call start of all entities
-	entityManager->Start();
+	//entityManager->Start();
 
 	//create position tracking and send al checkpoints
-	posTracker = new PositionTracker(currentMap->GetCheckpointsList());
+	//posTracker = new PositionTracker(currentMap->GetCheckpointsList());
 
 	//create scene managewr
-	sceneManager = new SceneManager();
+	//sceneManager = new SceneManager();
 
-	raceState = RaceState::COUNTDOWN;
-	countdownTimer = 3.0f;
+	//raceState = RaceState::COUNTDOWN;
+	//countdownTimer = 3.0f;
 	return ret;
 }
 
 update_status ModuleGame::PreUpdate()
 {
-	//BeginMode2D(camera->GetRaylibCamera());
-
 	App->physics->SetCameraDebug(camera->GetRaylibCamera());
 	return UPDATE_CONTINUE;
 }
@@ -67,50 +73,193 @@ update_status ModuleGame::Update()
 {
 	float dt = GetFrameTime();
 
-	static float startTime = GetTime(); // GetTime() devuelve segundos desde el inicio del juego
-
-	std::cout << "dt: " << dt << " countdownTimer: " << countdownTimer << std::endl;
-
-
-	switch (raceState)
+	switch (gameState)
 	{
+	case ModuleGame::GameState::MAIN_MENU:
+		if (IsKeyPressed(KEY_ONE)) {
+			gameState = GameState::CHARACTER_SELECTION;
+		}
+		else if (IsKeyPressed(KEY_TWO)) {
+			//quit
+		}
+		break;
 		{
-	case ModuleGame::RaceState::COUNTDOWN:
-		std::cout << "State countodwns" << std::endl;
-		//countdownTimer -= dt;
+	case ModuleGame::GameState::CHARACTER_SELECTION:
 
-		static float startTime = GetTime(); // GetTime() devuelve segundos desde el inicio del juego
-		float elapsed = GetTime() - startTime;
-		float countdownDuration = 5.0f;
+		bool choosenCharacter = false;
 
-		if (elapsed >= countdownDuration) {
-			raceState = RaceState::RUNNING;
+		if (IsKeyPressed(KEY_ONE)) {
+			choosenPokemon = 1;
+			choosenCharacter = true;
 		}
-		else {
-			std::cout << "Countdown: " << countdownDuration - elapsed << "s remaining\n";
+		else if (IsKeyPressed(KEY_TWO)) {
+			choosenPokemon = 2;
+			choosenCharacter = true;
 		}
+		else if (IsKeyPressed(KEY_THREE)) {
+			choosenPokemon = 3;
+			choosenCharacter = true;
+		}
+		else if (IsKeyPressed(KEY_FOUR)) {
+			choosenPokemon = 4;
+			choosenCharacter = true;
+		}
+
+		if (choosenCharacter)
+		{
+			//entity manager inicialization
+			entityManager = new EntityManager();
+
+			//camera inicialization
+			//camera = new GameCamera(SCREEN_WIDTH, SCREEN_HEIGHT);
+			//load level
+			LoadLevel(1);
+			CreatePlayers();
+			PositionPlayersOnGrid();
+
+			camera->SetSmoothSpeed(.15f);
+			camera->CenterOn(player->GetCenter());
+
+
+
+			entityManager->Start();
+
+			posTracker = new PositionTracker(currentMap->GetCheckpointsList());
+
+			//set race inicialization
+			countdownTimer = 3.0f;
+			raceState = RaceState::COUNTDOWN;
+
+			currentScore = 0.0f;
+
+			playerPosition = 0;
+
+			//change to In-game state
+			gameState = GameState::IN_GAME;
+		}
+
 		break;
 		}
-	case ModuleGame::RaceState::RUNNING:
-		std::cout << "State running" << std::endl;
-		if (entityManager) { entityManager->Update(dt); }
+	case ModuleGame::GameState::IN_GAME:
+		//game logic
+		switch (raceState)
+		{
+			{
+		case ModuleGame::RaceState::COUNTDOWN:
+			std::cout << "State countodwns" << std::endl;
+			//countdownTimer -= dt;
 
-		//update position of all racers
-		posTracker->UpdatePositions(racers);
+			static float startTime = GetTime(); // GetTime() devuelve segundos desde el inicio del juego
+			float elapsed = GetTime() - startTime;
+			float countdownDuration = countdownTimer;
+
+			if (elapsed >= countdownDuration) {
+				raceState = RaceState::RUNNING;
+			}
+			else {
+				std::cout << "Countdown: " << countdownDuration - elapsed << "s remaining\n";
+			}
+			break;
+			}
+			{
+		case ModuleGame::RaceState::RUNNING:
+			std::cout << "State running" << std::endl;
+			if (entityManager) { entityManager->Update(dt); }
+
+			//update position of all racers
+			posTracker->UpdatePositions(racers);
+
+			currentScore = GetTime() - countdownTimer;
+			std::cout << "Current Score: " << currentScore << " points" << std::endl;
+
+			//check if player laps are 3 ->finish race
+			for (Entity* racer : racers) {
+				Characters* chara = dynamic_cast<Characters*>(racer);
+				if (chara) {
+					if (chara->GetLaps() == 3) {
+						scoreWhenFinishingRace = currentScore;
+						raceState = RaceState::FINISHED;
+					}
+				}
+			}
+
+			break;
+			}
+			{
+		case ModuleGame::RaceState::FINISHED:
+
+			//get the final position of the player
+			Characters* chara = dynamic_cast<Characters*>(player);
+			playerPosition = chara->GetPositionInRace();
+
+			//go to game over scene and delete
+			if (currentMap)
+			{
+				currentMap->CleanUp();
+				delete currentMap;
+				currentMap = nullptr;
+			}
+
+			if (entityManager)
+			{
+				delete entityManager;
+				entityManager = nullptr;
+			}
+
+			if (posTracker)
+			{
+				delete posTracker;
+				posTracker = nullptr;
+			}
+
+			if (player) {
+				delete player;
+				player = nullptr;
+
+			}
+
+			for (Entity* racer : racers) {
+				racer->pendingToDelete = true;
+				racer->active = false;
+
+			}
+
+			racers.clear();
+
+			//update score if improved
+			if (currentScore > highestScore) {
+				highestScore = currentScore;
+			}
+
+			gameState = GameState::FINISH;
+			break;
+			}
+		default:
+			break;
+		}
+
+		//loop music level
+		if(currentMap)
+		{
+			currentMap->UpdateMusic();
+		}
+
+		if (camera && player)
+		{
+			camera->FollowPlayer(player);
+			camera->Update(dt);
+		}
+
 		break;
-	case ModuleGame::RaceState::FINISHED:
+	case ModuleGame::GameState::FINISH:
+		//game over screen. Show dcore and update if necessary
+
+		if (IsKeyPressed(KEY_ONE)) {
+			gameState = GameState::MAIN_MENU;
+		}
 		break;
 	default:
 		break;
-	}
-
-	//loop music level
-	currentMap->UpdateMusic();
-
-	if (camera && player)
-	{
-		camera->FollowPlayer(player);
-		camera->Update(dt);
 	}
 
 	return UPDATE_CONTINUE;
@@ -119,27 +268,195 @@ update_status ModuleGame::Update()
 //render in post-update
 update_status ModuleGame::PostUpdate()
 {
-	//MouseJoint
-	App->physics->UseMouseJoint(camera->GetRaylibCamera());
+	switch (gameState)
+	{
+	case ModuleGame::GameState::MAIN_MENU:
+		//draw main menu texture
+		DrawTexture(mainMenuScreen, 0, 0, WHITE);
 
-	//--------------RENDER-----------------
-	//Raylib camera behaviour (start camera mode)
-	BeginMode2D(camera->GetRaylibCamera());
-	//render map background (floor)
-	if (currentMap) { currentMap->RenderBackground(); }
-	//render entities
-	entityManager->Render();
+		// Dibujar texto de instrucciones
+		DrawText("Press 1 to Start the Game",
+			SCREEN_WIDTH / 2 - 180,
+			SCREEN_HEIGHT - 100,
+			30,
+			WHITE);
 
-	//render top elements
-	if (currentMap) { currentMap->RenderTop(); }
+		break;
+		{
+	case ModuleGame::GameState::CHARACTER_SELECTION:
+		DrawTexture(characterSelection, 0, 0, WHITE);
 
-	//draw debug physicBodies
-	App->physics->DrawDebug();
-	EndMode2D();
+		DrawText("SELECT YOUR CHARACTER",
+			SCREEN_WIDTH / 2 - 250,
+			50,
+			40,
+			YELLOW);
+
+		int startY = 180;
+		int spacing = 120;
+
+		// CLEFFA
+		DrawText("Press 1 -> Cleffa",
+			SCREEN_WIDTH / 2 - 250,
+			startY,
+			35,
+			WHITE);
+		DrawText("Ability: Become invisible and ignore colliders",
+			SCREEN_WIDTH / 2 - 240,
+			startY + 35,
+			22,
+			LIGHTGRAY);
+
+		// CHANSEY
+		DrawText("Press 2 -> Chansey",
+			SCREEN_WIDTH / 2 - 250,
+			startY + spacing,
+			35,
+			WHITE);
+		DrawText("Ability: Throw an egg",
+			SCREEN_WIDTH / 2 - 240,
+			startY + spacing + 35,
+			22,
+			LIGHTGRAY);
+
+		// PACHIRISU
+		DrawText("Press 3 -> Pachirisu",
+			SCREEN_WIDTH / 2 - 250,
+			startY + spacing * 2,
+			35,
+			WHITE);
+		DrawText("Ability: Electric discharge around",
+			SCREEN_WIDTH / 2 - 240,
+			startY + spacing * 2 + 35,
+			22,
+			LIGHTGRAY);
+
+		// MEGANIUM
+		DrawText("Press 4 -> Meganium",
+			SCREEN_WIDTH / 2 - 250,
+			startY + spacing * 3,
+			35,
+			WHITE);
+		DrawText("Ability: Shoot laser beam from mouth",
+			SCREEN_WIDTH / 2 - 240,
+			startY + spacing * 3 + 35,
+			22,
+			LIGHTGRAY);
+
+		break;
+		}
+	case ModuleGame::GameState::IN_GAME:
+		//MouseJoint
+		App->physics->UseMouseJoint(camera->GetRaylibCamera());
+
+		//--------------RENDER-----------------
+		//Raylib camera behaviour (start camera mode)
+		BeginMode2D(camera->GetRaylibCamera());
+		//render map background (floor)
+		if (currentMap) { currentMap->RenderBackground(); }
+		//render entities
+		entityManager->Render();
+
+		//render top elements
+		if (currentMap) { currentMap->RenderTop(); }
+
+		//draw debug physicBodies
+		App->physics->DrawDebug();
+		EndMode2D();
+		break;
+		{
+	case ModuleGame::GameState::FINISH:
+
+		DrawTexture(finishRaceScreen, 0, 0, WHITE);
+
+		//draw text current score and highest score
+		// Convertir los tiempos a minutos:segundos
+		int currentMinutes = (int)scoreWhenFinishingRace / 60;
+		int currentSeconds = (int)scoreWhenFinishingRace % 60;
+		int currentMillis = (int)((scoreWhenFinishingRace - (int)scoreWhenFinishingRace) * 100);
+
+		int bestMinutes = (int)highestScore / 60;
+		int bestSeconds = (int)highestScore % 60;
+		int bestMillis = (int)((highestScore - (int)highestScore) * 100);
+
+		// Determinar sufijo ordinal (1st, 2nd, 3rd, 4th)
+		const char* positionSuffix = "th";
+		if (playerPosition == 1) positionSuffix = "st";
+		else if (playerPosition == 2) positionSuffix = "nd";
+		else if (playerPosition == 3) positionSuffix = "rd";
+
+		// Color según posición
+		Color positionColor = GRAY;
+		if (playerPosition == 1) positionColor = GOLD;
+		else if (playerPosition == 2) positionColor = LIGHTGRAY;
+		else if (playerPosition == 3) {
+			positionColor.r = 205;
+			positionColor.g = 127;
+			positionColor.b = 50;
+			positionColor.a = 255;
+		}; // Bronce
+
+		// Dibujar título
+		DrawText("RACE FINISHED!",
+			SCREEN_WIDTH / 2 - 200,
+			100,
+			60,
+			YELLOW);
+
+		// Dibujar tiempo actual (esta carrera)
+		DrawText("YOUR TIME:",
+			SCREEN_WIDTH / 2 - 150,
+			250,
+			40,
+			WHITE);
+
+		DrawText(TextFormat("%02d:%02d.%02d", currentMinutes, currentSeconds, currentMillis),
+			SCREEN_WIDTH / 2 - 100,
+			320,
+			50,
+			GREEN);
+
+		// Dibujar mejor tiempo
+		if (highestScore > 0.0f) {
+			DrawText("BEST TIME:",
+				SCREEN_WIDTH / 2 - 150,
+				450,
+				40,
+				WHITE);
+
+			DrawText(TextFormat("%02d:%02d.%02d", bestMinutes, bestSeconds, bestMillis),
+				SCREEN_WIDTH / 2 - 100,
+				520,
+				50,
+				GOLD);
+
+			// Mensaje si es nuevo récord
+			if (scoreWhenFinishingRace <= highestScore) {
+				DrawText("NEW RECORD!",
+					SCREEN_WIDTH / 2 - 150,
+					600,
+					35,
+					RED);
+			}
+		}
+
+		// Instrucciones
+		DrawText("Press 1 to return to Main Menu",
+			SCREEN_WIDTH / 2 - 200,
+			SCREEN_HEIGHT - 100,
+			25,
+			LIGHTGRAY);
+		break;
+		}
+	default:
+		break;
+	}
+
+
 	//--------------------------------------
 	//---------UI debug render--------------
 	//Show position of the player
-	if (player) {
+	if (player && raceState == RaceState::RUNNING) {
 
 		Characters* playerCar = dynamic_cast<Characters*>(player);
 
@@ -159,7 +476,7 @@ update_status ModuleGame::PostUpdate()
 			debugText += "? "; // Si aún no se ha calculado
 		}
 
-		debugText += " / VUELTA: " + std::to_string(currentLap);
+		debugText += " / Lap: " + std::to_string(currentLap);
 
 		DrawText(
 			debugText.c_str(),
@@ -208,7 +525,7 @@ bool ModuleGame::CleanUp()
 }
 
 void ModuleGame::OnCollision(PhysBody* physA, PhysBody* physB) {
-
+	if (gameState != GameState::IN_GAME && raceState != RaceState::RUNNING) { return; }
 	if (!physA->entity || !physB->entity) { return; }
 
 	Entity* player = nullptr;
@@ -290,6 +607,7 @@ void ModuleGame::OnCollision(PhysBody* physA, PhysBody* physB) {
 }
 
 void ModuleGame::OnCollisionEnd(PhysBody* physA, PhysBody* physB) {
+	if (gameState != GameState::IN_GAME && raceState != RaceState::RUNNING) { return; }
 	if (!physA->entity || !physB->entity) { return; }
 
 	Entity* player = nullptr;
@@ -327,10 +645,6 @@ void ModuleGame::OnCollisionEnd(PhysBody* physA, PhysBody* physB) {
 	}
 }
 
-void ModuleGame::GetPokemonChoosenByPlayer()
-{
-	//ask scene manager or character selection scene which pokemon has been choosed
-}
 
 #pragma region LEVEL CREATION
 void ModuleGame::LoadLevel(int levelNumber)

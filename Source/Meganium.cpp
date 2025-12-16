@@ -154,7 +154,7 @@ void Meganium::UpdateAnims(float dt)
 bool Meganium::CleanUp()
 {
     LOG("Unloading player");
-
+    listener->App->physics->DestroyPhysBody(physBody);
     return true;
 }
 
@@ -583,7 +583,7 @@ bool Meganium::Render() {
 
 
     // Dibujar waypoints si es IA
-    if (!isPlayer && !waypoints.empty())
+    if (!isPlayer && !waypoints.empty() && listener->App->physics->GetDebug())
     {
         // Dibujar todos los waypoints
         for (size_t i = 0; i < waypoints.size(); i++)
