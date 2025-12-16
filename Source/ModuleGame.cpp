@@ -45,8 +45,11 @@ bool ModuleGame::Start()
 	//create position tracking and send al checkpoints
 	posTracker = new PositionTracker(currentMap->GetCheckpointsList());
 
+	//create scene managewr
+	sceneManager = new SceneManager();
+
 	raceState = RaceState::COUNTDOWN;
-	countdownTimer = 5.0f;
+	countdownTimer = 3.0f;
 	return ret;
 }
 
@@ -67,7 +70,8 @@ update_status ModuleGame::Update()
 	static float startTime = GetTime(); // GetTime() devuelve segundos desde el inicio del juego
 
 	std::cout << "dt: " << dt << " countdownTimer: " << countdownTimer << std::endl;
-	
+
+
 	switch (raceState)
 	{
 		{

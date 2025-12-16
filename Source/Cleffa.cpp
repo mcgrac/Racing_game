@@ -320,7 +320,7 @@ void Cleffa::ApplyAIControl(float dt)
     }
 
     // -------- FRENADO --------
-    if (shouldBrake && speed > 0.1f)
+    if (shouldBrake && speed > 2.0f)
     {
         b2Vec2 brakeForceVector = -brakeForce * forwardVector;
         body->ApplyForceToCenter(brakeForceVector, true);
