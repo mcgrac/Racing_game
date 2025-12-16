@@ -16,6 +16,7 @@ public:
 	Vector2D GetNextWaypoint() const;
 	void AdvanceToNextWaypoint();
 	void ResetWaypoints();
+
 	//read waypoints
 	void WaypointLoader(const char* path);
 
@@ -23,8 +24,8 @@ public:
 	inline int getAcceleration() {
 		return stats.acceleration;
 	}
-	inline int getMaxSpeed() {
-		return stats.maxSpeed;
+	inline float GetMaxSpeed() {
+		return maxForwardSpeed;
 	}
 	inline int getTurbo() {
 		return stats.turbo;
@@ -49,6 +50,9 @@ public:
 	}
 	inline void SetCheckpointArrived(int i) { checkpointArrived = i; }
 	inline void SetPositionInRace(int i) { positionInRace = i; }
+	inline void SetStunnedState() { currentState = State::STUNNED; }
+	inline void SetStateTimer(float f) { stateTimer = f; }
+	
 	inline void AddOneLap() { laps++; }
 
 	inline int GetCheckId() { return checkpointArrived; }
@@ -71,13 +75,12 @@ protected:
 		int offRoad;
 	};
 	Statistics stats;
-	//afegir tilset
-	//afegir icona
 
 	enum class State {
 		IDLE,
 		ATTACK,
 		STUNNED,
+		PREPARING_ATTACK
 	};
 	State currentState;
 	State previousState;
@@ -115,6 +118,7 @@ protected:
 	Animation idleAnimation;
 	Animation stunnedAnimation;
 	Animation attackAnimation;
+	Animation preparingAttack;
 
 	//IA
 	std::vector<Vector2D> waypoints;

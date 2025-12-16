@@ -115,7 +115,6 @@ update_status ModuleGame::PostUpdate()
 		// 2. Construir el texto a mostrar
 		// Ejemplo: "POS: 1º / VUELTA: 2"
 		std::string debugText = "POS: ";
-
 		// Convertir la posición a cadena (con indicador ordinal si es necesario)
 		if (currentPosition > 0) {
 			// Se puede usar la lógica del PositionTracker para generar el ordinal (1º, 2º, 3º, etc.)
@@ -127,12 +126,6 @@ update_status ModuleGame::PostUpdate()
 
 		debugText += " / VUELTA: " + std::to_string(currentLap);
 
-		// Opcional: Mostrar el progreso total (útil para debug de la lógica de clasificación)
-		// debugText += " (Progreso: " + std::to_string(positionTracker->CalculateTotalProgress(playerCar)) + ")";
-
-		// 3. Renderizar el texto
-		// **REEMPLAZAR** 'DrawText' con la función real de tu motor de renderizado.
-		// Asumo coordenadas fijas en la esquina superior izquierda (ej. 10, 10).
 		DrawText(
 			debugText.c_str(),
 			800, 10, 40, WHITE );
@@ -176,6 +169,7 @@ void ModuleGame::OnCollision(PhysBody* physA, PhysBody* physB) {
 	Entity* entityA = physA->entity;
 	Entity* entityB = physB->entity;
 
+	//if the entity is the player
 	if (entityA->type == EntityType::PLAYER || entityA->type == EntityType::AI) {
 		player = entityA;
 		other = entityB;
@@ -207,12 +201,18 @@ void ModuleGame::OnCollision(PhysBody* physA, PhysBody* physB) {
 		//if the checkpoint is the first one and the one before is the last one means 1 lap has been completed
 		if (chara->GetCheckId() >= 10 && c->GetId() == 0) { 
 			chara->AddOneLap(); 
-			//std::cout << "Lap completed. Current laps completed: " << chara->GetLaps() << std::endl;
 		}
 
 		chara->SetCheckpointArrived(c->GetId()); //update last checkpoint racers
-
-		//std::cout << "Updates checkpoint character: " << chara->GetCheckId() << std::endl;
+		break;
+		}
+		{
+	case EntityType::ATTACK:
+		//collision AI with a attack of the player ->set AI stunned for a while
+		std::cout << "attackCollision" << std::endl;
+		Characters* chara = dynamic_cast<Characters*>(player);
+		chara->SetStunnedState();
+		chara->SetStateTimer(2.0f); //be stunned for 2 seconds
 		break;
 		}
 	default:
@@ -280,7 +280,7 @@ void ModuleGame::CreatePlayers()
 						Vector2D(0.0f, 0.0f),
 						EntityType::PLAYER,
 						PhysicCategory::CARS,
-						PhysicCategory::SENSORS|WALLS|DESTRUCTIBLE
+						PhysicCategory::SENSORS | WALLS | DESTRUCTIBLE | CHECKPOINTS
 					);
 					break;
 				case 2:
@@ -289,7 +289,7 @@ void ModuleGame::CreatePlayers()
 						Vector2D(0.0f, 0.0f),
 						EntityType::PLAYER,
 						PhysicCategory::CARS,
-						PhysicCategory::CHECKPOINTS
+						PhysicCategory::SENSORS | WALLS | DESTRUCTIBLE | CHECKPOINTS
 					);
 					break;
 				case 3:
@@ -298,7 +298,7 @@ void ModuleGame::CreatePlayers()
 						Vector2D(0.0f, 0.0f),
 						EntityType::PLAYER,
 						PhysicCategory::CARS,
-						PhysicCategory::SENSORS | WALLS | DESTRUCTIBLE
+						PhysicCategory::SENSORS | WALLS | DESTRUCTIBLE | CHECKPOINTS
 					);
 					break;
 				case 4:
@@ -307,7 +307,7 @@ void ModuleGame::CreatePlayers()
 						Vector2D(0.0f, 0.0f),
 						EntityType::PLAYER,
 						PhysicCategory::CARS,
-						PhysicCategory::SENSORS | WALLS | DESTRUCTIBLE
+						PhysicCategory::SENSORS | WALLS | DESTRUCTIBLE | CHECKPOINTS
 					);
 					break;
 				default:
@@ -333,7 +333,7 @@ void ModuleGame::CreatePlayers()
 						Vector2D(0.0f, 0.0f),
 						EntityType::AI,
 						PhysicCategory::AI,
-						PhysicCategory::CHECKPOINTS
+						PhysicCategory::CHECKPOINTS | ATTACK
 					);
 					break;
 				case 2:
@@ -342,7 +342,7 @@ void ModuleGame::CreatePlayers()
 						Vector2D(0.0f, 0.0f),
 						EntityType::AI,
 						PhysicCategory::AI,
-						PhysicCategory::CHECKPOINTS
+						PhysicCategory::CHECKPOINTS | ATTACK
 					);
 					break;
 				case 3:
@@ -351,7 +351,7 @@ void ModuleGame::CreatePlayers()
 						Vector2D(0.0f, 0.0f),
 						EntityType::AI,
 						PhysicCategory::AI,
-						PhysicCategory::CHECKPOINTS
+						PhysicCategory::CHECKPOINTS | ATTACK
 					);
 					break;
 				case 4:
@@ -360,7 +360,7 @@ void ModuleGame::CreatePlayers()
 						Vector2D(0.0f, 0.0f),
 						EntityType::AI,
 						PhysicCategory::AI,
-						PhysicCategory::CHECKPOINTS
+						PhysicCategory::CHECKPOINTS | ATTACK
 					);
 					break;
 				default:
@@ -369,9 +369,7 @@ void ModuleGame::CreatePlayers()
 		 
 			currentMap->AddChosenCharacter(randomPokemon);
 			racer->SetIsPlayer(false);
-			//racer->type == EntityType::AI;
 			
-			//FOR DOING THE NEXT TWO THINGS A DYNAMYC CAST IS NEEDED
 			Characters* c = dynamic_cast<Characters*>(racer);
 			c->WaypointLoader("Assets/WaypointsAI.txt");
 			c->SetMaxSpeed(8.0f);

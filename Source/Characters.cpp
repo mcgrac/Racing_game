@@ -6,6 +6,7 @@ Characters::Characters(Module* _listener, const Vector2D& startPos, EntityType _
 	idleAnimation(0.15f), //0.15 seconds per frame
 	attackAnimation(0.2f), //0.2 seconds per frame
 	stunnedAnimation(0.2f), //0.2 seconds per frame
+	preparingAttack (0.2f),
 	speed(200.0f),
 	textureLoaded(false),
 	maxForwardSpeed(10.0f),        // 72 km/h
@@ -34,13 +35,18 @@ void Characters::UpdateState(float dt)
 {
 	//if there is a tempoal state like stunned
 	if (stateTimer > 0.0f) { 
-		
 		stateTimer -= dt; 
 		
 		if (stateTimer <= 0.0f) {
 
 			currentState = State::IDLE;
 			std::cout << "Player returned to idle" << std::endl;
+			stateTimer = 0.0f;
+
+			//reset forward speed
+			std::cout << "Previous max speed: " << maxForwardSpeed << std::endl;
+			maxForwardSpeed *= 2;
+			std::cout << "New max speed: "<<maxForwardSpeed << std::endl;
 		}
 	} 
 }
@@ -108,14 +114,6 @@ float Characters::CalculateDistanceFromCheckpoint(Checkpoint* ch)
 	Vector2D posCar = position;
 	return posCar.distanceEuclidean(ch->GetCenter());
 }
-
-//void Characters::CheckpointPassed(int idCheck)
-//{
-//	//If the checkpoint id is 0 and the previous one is the last one, add one lap
-//	if (idCheck == 0 && (checkpointArrived == 29 || checkpointArrived == 28)) {
-//
-//	}
-//}
 
 #pragma region HELPERS
 b2Vec2 Characters::GetForwardVector() const {

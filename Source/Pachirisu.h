@@ -1,5 +1,6 @@
 #pragma once
 #include "Characters.h"
+#include "AttackPachirisu.h"
 
 class Pachirisu : public Characters
 {
@@ -23,7 +24,6 @@ private:
 	void LoadAnimations();
 	void UpdateAnims(float dt) override;
 	bool IsTextureLoaded() const { return textureLoaded; }
-	Texture texture;
 
 	//PHYSICS
 	void ApplyDrag();
@@ -31,8 +31,10 @@ private:
 	void SyncPositionFromPhysics();
 	void Boost(float dt) override;
 
-	//player control
+	//player controls
 	void ApplyCarPhysics(float dt);
+	void Attack();
+	AttackPachirisu* attack = nullptr;
 
 	//AI controls
 	//Control IA

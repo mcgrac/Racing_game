@@ -23,7 +23,7 @@ private:
 	void LoadAnimations();
 	void UpdateAnims(float dt) override;
 	bool IsTextureLoaded() const { return textureLoaded; }
-	Texture texture;
+	void Attack();
 
 	//PHYSICS
 	void ApplyDrag();

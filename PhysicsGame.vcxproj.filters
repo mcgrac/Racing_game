@@ -103,6 +103,12 @@
     <ClCompile Include="Source/Cleffa.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="Source\AttackPachirisu.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\SolarBeam.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source/p2Point.h">
@@ -208,6 +214,12 @@
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="Source\Checkpoint.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\AttackPachirisu.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\SolarBeam.h">
       <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>

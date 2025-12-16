@@ -60,7 +60,8 @@ enum PhysicCategory {
 	SENSORS = 1 << 3,
 	DESTRUCTIBLE = 1 << 4,
 	AI = 1 << 5,
-	CHECKPOINTS = 1 << 6
+	CHECKPOINTS = 1 << 6,
+	ATTACK = 1 << 7
 
 };
 
@@ -77,6 +78,7 @@ public:
 	bool CleanUp();
 
 	PhysBody* CreateCircle(int x, int y, int radius, b2BodyType type);
+	PhysBody* CreateCircleSensor(int x, int y, int radius, b2BodyType type, uint16 categoryBits, uint16 maskBits, int16 groupIndex);
 	PhysBody* CreateRectangle(int x, int y, int width, int height, b2BodyType type, uint16 categoryBits, uint16 maskBits, int16 groupIndex);
 	PhysBody* CreateRectangleSensor(int x, int y, int width, int height, b2BodyType type);
 	PhysBody* CreateRectangleSensor(int x, int y, int width, int height, float rotation, b2BodyType type, uint16 categoryBits, uint16 maskBits, int16 groupIndex);

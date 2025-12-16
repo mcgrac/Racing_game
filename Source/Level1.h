@@ -30,8 +30,6 @@ private:
     Module* listener; // listener for everithing
     EntityManager* entityManager; //creation entities
 
-    //bosts
-    std::vector<Boost*> boostsList;
     
 
 

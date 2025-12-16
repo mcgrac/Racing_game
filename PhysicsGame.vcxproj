@@ -189,6 +189,7 @@
     <ClInclude Include="Source/ModuleWindow.h" />
     <ClInclude Include="Source/p2Point.h" />
     <ClInclude Include="Source\Animation.h" />
+    <ClInclude Include="Source\AttackPachirisu.h" />
     <ClInclude Include="Source\Boost.h" />
     <ClInclude Include="Source\Chansey.h" />
     <ClInclude Include="Source\Characters.h" />
@@ -212,6 +213,7 @@
     <ClInclude Include="Source\PositionTracker.h" />
     <ClInclude Include="Source\Scene.h" />
     <ClInclude Include="Source\SceneManager.h" />
+    <ClInclude Include="Source\SolarBeam.h" />
     <ClInclude Include="Source\StartScreen.h" />
     <ClInclude Include="Source\Timer.h" />
     <ClInclude Include="Source\Vector2D.h" />
@@ -226,6 +228,7 @@
     <ClCompile Include="Source/ModuleRender.cpp" />
     <ClCompile Include="Source/ModuleWindow.cpp" />
     <ClCompile Include="Source\Animation.cpp" />
+    <ClCompile Include="Source\AttackPachirisu.cpp" />
     <ClCompile Include="Source\Boost.cpp" />
     <ClCompile Include="Source\Chansey.cpp" />
     <ClCompile Include="Source\BadgesScreen.cpp" />
@@ -248,6 +251,7 @@
     <ClCompile Include="Source\PositionTracker.cpp" />
     <ClCompile Include="Source\Scene.cpp" />
     <ClCompile Include="Source\SceneManager.cpp" />
+    <ClCompile Include="Source\SolarBeam.cpp" />
     <ClCompile Include="Source\StartScreen.cpp" />
     <ClCompile Include="Source\Timer.cpp" />
     <ClCompile Include="Source\Vector2D.cpp" />
